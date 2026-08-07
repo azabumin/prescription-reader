@@ -11,7 +11,7 @@
     "ALLOWED_ORIGIN": "https://azabumin.github.io"
   },
   "kv_namespaces": [
-    { "binding": "RATE_LIMIT_KV", "id": "REPLACE_WITH_KV_NAMESPACE_ID" }
+    { "binding": "RATE_LIMIT_KV", "id": "766c211f9e734392af7fa1581a131c2b" }
   ]
   // ANTHROPIC_API_KEY is NOT set here — it's a secret.
   // Run: wrangler secret put ANTHROPIC_API_KEY
