@@ -1,0 +1,363 @@
+import { useState } from 'react';
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { Link } from 'expo-router';
+import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
+
+import AdBanner from '../components/AdBanner';
+import { COLORS, FONT, RADIUS, SPACING } from '../constants/theme';
+import { analyzePrescriptionPhoto, AnalyzeError } from '../lib/api';
+import { detectDefaultLang, STRINGS } from '../lib/i18n';
+import type { AnalysisResult, Lang } from '../types';
+
+export default function HomeScreen() {
+  const [lang, setLang] = useState<Lang>(detectDefaultLang());
+  const [imageUri, setImageUri] = useState<string | null>(null);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const t = STRINGS[lang];
+
+  async function analyze(uri: string) {
+    setAnalyzing(true);
+    setErrorMsg(null);
+    setResult(null);
+    try {
+      const manipulated = await ImageManipulator.manipulateAsync(
+        uri,
+        [{ resize: { width: 1200 } }],
+        { compress: 0.75, format: ImageManipulator.SaveFormat.JPEG, base64: true }
+      );
+      if (!manipulated.base64) {
+        throw new Error('no base64 output');
+      }
+      const analysis = await analyzePrescriptionPhoto(manipulated.base64, 'image/jpeg', lang);
+      setResult(analysis);
+    } catch (e) {
+      if (e instanceof AnalyzeError) {
+        setErrorMsg(
+          e.code === 'network' ? t.errorNetwork : e.code === 'rate_limited' ? t.errorRateLimited : t.errorServer
+        );
+      } else {
+        setErrorMsg(t.errorServer);
+      }
+    } finally {
+      setAnalyzing(false);
+    }
+  }
+
+  async function handlePick(source: 'camera' | 'library') {
+    setErrorMsg(null);
+    try {
+      const permission =
+        source === 'camera'
+          ? await ImagePicker.requestCameraPermissionsAsync()
+          : await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permission.granted) {
+        setErrorMsg(source === 'camera' ? t.cameraPermissionDenied : t.libraryPermissionDenied);
+        return;
+      }
+
+      const pickerResult =
+        source === 'camera'
+          ? await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 1 })
+          : await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 1 });
+
+      if (pickerResult.canceled || !pickerResult.assets?.length) return;
+
+      const uri = pickerResult.assets[0].uri;
+      setImageUri(uri);
+      setResult(null);
+      await analyze(uri);
+    } catch {
+      setErrorMsg(t.pickError);
+    }
+  }
+
+  function reset() {
+    setImageUri(null);
+    setResult(null);
+    setErrorMsg(null);
+  }
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <TouchableOpacity
+        style={styles.langSwitch}
+        onPress={() => setLang(lang === 'ko' ? 'ja' : 'ko')}
+        accessibilityRole="button"
+      >
+        <Text style={styles.langSwitchText}>{t.langToggle}</Text>
+      </TouchableOpacity>
+
+      <Text style={styles.title}>{t.appTitle}</Text>
+      <Text style={styles.subtitle}>{t.appSubtitle}</Text>
+
+      {!imageUri && (
+        <View style={styles.pickCard}>
+          <TouchableOpacity style={styles.primaryButton} onPress={() => handlePick('camera')}>
+            <Text style={styles.primaryButtonText}>{t.takePhoto}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.secondaryButton} onPress={() => handlePick('library')}>
+            <Text style={styles.secondaryButtonText}>{t.pickPhoto}</Text>
+          </TouchableOpacity>
+          {!!errorMsg && <Text style={styles.errorText}>{errorMsg}</Text>}
+          <Text style={styles.helperText}>{t.disclaimer}</Text>
+        </View>
+      )}
+
+      {imageUri && (
+        <View style={styles.resultCard}>
+          <Image source={{ uri: imageUri }} style={styles.preview} resizeMode="cover" />
+
+          {analyzing && (
+            <View style={styles.centerBlock}>
+              <ActivityIndicator color={COLORS.primary} size="large" />
+              <Text style={styles.loadingText}>{t.analyzing}</Text>
+            </View>
+          )}
+
+          {!analyzing && errorMsg && (
+            <View style={styles.centerBlock}>
+              <Text style={styles.errorText}>{errorMsg}</Text>
+              <TouchableOpacity style={styles.primaryButton} onPress={() => analyze(imageUri)}>
+                <Text style={styles.primaryButtonText}>{t.retry}</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {!analyzing && !errorMsg && result && (
+            <View style={styles.analysisBlock}>
+              <Text style={styles.medicationName}>{result.medicationName}</Text>
+              <Text style={styles.sectionLabel}>{t.medicationSectionTitle}</Text>
+
+              {result.items.map((item, index) => (
+                <View key={`${item.name}-${index}`} style={styles.itemCard}>
+                  <Text style={styles.itemName}>{item.name}</Text>
+                  <View style={styles.itemRow}>
+                    <Text style={styles.itemFieldLabel}>{t.dosageLabel}</Text>
+                    <Text style={styles.itemFieldValue}>{item.dosage}</Text>
+                  </View>
+                  <View style={styles.itemRow}>
+                    <Text style={styles.itemFieldLabel}>{t.frequencyLabel}</Text>
+                    <Text style={styles.itemFieldValue}>{item.frequency}</Text>
+                  </View>
+                  <View style={styles.itemRow}>
+                    <Text style={styles.itemFieldLabel}>{t.purposeLabel}</Text>
+                    <Text style={styles.itemFieldValue}>{item.purpose}</Text>
+                  </View>
+                  <View style={styles.itemRow}>
+                    <Text style={styles.itemFieldLabel}>{t.precautionLabel}</Text>
+                    <Text style={styles.itemFieldValue}>{item.precaution}</Text>
+                  </View>
+                </View>
+              ))}
+
+              <Text style={styles.sectionLabel}>{t.generalNotesTitle}</Text>
+              <Text style={styles.generalNotes}>{result.generalNotes}</Text>
+              <Text style={styles.helperText}>{t.disclaimer}</Text>
+            </View>
+          )}
+
+          <TouchableOpacity style={styles.secondaryButton} onPress={reset}>
+            <Text style={styles.secondaryButtonText}>{t.tryAnother}</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      <AdBanner />
+
+      <View style={styles.footer}>
+        <Link href="/about" style={styles.footerLink}>
+          {t.footerAbout}
+        </Link>
+        <Text style={styles.footerDot}>·</Text>
+        <Link href="/privacy" style={styles.footerLink}>
+          {t.footerPrivacy}
+        </Link>
+        <Text style={styles.footerDot}>·</Text>
+        <Link href="/terms" style={styles.footerLink}>
+          {t.footerTerms}
+        </Link>
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    backgroundColor: COLORS.bg,
+    padding: SPACING.lg,
+    paddingTop: SPACING.xl,
+    alignItems: 'stretch',
+    maxWidth: 480,
+    width: '100%',
+    alignSelf: 'center',
+  },
+  langSwitch: {
+    alignSelf: 'flex-end',
+    paddingVertical: SPACING.xs,
+    paddingHorizontal: SPACING.sm,
+    marginBottom: SPACING.sm,
+  },
+  langSwitchText: {
+    color: COLORS.accent,
+    fontWeight: '700',
+    fontSize: FONT.small,
+    textDecorationLine: 'underline',
+  },
+  title: {
+    fontSize: FONT.title,
+    fontWeight: '800',
+    color: COLORS.text,
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: FONT.subtitle,
+    color: COLORS.textMuted,
+    textAlign: 'center',
+    marginTop: SPACING.xs,
+    marginBottom: SPACING.lg,
+  },
+  pickCard: {
+    backgroundColor: COLORS.card,
+    borderRadius: RADIUS.lg,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    padding: SPACING.lg,
+    gap: SPACING.sm,
+  },
+  primaryButton: {
+    backgroundColor: COLORS.primary,
+    borderRadius: RADIUS.pill,
+    paddingVertical: SPACING.md + 2,
+    alignItems: 'center',
+  },
+  primaryButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+    fontSize: FONT.button,
+  },
+  secondaryButton: {
+    backgroundColor: COLORS.chipBg,
+    borderRadius: RADIUS.pill,
+    paddingVertical: SPACING.md + 2,
+    alignItems: 'center',
+    marginTop: SPACING.sm,
+  },
+  secondaryButtonText: {
+    color: COLORS.primaryDark,
+    fontWeight: '700',
+    fontSize: FONT.label + 1,
+  },
+  helperText: {
+    fontSize: FONT.small,
+    color: COLORS.textMuted,
+    marginTop: SPACING.sm,
+    lineHeight: 19,
+  },
+  errorText: {
+    color: COLORS.danger,
+    fontSize: FONT.label,
+    textAlign: 'center',
+    marginBottom: SPACING.xs,
+  },
+  resultCard: {
+    backgroundColor: COLORS.card,
+    borderRadius: RADIUS.lg,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    padding: SPACING.md,
+    gap: SPACING.sm,
+  },
+  preview: {
+    width: '100%',
+    height: 260,
+    borderRadius: RADIUS.md,
+    backgroundColor: COLORS.chipBg,
+  },
+  centerBlock: {
+    alignItems: 'center',
+    paddingVertical: SPACING.lg,
+    gap: SPACING.sm,
+  },
+  loadingText: {
+    color: COLORS.textMuted,
+    fontSize: FONT.label,
+  },
+  analysisBlock: {
+    paddingTop: SPACING.sm,
+  },
+  medicationName: {
+    fontSize: FONT.title - 8,
+    fontWeight: '800',
+    color: COLORS.text,
+    marginBottom: SPACING.md,
+  },
+  sectionLabel: {
+    fontSize: FONT.small,
+    fontWeight: '700',
+    color: COLORS.primaryDark,
+    textTransform: 'uppercase',
+    letterSpacing: 0.4,
+    marginBottom: SPACING.sm,
+    marginTop: SPACING.sm,
+  },
+  itemCard: {
+    backgroundColor: COLORS.chipBg,
+    borderRadius: RADIUS.md,
+    padding: SPACING.md,
+    marginBottom: SPACING.sm,
+  },
+  itemName: {
+    fontSize: FONT.body + 1,
+    fontWeight: '800',
+    color: COLORS.text,
+    marginBottom: SPACING.xs,
+  },
+  itemRow: {
+    flexDirection: 'row',
+    marginTop: 4,
+  },
+  itemFieldLabel: {
+    fontSize: FONT.small,
+    color: COLORS.textMuted,
+    width: 84,
+    flexShrink: 0,
+  },
+  itemFieldValue: {
+    fontSize: FONT.label,
+    color: COLORS.text,
+    flex: 1,
+  },
+  generalNotes: {
+    fontSize: FONT.body,
+    color: COLORS.text,
+    lineHeight: 24,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: SPACING.xl,
+    gap: SPACING.sm,
+  },
+  footerLink: {
+    fontSize: FONT.small,
+    color: COLORS.textMuted,
+  },
+  footerDot: {
+    fontSize: FONT.small,
+    color: COLORS.textMuted,
+  },
+});

@@ -1,0 +1,44 @@
+{
+  "expo": {
+    "name": "처방전 도우미 / 処方箋ヘルパー",
+    "slug": "prescription-reader",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "prescriptionreader",
+    "userInterfaceStyle": "light",
+    "experiments": {
+      "typedRoutes": true,
+      "baseUrl": "/prescription-reader"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "처방전이나 약봉투를 촬영해서 쉬운 말로 설명해 드리기 위해 카메라 접근 권한이 필요합니다."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#EFF3F1",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "permissions": ["CAMERA"]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "처방전이나 약봉투 사진을 분석하려면 사진 접근 권한이 필요합니다.",
+          "cameraPermission": "처방전이나 약봉투를 촬영해서 쉬운 말로 설명해 드리기 위해 카메라 접근 권한이 필요합니다."
+        }
+      ]
+    ]
+  }
+}
