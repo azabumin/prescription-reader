@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import {
   ActivityIndicator,
+  FlatList,
   Image,
   ScrollView,
   StyleSheet,
@@ -16,16 +17,19 @@ import AdBanner from '../components/AdBanner';
 import { COLORS, FONT, RADIUS, SPACING } from '../constants/theme';
 import { analyzePrescriptionPhoto, AnalyzeError } from '../lib/api';
 import { detectDefaultLang, STRINGS } from '../lib/i18n';
+import { LANGUAGES } from '../types';
 import type { AnalysisResult, Lang } from '../types';
 
 export default function HomeScreen() {
   const [lang, setLang] = useState<Lang>(detectDefaultLang());
+  const [pickerOpen, setPickerOpen] = useState(false);
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const t = STRINGS[lang];
+  const currentLanguage = LANGUAGES.find((l) => l.code === lang)!;
 
   async function analyze(uri: string) {
     setAnalyzing(true);
@@ -93,11 +97,44 @@ export default function HomeScreen() {
     <ScrollView contentContainerStyle={styles.container}>
       <TouchableOpacity
         style={styles.langSwitch}
-        onPress={() => setLang(lang === 'ko' ? 'ja' : 'ko')}
+        onPress={() => setPickerOpen(true)}
         accessibilityRole="button"
+        accessibilityLabel={t.chooseLanguage}
       >
-        <Text style={styles.langSwitchText}>{t.langToggle}</Text>
+        <Text style={styles.langSwitchText}>{currentLanguage.native} ▾</Text>
       </TouchableOpacity>
+
+      {pickerOpen && (
+        <View style={styles.modalBackdrop}>
+          <TouchableOpacity
+            style={StyleSheet.absoluteFill}
+            activeOpacity={1}
+            onPress={() => setPickerOpen(false)}
+          />
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>{t.chooseLanguage}</Text>
+            <FlatList
+              data={LANGUAGES}
+              keyExtractor={(item) => item.code}
+              style={styles.modalList}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={[styles.langOption, item.code === lang && styles.langOptionActive]}
+                  onPress={() => {
+                    setLang(item.code);
+                    setPickerOpen(false);
+                  }}
+                >
+                  <Text style={[styles.langOptionNative, item.code === lang && styles.langOptionActiveText]}>
+                    {item.native}
+                  </Text>
+                  <Text style={styles.langOptionEnglish}>{item.english}</Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        </View>
+      )}
 
       <Text style={styles.title}>{t.appTitle}</Text>
       <Text style={styles.subtitle}>{t.appSubtitle}</Text>
@@ -215,6 +252,60 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: FONT.small,
     textDecorationLine: 'underline',
+  },
+  modalBackdrop: {
+    position: 'fixed' as 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 1000,
+    backgroundColor: 'rgba(20,24,22,0.45)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: SPACING.lg,
+  },
+  modalCard: {
+    backgroundColor: COLORS.card,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.md,
+    width: '100%',
+    maxWidth: 360,
+    maxHeight: '80%',
+  },
+  modalTitle: {
+    fontSize: FONT.label + 1,
+    fontWeight: '800',
+    color: COLORS.text,
+    marginBottom: SPACING.sm,
+    paddingHorizontal: SPACING.sm,
+  },
+  modalList: {
+    flexGrow: 0,
+  },
+  langOption: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'space-between',
+    paddingVertical: SPACING.sm + 2,
+    paddingHorizontal: SPACING.sm,
+    borderRadius: RADIUS.sm,
+  },
+  langOptionActive: {
+    backgroundColor: COLORS.chipBg,
+  },
+  langOptionNative: {
+    fontSize: FONT.label + 1,
+    fontWeight: '600',
+    color: COLORS.text,
+  },
+  langOptionActiveText: {
+    color: COLORS.primaryDark,
+    fontWeight: '800',
+  },
+  langOptionEnglish: {
+    fontSize: FONT.small,
+    color: COLORS.textMuted,
   },
   title: {
     fontSize: FONT.title,

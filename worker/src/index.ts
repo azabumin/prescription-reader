@@ -11,74 +11,71 @@ const MAX_BASE64_LENGTH = 8_000_000; // ~6MB image
 const MODEL = 'claude-haiku-4-5';
 const ALLOWED_MEDIA_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
-type Lang = 'ko' | 'ja';
+type Lang = 'ja' | 'ko' | 'en' | 'vi' | 'zh' | 'id' | 'tl' | 'th' | 'my' | 'ne' | 'pt';
 
-function buildSchema(lang: Lang) {
-  const isJa = lang === 'ja';
-  return {
-    type: 'object',
-    properties: {
-      medicationName: {
-        type: 'string',
-        description: isJa
-          ? '処方箋・薬袋に記載されたお薬の名前(全体をまとめた見出し)'
-          : '처방전/약봉투에 적힌 약 이름(전체를 아우르는 제목)',
-      },
+// Keep in sync with LANGUAGES in ../../types.ts. Only the English name matters here —
+// it's substituted into an English-language instruction to Claude, not shown to the user.
+const LANGUAGE_NAMES: Record<Lang, string> = {
+  ja: 'Japanese',
+  ko: 'Korean',
+  en: 'English',
+  vi: 'Vietnamese',
+  zh: 'Chinese',
+  id: 'Indonesian',
+  tl: 'Filipino (Tagalog)',
+  th: 'Thai',
+  my: 'Burmese',
+  ne: 'Nepali',
+  pt: 'Portuguese',
+};
+
+// One schema for every target language — field descriptions are instructions to Claude
+// (which understands them regardless of output language), not user-facing text.
+const ANALYSIS_SCHEMA = {
+  type: 'object',
+  properties: {
+    medicationName: {
+      type: 'string',
+      description: 'Overall heading naming the medication(s) shown on the prescription/label.',
+    },
+    items: {
+      type: 'array',
       items: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            name: { type: 'string', description: isJa ? '個別のお薬の名前' : '개별 약 이름' },
-            dosage: {
-              type: 'string',
-              description: isJa ? '1回の服用量 (例: 「1錠」)' : '1회 복용량 (예: "1정")',
-            },
-            frequency: {
-              type: 'string',
-              description: isJa
-                ? '服用タイミング・頻度 (例: 「1日3回、食後30分」)'
-                : '복용 시간/빈도 (예: "하루 3번, 식후 30분")',
-            },
-            purpose: {
-              type: 'string',
-              description: isJa ? 'この薬の一般的な用途 (簡潔に)' : '이 약의 일반적인 용도 (간단히)',
-            },
-            precaution: {
-              type: 'string',
-              description: isJa ? '注意事項 (簡潔に)' : '주의사항 (간단히)',
-            },
+        type: 'object',
+        properties: {
+          name: { type: 'string', description: 'Name of this individual medication.' },
+          dosage: { type: 'string', description: 'Amount taken per dose, e.g. "1 tablet".' },
+          frequency: {
+            type: 'string',
+            description: 'When/how often to take it, e.g. "Once daily, after breakfast".',
           },
-          required: ['name', 'dosage', 'frequency', 'purpose', 'precaution'],
-          additionalProperties: false,
+          purpose: { type: 'string', description: "This medication's general purpose, briefly." },
+          precaution: { type: 'string', description: 'Precautions or warnings, briefly.' },
         },
-      },
-      generalNotes: {
-        type: 'string',
-        description: isJa
-          ? '医療アドバイスではないという断り書きを含む、全体のご案内'
-          : '의료 조언이 아니라는 안내를 포함한 전체 안내 문구',
+        required: ['name', 'dosage', 'frequency', 'purpose', 'precaution'],
+        additionalProperties: false,
       },
     },
-    required: ['medicationName', 'items', 'generalNotes'],
-    additionalProperties: false,
-  } as const;
-}
+    generalNotes: {
+      type: 'string',
+      description:
+        'Brief overall note. Must state this is not medical advice, just a plain-language restatement of what is printed on the label, and that the user should ask a pharmacist or doctor with questions.',
+    },
+  },
+  required: ['medicationName', 'items', 'generalNotes'],
+  additionalProperties: false,
+} as const;
 
-const PROMPTS: Record<Lang, string> = {
-  ko: `사진 속 처방전 또는 약봉투를 분석해주세요.
-1. 약 이름(여러 약이 있으면 각각의 이름)을 알려주세요.
-2. 각 약에 대해 1회 복용량, 복용 시간/빈도, 일반적인 용도, 주의사항을 쉬운 말로 정리해주세요.
-3. 전체적으로 참고할 안내 문구를 짧게 적어주세요 — 이 안내가 의료 조언이 아니라 처방전에 적힌 내용을 쉬운 말로 옮긴 것이라는 점과, 복용 관련 궁금한 점은 약사·의사와 상담해야 한다는 점을 포함해주세요.
-전문 의학 용어는 피하고 일상적인 말로 풀어서 설명해주세요. 사진이 흐리거나 읽기 어려운 부분이 있으면 추측하지 말고 "읽기 어려움"이라고 표시해주세요.
-모든 답변은 한국어로 작성해주세요.`,
-  ja: `写真の処方箋またはお薬の袋を分析してください。
-1. お薬の名前(複数ある場合はそれぞれの名前)を教えてください。
-2. 各お薬について、1回の服用量、服用タイミング・頻度、一般的な用途、注意事項をわかりやすい言葉でまとめてください。
-3. 全体のご案内を短く書いてください — この説明が医療アドバイスではなく、処方箋に書かれた内容をわかりやすく言い換えたものであること、服用について気になる点は薬剤師・医師にご相談いただく必要があることを含めてください。
-専門的な医学用語は避け、日常的な言葉で説明してください。写真が不鮮明で読み取れない部分がある場合は、推測せずに「判読できません」と表示してください。
-すべての回答は日本語で書いてください。`,
-};
+function buildPrompt(targetLanguageName: string): string {
+  return `Analyze the photo of a prescription or medication label. The text on it may be in Japanese, Korean, or another language — read it regardless of which.
+
+1. Identify the medication name(s) shown (there may be more than one).
+2. For each medication, state the dose per administration, timing/frequency, its general purpose, and any precautions — in plain, everyday language, not technical medical jargon.
+3. Write a brief overall note that this is not medical advice — just the label's own text restated in plain language — and that the reader should ask a pharmacist or doctor with any questions about taking the medication.
+4. If any part of the photo is blurry or illegible, say so rather than guessing at it.
+
+Write your entire response in ${targetLanguageName}, including every field. Do not mix in other languages.`;
+}
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -127,7 +124,7 @@ export default {
       typeof body.mediaType === 'string' && ALLOWED_MEDIA_TYPES.includes(body.mediaType)
         ? body.mediaType
         : 'image/jpeg';
-    const lang: Lang = body.lang === 'ja' ? 'ja' : 'ko';
+    const lang: Lang = typeof body.lang === 'string' && body.lang in LANGUAGE_NAMES ? (body.lang as Lang) : 'en';
 
     const dayTtlSeconds = 60 * 60 * 26;
     await Promise.all([
@@ -174,13 +171,13 @@ async function callClaude(base64Image: string, mediaType: string, lang: Lang, ap
     body: JSON.stringify({
       model: MODEL,
       max_tokens: 1536,
-      output_config: { format: { type: 'json_schema', schema: buildSchema(lang) } },
+      output_config: { format: { type: 'json_schema', schema: ANALYSIS_SCHEMA } },
       messages: [
         {
           role: 'user',
           content: [
             { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Image } },
-            { type: 'text', text: PROMPTS[lang] },
+            { type: 'text', text: buildPrompt(LANGUAGE_NAMES[lang]) },
           ],
         },
       ],
