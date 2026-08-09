@@ -18,27 +18,46 @@ const SPEECH_LOCALES: Record<Lang, string> = {
   pt: 'pt-PT',
 };
 
+// Voices load asynchronously on many browsers (notably iOS Safari), so getVoices() can
+// return an empty list right after page load. speechSynthesis.speak() must also be called
+// synchronously inside the tap/click handler on iOS Safari -- if it's deferred until an
+// async "voiceschanged" callback fires later, iOS can silently ignore the assigned voice
+// and lang and fall back to the device's system-language voice instead. To avoid that gap,
+// we warm the voice list once at module load (well before the user taps anything) and cache
+// it, so speak() always has a populated list ready and can call speechSynthesis.speak()
+// immediately, in the same call stack as the user's tap.
+let cachedVoices: SpeechSynthesisVoice[] = [];
+
+function refreshVoiceCache(): void {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length > 0) cachedVoices = voices;
+}
+
+if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+  refreshVoiceCache();
+  window.speechSynthesis.addEventListener('voiceschanged', refreshVoiceCache);
+}
+
 export function isSpeechSupported(): boolean {
   return typeof window !== 'undefined' && 'speechSynthesis' in window;
 }
 
-function pickVoice(bcp47: string, voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | undefined {
+function pickVoice(bcp47: string): SpeechSynthesisVoice | undefined {
+  const voices = cachedVoices.length > 0 ? cachedVoices : window.speechSynthesis.getVoices();
   const exact = voices.find((v) => v.lang.toLowerCase() === bcp47.toLowerCase());
   if (exact) return exact;
   const prefix = bcp47.split('-')[0].toLowerCase();
   return voices.find((v) => v.lang.toLowerCase().startsWith(prefix));
 }
 
-// Setting utterance.lang alone is not enough on many browsers -- if utterance.voice is left
-// unset, some implementations silently fall back to the OS/browser default voice instead of
-// picking one that matches the requested language, so the reader can hear the wrong language
-// even though the text itself is correctly translated. We look up an installed voice that
-// actually matches and set it explicitly. getVoices() can return an empty list on first call
-// until the browser's async "voiceschanged" event fires, so we wait for that when needed.
-function speakWithVoices(text: string, bcp47: string, voices: SpeechSynthesisVoice[], onEnd?: () => void): void {
+export function speak(text: string, lang: Lang, onEnd?: () => void): void {
+  if (!isSpeechSupported()) return;
+  window.speechSynthesis.cancel();
+  const bcp47 = SPEECH_LOCALES[lang];
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = bcp47;
-  const voice = pickVoice(bcp47, voices);
+  const voice = pickVoice(bcp47);
   if (voice) utterance.voice = voice;
   utterance.rate = 0.75;
   if (onEnd) {
@@ -46,23 +65,6 @@ function speakWithVoices(text: string, bcp47: string, voices: SpeechSynthesisVoi
     utterance.onerror = onEnd;
   }
   window.speechSynthesis.speak(utterance);
-}
-
-export function speak(text: string, lang: Lang, onEnd?: () => void): void {
-  if (!isSpeechSupported()) return;
-  window.speechSynthesis.cancel();
-  const bcp47 = SPEECH_LOCALES[lang];
-
-  const existingVoices = window.speechSynthesis.getVoices();
-  if (existingVoices.length > 0) {
-    speakWithVoices(text, bcp47, existingVoices, onEnd);
-    return;
-  }
-  const handleVoicesChanged = () => {
-    window.speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged);
-    speakWithVoices(text, bcp47, window.speechSynthesis.getVoices(), onEnd);
-  };
-  window.speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged);
 }
 
 export function stopSpeech(): void {
