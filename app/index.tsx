@@ -54,7 +54,7 @@ export default function HomeScreen() {
     setSpeaking(true);
   }
 
-  async function analyze(uri: string) {
+  async function analyze(uri: string, targetLang: Lang = lang) {
     stopSpeech();
     setSpeaking(false);
     setAnalyzing(true);
@@ -69,9 +69,9 @@ export default function HomeScreen() {
       if (!manipulated.base64) {
         throw new Error('no base64 output');
       }
-      const analysis = await analyzePrescriptionPhoto(manipulated.base64, 'image/jpeg', lang);
+      const analysis = await analyzePrescriptionPhoto(manipulated.base64, 'image/jpeg', targetLang);
       setResult(analysis);
-      saveHistoryEntry(analysis, lang).catch(() => {
+      saveHistoryEntry(analysis, targetLang).catch(() => {
         // best-effort local save; a failure here shouldn't block showing the result
       });
     } catch (e) {
@@ -153,6 +153,12 @@ export default function HomeScreen() {
                   onPress={() => {
                     setLang(item.code);
                     setPickerOpen(false);
+                    // A result already on screen was fetched in the old language and
+                    // won't retranslate itself -- re-run analysis on the same photo so
+                    // displayed content always matches the selected language.
+                    if (imageUri && item.code !== lang) {
+                      analyze(imageUri, item.code);
+                    }
                   }}
                 >
                   <Text style={[styles.langOptionNative, item.code === lang && styles.langOptionActiveText]}>
