@@ -178,13 +178,16 @@ export default {
     ]);
 
     try {
+      const MAX_ATTEMPTS = 3;
       let analysis = await callClaude(body.image, mediaType, lang, env.ANTHROPIC_API_KEY);
-      if (hasJapaneseLeak(analysis, lang)) {
-        console.error('language_leak_detected', { lang, retrying: true });
+      let attempts = 1;
+      while (hasJapaneseLeak(analysis, lang) && attempts < MAX_ATTEMPTS) {
+        console.error('language_leak_detected', { lang, attempt: attempts });
         analysis = await callClaude(body.image, mediaType, lang, env.ANTHROPIC_API_KEY);
-        if (hasJapaneseLeak(analysis, lang)) {
-          console.error('language_leak_detected', { lang, retrying: false });
-        }
+        attempts += 1;
+      }
+      if (hasJapaneseLeak(analysis, lang)) {
+        console.error('language_leak_unresolved', { lang, attempts });
       }
       return jsonResponse(analysis, 200, corsHeaders);
     } catch (err) {
@@ -223,6 +226,7 @@ async function callClaude(base64Image: string, mediaType: string, lang: Lang, ap
     body: JSON.stringify({
       model: MODEL,
       max_tokens: 1536,
+      temperature: 0,
       output_config: { format: { type: 'json_schema', schema: ANALYSIS_SCHEMA } },
       messages: [
         {
