@@ -42,6 +42,8 @@ export const STRINGS: Record<Lang, Record<string, string>> = {
     footerHistory: '記録',
     historyDelete: '削除',
     historyScannedOn: '撮影日',
+    listen: '読み上げ',
+    stopListening: '停止',
   },
   ko: {
     appTitle: '처방전 도우미',
@@ -83,6 +85,8 @@ export const STRINGS: Record<Lang, Record<string, string>> = {
     footerHistory: '기록',
     historyDelete: '삭제',
     historyScannedOn: '촬영일',
+    listen: '읽어주기',
+    stopListening: '정지',
   },
   en: {
     appTitle: 'Prescription Helper',
@@ -124,6 +128,8 @@ export const STRINGS: Record<Lang, Record<string, string>> = {
     footerHistory: 'History',
     historyDelete: 'Delete',
     historyScannedOn: 'Scanned on',
+    listen: 'Listen',
+    stopListening: 'Stop',
   },
   vi: {
     appTitle: 'Trợ Lý Đơn Thuốc',
@@ -165,6 +171,8 @@ export const STRINGS: Record<Lang, Record<string, string>> = {
     footerHistory: 'Lịch Sử',
     historyDelete: 'Xóa',
     historyScannedOn: 'Ngày chụp',
+    listen: 'Nghe',
+    stopListening: 'Dừng',
   },
   zh: {
     appTitle: '处方助手',
@@ -205,6 +213,8 @@ export const STRINGS: Record<Lang, Record<string, string>> = {
     footerHistory: '记录',
     historyDelete: '删除',
     historyScannedOn: '拍摄日期',
+    listen: '朗读',
+    stopListening: '停止',
   },
   id: {
     appTitle: 'Asisten Resep Obat',
@@ -246,6 +256,8 @@ export const STRINGS: Record<Lang, Record<string, string>> = {
     footerHistory: 'Riwayat',
     historyDelete: 'Hapus',
     historyScannedOn: 'Difoto pada',
+    listen: 'Dengarkan',
+    stopListening: 'Berhenti',
   },
   tl: {
     appTitle: 'Katulong sa Reseta',
@@ -287,6 +299,8 @@ export const STRINGS: Record<Lang, Record<string, string>> = {
     footerHistory: 'Kasaysayan',
     historyDelete: 'Alisin',
     historyScannedOn: 'Kinuhanan noong',
+    listen: 'Pakinggan',
+    stopListening: 'Ihinto',
   },
   th: {
     appTitle: 'ผู้ช่วยอ่านใบสั่งยา',
@@ -328,6 +342,8 @@ export const STRINGS: Record<Lang, Record<string, string>> = {
     footerHistory: 'ประวัติ',
     historyDelete: 'ลบ',
     historyScannedOn: 'ถ่ายเมื่อ',
+    listen: 'ฟัง',
+    stopListening: 'หยุด',
   },
   my: {
     appTitle: 'ဆေးညွှန်း အကူအညီ',
@@ -369,6 +385,8 @@ export const STRINGS: Record<Lang, Record<string, string>> = {
     footerHistory: 'မှတ်တမ်း',
     historyDelete: 'ဖျက်ရန်',
     historyScannedOn: 'ရိုက်ကူးသည့်ရက်',
+    listen: 'နားထောင်ရန်',
+    stopListening: 'ရပ်ရန်',
   },
   ne: {
     appTitle: 'प्रेस्क्रिप्शन सहायक',
@@ -410,6 +428,8 @@ export const STRINGS: Record<Lang, Record<string, string>> = {
     footerHistory: 'इतिहास',
     historyDelete: 'मेटाउनुहोस्',
     historyScannedOn: 'फोटो खिचिएको मिति',
+    listen: 'सुन्नुहोस्',
+    stopListening: 'रोक्नुहोस्',
   },
   pt: {
     appTitle: 'Assistente de Receita',
@@ -451,6 +471,8 @@ export const STRINGS: Record<Lang, Record<string, string>> = {
     footerHistory: 'Histórico',
     historyDelete: 'Excluir',
     historyScannedOn: 'Fotografado em',
+    listen: 'Ouvir',
+    stopListening: 'Parar',
   },
 };
 

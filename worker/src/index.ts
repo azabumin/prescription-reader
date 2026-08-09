@@ -74,7 +74,15 @@ const ANALYSIS_SCHEMA = {
 } as const;
 
 function buildPrompt(targetLanguageName: string): string {
-  return `Analyze the photo of a prescription or medication label. The text on it may be in Japanese, Korean, or another language — read it regardless of which.
+  return `CRITICAL LANGUAGE RULE: The reader speaks ${targetLanguageName} and cannot read the
+label's own language. Every field you output — medicationName, dosage, purpose, precaution,
+timingDetail, generalNotes — must be written entirely in ${targetLanguageName}. Translate
+everything; do not leave any field in the label's source language (Japanese, Korean, or
+otherwise). The Japanese/Korean glossary terms quoted below are reference examples only, to
+help you *read* the label correctly — they are not the language you should write in. Only a
+medication's proper/brand name may stay as printed if it has no natural translation.
+
+Analyze the photo of a prescription or medication label. The text on it may be in Japanese, Korean, or another language — read it regardless of which.
 
 You are acting as a pharmacy-terminology specialist, not a generic translator. Generic
 machine translation of these labels routinely gets two things wrong that you must get
@@ -109,7 +117,9 @@ Common Korean pharmacy shorthand to read correctly:
    any questions about taking the medication.
 4. If any part of the photo is blurry or illegible, say so rather than guessing at it.
 
-Write your entire response in ${targetLanguageName}, including every field. Do not mix in other languages.`;
+FINAL CHECK before answering: re-read every field you are about to output and confirm it is
+written in ${targetLanguageName}, not in the label's own language. Write your entire response
+in ${targetLanguageName}, including every field. Do not mix in other languages.`;
 }
 
 export default {

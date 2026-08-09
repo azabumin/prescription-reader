@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -20,6 +20,8 @@ import { buildMedicationCalendar, hasSchedulableDoses } from '../lib/calendar';
 import { downloadTextFile } from '../lib/download';
 import { saveHistoryEntry } from '../lib/history';
 import { detectDefaultLang, STRINGS } from '../lib/i18n';
+import { isSpeechSupported, speak, stopSpeech } from '../lib/speech';
+import { buildSpokenSummary } from '../lib/speechText';
 import { LANGUAGES, TIME_SLOTS } from '../types';
 import type { AnalysisResult, Lang, TimeSlot } from '../types';
 
@@ -34,11 +36,27 @@ export default function HomeScreen() {
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [speaking, setSpeaking] = useState(false);
 
   const t = STRINGS[lang];
   const currentLanguage = LANGUAGES.find((l) => l.code === lang)!;
 
+  useEffect(() => stopSpeech, []);
+
+  function toggleListen() {
+    if (speaking) {
+      stopSpeech();
+      setSpeaking(false);
+      return;
+    }
+    if (!result) return;
+    speak(buildSpokenSummary(result, lang), lang, () => setSpeaking(false));
+    setSpeaking(true);
+  }
+
   async function analyze(uri: string) {
+    stopSpeech();
+    setSpeaking(false);
     setAnalyzing(true);
     setErrorMsg(null);
     setResult(null);
@@ -98,6 +116,8 @@ export default function HomeScreen() {
   }
 
   function reset() {
+    stopSpeech();
+    setSpeaking(false);
     setImageUri(null);
     setResult(null);
     setErrorMsg(null);
@@ -185,6 +205,12 @@ export default function HomeScreen() {
           {!analyzing && !errorMsg && result && (
             <View style={styles.analysisBlock}>
               <Text style={styles.medicationName}>{result.medicationName}</Text>
+
+              {isSpeechSupported() && (
+                <TouchableOpacity style={styles.secondaryButton} onPress={toggleListen}>
+                  <Text style={styles.secondaryButtonText}>{speaking ? t.stopListening : t.listen}</Text>
+                </TouchableOpacity>
+              )}
 
               <Text style={styles.sectionLabel}>{t.scheduleTitle}</Text>
               <View style={styles.scheduleCard}>
