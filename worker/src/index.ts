@@ -178,7 +178,14 @@ export default {
     ]);
 
     try {
-      const analysis = await callClaude(body.image, mediaType, lang, env.ANTHROPIC_API_KEY);
+      let analysis = await callClaude(body.image, mediaType, lang, env.ANTHROPIC_API_KEY);
+      if (hasJapaneseLeak(analysis, lang)) {
+        console.error('language_leak_detected', { lang, retrying: true });
+        analysis = await callClaude(body.image, mediaType, lang, env.ANTHROPIC_API_KEY);
+        if (hasJapaneseLeak(analysis, lang)) {
+          console.error('language_leak_detected', { lang, retrying: false });
+        }
+      }
       return jsonResponse(analysis, 200, corsHeaders);
     } catch (err) {
       console.error('analysis_failed', err);
@@ -249,4 +256,25 @@ async function callClaude(base64Image: string, mediaType: string, lang: Lang, ap
   }
 
   return JSON.parse(textBlock.text);
+}
+
+// Hiragana/katakana (U+3040-U+30FF) only occur in Japanese -- none of the other 10 supported
+// languages legitimately produce them in prose, even Chinese (which uses kanji-like hanzi but
+// not kana). So finding any in a non-Japanese-target response is a reliable signal that the
+// model leaked source-language text into the translation, despite the prompt's instructions --
+// a known failure mode where a heavily-Japanese label photo biases the output back toward
+// Japanese. We treat it as a retryable failure rather than trusting the prompt alone.
+function hasJapaneseLeak(analysis: unknown, lang: Lang): boolean {
+  if (lang === 'ja' || typeof analysis !== 'object' || analysis === null) return false;
+  const kana = /[぀-ヿ]/;
+  const result = analysis as {
+    medicationName?: unknown;
+    generalNotes?: unknown;
+    items?: { name?: unknown; dosage?: unknown; timingDetail?: unknown; purpose?: unknown; precaution?: unknown }[];
+  };
+  const fields: unknown[] = [result.medicationName, result.generalNotes];
+  for (const item of result.items ?? []) {
+    fields.push(item.name, item.dosage, item.timingDetail, item.purpose, item.precaution);
+  }
+  return fields.some((f) => typeof f === 'string' && kana.test(f));
 }
