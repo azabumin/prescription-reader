@@ -17,6 +17,7 @@ export default function RootLayout() {
           }}
         >
           <Stack.Screen name="index" />
+          <Stack.Screen name="history" />
           <Stack.Screen name="privacy" />
           <Stack.Screen name="terms" />
           <Stack.Screen name="about" />

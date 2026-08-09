@@ -45,14 +45,21 @@ const ANALYSIS_SCHEMA = {
         properties: {
           name: { type: 'string', description: 'Name of this individual medication.' },
           dosage: { type: 'string', description: 'Amount taken per dose, e.g. "1 tablet".' },
-          frequency: {
+          timeSlots: {
+            type: 'array',
+            description:
+              'Every time-of-day this dose applies to, from the fixed set below — do not invent other values. Pick every slot that applies (e.g. a "3x daily after meals" drug gets all three of morning/noon/evening). Use ["asNeeded"] alone for PRN doses (頓服/屯用/필요시/as needed) not tied to a fixed time — never combine "asNeeded" with a fixed slot.',
+            items: { type: 'string', enum: ['morning', 'noon', 'evening', 'bedtime', 'asNeeded'] },
+          },
+          timingDetail: {
             type: 'string',
-            description: 'When/how often to take it, e.g. "Once daily, after breakfast".',
+            description:
+              'Nuance the fixed time slots can\'t capture, in the target language: meal relation (before/after/with meals, minutes relative to a meal), fasting requirement, max doses per day for PRN drugs, or any other timing qualifier printed on the label. Empty string if there is nothing beyond the time slots themselves.',
           },
           purpose: { type: 'string', description: "This medication's general purpose, briefly." },
           precaution: { type: 'string', description: 'Precautions or warnings, briefly.' },
         },
-        required: ['name', 'dosage', 'frequency', 'purpose', 'precaution'],
+        required: ['name', 'dosage', 'timeSlots', 'timingDetail', 'purpose', 'precaution'],
         additionalProperties: false,
       },
     },
@@ -69,9 +76,37 @@ const ANALYSIS_SCHEMA = {
 function buildPrompt(targetLanguageName: string): string {
   return `Analyze the photo of a prescription or medication label. The text on it may be in Japanese, Korean, or another language — read it regardless of which.
 
+You are acting as a pharmacy-terminology specialist, not a generic translator. Generic
+machine translation of these labels routinely gets two things wrong that you must get
+right: (1) misreading pharmacy shorthand as its literal/everyday meaning, and (2) losing
+the timing structure when a label's layout is a table or multi-column form, which scrambles
+which dose goes with which time. Take care with both.
+
+Common Japanese pharmacy shorthand to read correctly (not literally):
+- 頓服 / 屯用 = PRN, "as needed" — not a fixed schedule
+- 毎食後 = after every meal (morning+noon+evening) · 毎食前 = before every meal
+- 朝食後/昼食後/夕食後 = after breakfast/lunch/dinner specifically (only that one slot)
+- 就寝前 = before bed · 起床時 = on waking · 食間 = between meals (roughly 2h after eating)
+- 空腹時 = on an empty stomach · 1日1回/2回/3回 = once/twice/three-times daily
+
+Common Korean pharmacy shorthand to read correctly:
+- 필요시 = PRN, as needed · 매식후/식후 = after meals · 식전 = before meals
+- 취침전 = before bed · 공복시 = on an empty stomach · 1일 1회/2회/3회 = once/twice/three-times daily
+
 1. Identify the medication name(s) shown (there may be more than one).
-2. For each medication, state the dose per administration, timing/frequency, its general purpose, and any precautions — in plain, everyday language, not technical medical jargon.
-3. Write a brief overall note that this is not medical advice — just the label's own text restated in plain language — and that the reader should ask a pharmacist or doctor with any questions about taking the medication.
+2. For each medication:
+   - State the dose per administration in plain language.
+   - Classify its timing into the fixed time-slot set the schema defines (morning/noon/
+     evening/bedtime/asNeeded) — this is the part generic translators get wrong by leaving
+     timing as unstructured prose, so be precise about which slots actually apply versus a
+     nearby but different medication's slots, especially if the label's layout is a table.
+   - Put anything the fixed slots can't express (meal-relative timing, fasting, max PRN
+     doses per day) into the timing detail field, in plain language.
+   - State its general purpose and any precautions, in plain everyday language, not
+     technical medical jargon.
+3. Write a brief overall note that this is not medical advice — just the label's own text
+   restated in plain language — and that the reader should ask a pharmacist or doctor with
+   any questions about taking the medication.
 4. If any part of the photo is blurry or illegible, say so rather than guessing at it.
 
 Write your entire response in ${targetLanguageName}, including every field. Do not mix in other languages.`;

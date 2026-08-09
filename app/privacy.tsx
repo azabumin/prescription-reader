@@ -27,6 +27,13 @@ export default function PrivacyScreen() {
           이 정보는 다음 날 자동으로 사라지며, 다른 목적으로 쓰이지 않습니다.
         </Text>
 
+        <Text style={s.sectionHeading}>기록 저장 및 캘린더 알림</Text>
+        <Text style={s.body}>
+          분석 결과(약 이름, 복용 시간표 등 텍스트)는 다시 보실 수 있도록 이 기기의 브라우저에만 저장됩니다.
+          사진은 이 저장에 포함되지 않으며, 어디로도 전송되지 않습니다. "캘린더에 알림 추가" 기능은 기기에서
+          직접 파일을 만들어 다운로드할 뿐, 저희 서버나 제3자에게 아무 정보도 전달하지 않습니다.
+        </Text>
+
         <Text style={s.sectionHeading}>광고</Text>
         <Text style={s.body}>
           이 사이트는 Google AdSense를 통해 광고를 표시할 수 있습니다. Google은 쿠키를 사용해 관심사 기반
@@ -53,6 +60,14 @@ export default function PrivacyScreen() {
         <Text style={s.body}>
           無料でサービスを継続するため、接続元IPアドレスごとの1日あたりの利用回数のみ、24時間だけ一時的に
           記録します。この情報は翌日に自動的に消去され、他の目的には使用しません。
+        </Text>
+
+        <Text style={s.sectionHeading}>履歴の保存とカレンダーリマインダー</Text>
+        <Text style={s.body}>
+          分析結果(お薬の名前、服用スケジュールなどのテキスト)は、後で見返せるようこの端末のブラウザ内にのみ
+          保存されます。写真はこの保存には含まれず、どこにも送信されません。「カレンダーにリマインダーを追加」
+          機能は端末上でファイルを作成してダウンロードするだけで、当方のサーバーや第三者に情報が送られること
+          はありません。
         </Text>
 
         <Text style={s.sectionHeading}>広告</Text>

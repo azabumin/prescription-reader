@@ -25,10 +25,22 @@ export const LANGUAGES: LanguageMeta[] = [
   { code: 'pt', native: 'Português', english: 'Portuguese' },
 ];
 
+// Fixed, language-agnostic codes the AI classifies each dose into. The UI renders these
+// with client-side i18n labels (see lib/i18n.ts) rather than trusting the AI to phrase
+// "morning" identically every time -- that's what makes the schedule groupable/scannable
+// instead of just prose. "asNeeded" covers 頓服/屯用/필요시 (PRN) doses that aren't tied to
+// a fixed time.
+export type TimeSlot = 'morning' | 'noon' | 'evening' | 'bedtime' | 'asNeeded';
+
+export const TIME_SLOTS: TimeSlot[] = ['morning', 'noon', 'evening', 'bedtime', 'asNeeded'];
+
 export type MedicationItem = {
   name: string;
   dosage: string;
-  frequency: string;
+  timeSlots: TimeSlot[];
+  // Free-text nuance in the target language that the fixed slots can't capture, e.g.
+  // "after meals, within 30 minutes" or "avoid on an empty stomach".
+  timingDetail: string;
   purpose: string;
   precaution: string;
 };

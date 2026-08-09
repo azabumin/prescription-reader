@@ -16,9 +16,16 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import AdBanner from '../components/AdBanner';
 import { COLORS, FONT, RADIUS, SPACING } from '../constants/theme';
 import { analyzePrescriptionPhoto, AnalyzeError } from '../lib/api';
+import { buildMedicationCalendar, hasSchedulableDoses } from '../lib/calendar';
+import { downloadTextFile } from '../lib/download';
+import { saveHistoryEntry } from '../lib/history';
 import { detectDefaultLang, STRINGS } from '../lib/i18n';
-import { LANGUAGES } from '../types';
-import type { AnalysisResult, Lang } from '../types';
+import { LANGUAGES, TIME_SLOTS } from '../types';
+import type { AnalysisResult, Lang, TimeSlot } from '../types';
+
+function slotLabelKey(slot: TimeSlot): string {
+  return `timeSlot${slot[0].toUpperCase()}${slot.slice(1)}`;
+}
 
 export default function HomeScreen() {
   const [lang, setLang] = useState<Lang>(detectDefaultLang());
@@ -46,6 +53,9 @@ export default function HomeScreen() {
       }
       const analysis = await analyzePrescriptionPhoto(manipulated.base64, 'image/jpeg', lang);
       setResult(analysis);
+      saveHistoryEntry(analysis, lang).catch(() => {
+        // best-effort local save; a failure here shouldn't block showing the result
+      });
     } catch (e) {
       if (e instanceof AnalyzeError) {
         setErrorMsg(
@@ -175,6 +185,33 @@ export default function HomeScreen() {
           {!analyzing && !errorMsg && result && (
             <View style={styles.analysisBlock}>
               <Text style={styles.medicationName}>{result.medicationName}</Text>
+
+              <Text style={styles.sectionLabel}>{t.scheduleTitle}</Text>
+              <View style={styles.scheduleCard}>
+                {TIME_SLOTS.map((slot) => {
+                  const meds = result.items.filter((item) => item.timeSlots.includes(slot));
+                  if (meds.length === 0) return null;
+                  return (
+                    <View key={slot} style={styles.slotRow}>
+                      <Text style={styles.slotLabel}>{t[slotLabelKey(slot)]}</Text>
+                      <Text style={styles.slotMeds}>{meds.map((m) => m.name).join(' · ')}</Text>
+                    </View>
+                  );
+                })}
+              </View>
+
+              {hasSchedulableDoses(result) && (
+                <View>
+                  <TouchableOpacity
+                    style={styles.secondaryButton}
+                    onPress={() => downloadTextFile('medication-reminders.ics', buildMedicationCalendar(result, lang), 'text/calendar')}
+                  >
+                    <Text style={styles.secondaryButtonText}>{t.addToCalendar}</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.helperText}>{t.calendarNote}</Text>
+                </View>
+              )}
+
               <Text style={styles.sectionLabel}>{t.medicationSectionTitle}</Text>
 
               {result.items.map((item, index) => (
@@ -184,10 +221,12 @@ export default function HomeScreen() {
                     <Text style={styles.itemFieldLabel}>{t.dosageLabel}</Text>
                     <Text style={styles.itemFieldValue}>{item.dosage}</Text>
                   </View>
-                  <View style={styles.itemRow}>
-                    <Text style={styles.itemFieldLabel}>{t.frequencyLabel}</Text>
-                    <Text style={styles.itemFieldValue}>{item.frequency}</Text>
-                  </View>
+                  {!!item.timingDetail && (
+                    <View style={styles.itemRow}>
+                      <Text style={styles.itemFieldLabel}>{t.timingDetailLabel}</Text>
+                      <Text style={styles.itemFieldValue}>{item.timingDetail}</Text>
+                    </View>
+                  )}
                   <View style={styles.itemRow}>
                     <Text style={styles.itemFieldLabel}>{t.purposeLabel}</Text>
                     <Text style={styles.itemFieldValue}>{item.purpose}</Text>
@@ -214,6 +253,10 @@ export default function HomeScreen() {
       <AdBanner />
 
       <View style={styles.footer}>
+        <Link href="/history" style={styles.footerLink}>
+          {t.footerHistory}
+        </Link>
+        <Text style={styles.footerDot}>·</Text>
         <Link href="/about" style={styles.footerLink}>
           {t.footerAbout}
         </Link>
@@ -403,6 +446,30 @@ const styles = StyleSheet.create({
     letterSpacing: 0.4,
     marginBottom: SPACING.sm,
     marginTop: SPACING.sm,
+  },
+  scheduleCard: {
+    backgroundColor: COLORS.chipBg,
+    borderRadius: RADIUS.md,
+    padding: SPACING.md,
+    marginBottom: SPACING.sm,
+    gap: SPACING.xs,
+  },
+  slotRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    paddingVertical: 6,
+  },
+  slotLabel: {
+    fontSize: FONT.label,
+    fontWeight: '800',
+    color: COLORS.primaryDark,
+    width: 90,
+    flexShrink: 0,
+  },
+  slotMeds: {
+    fontSize: FONT.label,
+    color: COLORS.text,
+    flex: 1,
   },
   itemCard: {
     backgroundColor: COLORS.chipBg,
