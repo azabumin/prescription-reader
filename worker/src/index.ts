@@ -56,7 +56,11 @@ const ANALYSIS_SCHEMA = {
             description:
               'Nuance the fixed time slots can\'t capture, in the target language: meal relation (before/after/with meals, minutes relative to a meal), fasting requirement, max doses per day for PRN drugs, or any other timing qualifier printed on the label. Empty string if there is nothing beyond the time slots themselves.',
           },
-          purpose: { type: 'string', description: "This medication's general purpose, briefly." },
+          purpose: {
+            type: 'string',
+            description:
+              "This medication's general purpose, briefly, but ONLY if you are highly confident it matches the exact drug/formula name identified above — never the purpose of a different, more familiar-sounding drug. If not highly confident, say the exact purpose should be confirmed with the pharmacist/doctor instead of guessing.",
+          },
           precaution: { type: 'string', description: 'Precautions or warnings, briefly.' },
         },
         required: ['name', 'dosage', 'timeSlots', 'timingDetail', 'purpose', 'precaution'],
@@ -74,7 +78,33 @@ const ANALYSIS_SCHEMA = {
 } as const;
 
 function buildPrompt(targetLanguageName: string): string {
-  return `CRITICAL LANGUAGE RULE: The reader speaks ${targetLanguageName} and cannot read the
+  return `CRITICAL SAFETY RULE — NEVER SUBSTITUTE A DIFFERENT MEDICATION: The single most
+dangerous mistake you can make is naming or describing a DIFFERENT drug than the one actually
+printed on the label. This has happened before in real use: a cough suppressant
+(dextromethorphan) was output as an unrelated allergy medication (desloratadine), and a Kampo
+formula for sore throat (桔梗湯, kikyoto) was output as a different, unrelated formula (芍薬湯).
+These are not translation nuances — they are factual substitutions that could mislead someone
+about what they are taking. To prevent this:
+- Read the drug/formula name on the label character by character. Do not autocomplete it to a
+  more familiar-sounding drug name, even if part of the name is unclear or hard to translate.
+- If you are not certain how to translate or transliterate a specific drug or Kampo formula
+  name into the target language, do NOT substitute a different, better-known drug or formula
+  you happen to recognize with more confidence. Instead, phonetically transliterate the
+  Japanese/Korean reading into the target language's script, optionally keeping the original-
+  script name in parentheses.
+- Kampo (漢方) formula names are especially easy to confuse — they are multi-kanji compound
+  names with no simple international equivalent. Never swap one Kampo formula for a different
+  one. If you cannot translate a Kampo name with full confidence, keep its original Japanese
+  reading (romanized) plus "(a traditional Japanese herbal formula)" rather than describing a
+  different formula's effects.
+- Before writing the "purpose" field, silently double-check: does this purpose actually match
+  the specific drug/formula name you just identified — not a similarly-named or more famous
+  drug? If you are not highly confident about a specific drug's real-world purpose, say so
+  plainly (e.g. "this medication's exact purpose should be confirmed with the prescribing
+  pharmacist or doctor") instead of stating a guessed purpose as fact. A wrong but confident-
+  sounding purpose is worse than admitting uncertainty.
+
+CRITICAL LANGUAGE RULE: The reader speaks ${targetLanguageName} and cannot read the
 label's own language. Every field you output — medicationName, dosage, purpose, precaution,
 timingDetail, generalNotes — must be written entirely in ${targetLanguageName}. Translate
 everything; do not leave any field in the label's source language (Japanese, Korean, or
@@ -111,15 +141,19 @@ Common Korean pharmacy shorthand to read correctly:
    - Put anything the fixed slots can't express (meal-relative timing, fasting, max PRN
      doses per day) into the timing detail field, in plain language.
    - State its general purpose and any precautions, in plain everyday language, not
-     technical medical jargon.
+     technical medical jargon — but only state a purpose you are highly confident matches
+     this exact drug/formula (see the safety rule above); otherwise say it should be
+     confirmed with the pharmacist/doctor.
 3. Write a brief overall note that this is not medical advice — just the label's own text
    restated in plain language — and that the reader should ask a pharmacist or doctor with
    any questions about taking the medication.
 4. If any part of the photo is blurry or illegible, say so rather than guessing at it.
 
-FINAL CHECK before answering: re-read every field you are about to output and confirm it is
-written in ${targetLanguageName}, not in the label's own language. Write your entire response
-in ${targetLanguageName}, including every field. Do not mix in other languages.`;
+FINAL CHECK before answering: for each medication, re-read the name you are about to output
+and confirm it names the SAME substance as what is printed on the label — not a different,
+more familiar drug or Kampo formula. Then re-read every field and confirm it is written in
+${targetLanguageName}, not in the label's own language. Write your entire response in
+${targetLanguageName}, including every field. Do not mix in other languages.`;
 }
 
 export default {
