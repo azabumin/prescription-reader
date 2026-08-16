@@ -313,7 +313,7 @@ export default function HomeScreen() {
         </Link>
         <Text style={styles.footerDot}>·</Text>
         <Link href="/tokushoho" style={styles.footerLink}>
-          特定商取引法
+          {t.footerTokushoho}
         </Link>
       </View>
     </ScrollView>
