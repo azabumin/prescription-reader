@@ -300,6 +300,10 @@ export default function HomeScreen() {
         <Link href="/terms" style={styles.footerLink}>
           {t.footerTerms}
         </Link>
+        <Text style={styles.footerDot}>·</Text>
+        <Link href="/tokushoho" style={styles.footerLink}>
+          特定商取引法
+        </Link>
       </View>
     </ScrollView>
   );

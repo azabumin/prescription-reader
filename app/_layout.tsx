@@ -20,6 +20,7 @@ export default function RootLayout() {
           <Stack.Screen name="history" />
           <Stack.Screen name="privacy" />
           <Stack.Screen name="terms" />
+          <Stack.Screen name="tokushoho" />
           <Stack.Screen name="about" />
         </Stack>
       </SafeAreaProvider>
