@@ -20,6 +20,7 @@ import { buildMedicationCalendar, hasSchedulableDoses } from '../lib/calendar';
 import { downloadTextFile } from '../lib/download';
 import { saveHistoryEntry } from '../lib/history';
 import { detectDefaultLang, STRINGS } from '../lib/i18n';
+import { loadLangPref, saveLangPref } from '../lib/langPref';
 import { isSpeechSupported, speak, stopSpeech } from '../lib/speech';
 import { buildSpokenSummary } from '../lib/speechText';
 import { LANGUAGES, TIME_SLOTS } from '../types';
@@ -42,6 +43,15 @@ export default function HomeScreen() {
   const currentLanguage = LANGUAGES.find((l) => l.code === lang)!;
 
   useEffect(() => stopSpeech, []);
+
+  // The language picker's choice only lived in this screen's local state, so navigating to
+  // /about, /privacy, /terms, or /tokushoho and back (which unmounts this screen) silently
+  // reset the language back to the browser default. Restore whatever the user last picked.
+  useEffect(() => {
+    loadLangPref().then((saved) => {
+      if (saved) setLang(saved);
+    });
+  }, []);
 
   function toggleListen() {
     if (speaking) {
@@ -152,6 +162,7 @@ export default function HomeScreen() {
                   style={[styles.langOption, item.code === lang && styles.langOptionActive]}
                   onPress={() => {
                     setLang(item.code);
+                    saveLangPref(item.code);
                     setPickerOpen(false);
                     // A result already on screen was fetched in the old language and
                     // won't retranslate itself -- re-run analysis on the same photo so

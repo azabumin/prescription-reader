@@ -4,15 +4,15 @@ import { Link } from 'expo-router';
 import { staticPageStyles as s } from '../components/staticPageStyles';
 import { COLORS, SPACING } from '../constants/theme';
 
-type Row = { label: string; value: string; pending?: boolean };
+type Row = { label: string; value: string };
 
 const ROWS: Row[] = [
   { label: '販売業者', value: '株式会社PRIAMOS' },
   { label: '運営統括責任者', value: '代表取締役　閔鐘基' },
-  { label: '所在地', value: '', pending: true },
-  { label: '電話番号', value: '', pending: true },
+  { label: '所在地', value: '東京都江戸川区西葛西8-15-6-703' },
+  { label: '電話番号', value: '080-3155-5076' },
   { label: 'メールアドレス', value: 'azabumin@gmail.com' },
-  { label: '販売価格', value: '', pending: true },
+  { label: '販売価格', value: '月額プラン ¥480（税込）\n年額プラン ¥3,600（税込）' },
   {
     label: '商品代金以外の必要料金',
     value: 'インターネット接続料金など、通信に関する費用はお客様のご負担となります。',
@@ -23,7 +23,11 @@ const ROWS: Row[] = [
     value: 'ご登録時に決済され、以降は毎月自動更新（自動課金）となります。',
   },
   { label: 'サービス提供時期', value: 'お支払い完了後、直ちにご利用いただけます。' },
-  { label: '返品・キャンセルについて', value: '', pending: true },
+  {
+    label: '返品・キャンセルについて',
+    value:
+      'デジタルサービスの性質上、お支払い済みの料金の返金は原則としてお受けしておりません。次回の自動更新の停止（解約）はいつでもマイページから手続きいただけます。解約後も、お支払い済みの期間の終了日まで引き続きサービスをご利用いただけます。',
+  },
   {
     label: '動作環境',
     value: '最新のWebブラウザ（Chrome、Safari等）でご利用いただけます。',
@@ -45,18 +49,10 @@ export default function TokushohoScreen() {
           {ROWS.map((row) => (
             <View key={row.label} style={rowStyles.row}>
               <Text style={rowStyles.label}>{row.label}</Text>
-              {row.pending ? (
-                <Text style={rowStyles.pendingValue}>【要入力】</Text>
-              ) : (
-                <Text style={rowStyles.value}>{row.value}</Text>
-              )}
+              <Text style={rowStyles.value}>{row.value}</Text>
             </View>
           ))}
         </View>
-
-        <Text style={[s.muted, { marginTop: SPACING.md }]}>
-          【要入力】の項目は未確定のため、公開前に必ず入力してください。
-        </Text>
       </View>
     </ScrollView>
   );
@@ -87,11 +83,5 @@ const rowStyles = StyleSheet.create({
     fontSize: 13.5,
     color: COLORS.text,
     lineHeight: 20,
-  },
-  pendingValue: {
-    flex: 1,
-    fontSize: 13.5,
-    color: COLORS.danger,
-    fontWeight: '700',
   },
 });
