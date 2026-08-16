@@ -3,7 +3,7 @@ import { ScrollView, Text, View } from 'react-native';
 import { Link } from 'expo-router';
 
 import { staticPageStyles as s } from '../components/staticPageStyles';
-import { detectDefaultLang } from '../lib/i18n';
+import { detectDefaultLang, STRINGS } from '../lib/i18n';
 import { loadLangPref } from '../lib/langPref';
 import type { Lang } from '../types';
 
@@ -109,7 +109,7 @@ export default function PrivacyScreen() {
   return (
     <ScrollView contentContainerStyle={s.container}>
       <Link href="/" style={s.backLink}>
-        ← 처방전 도우미로 돌아가기 / 処方箋ヘルパーに戻る
+        {STRINGS[lang].backToApp}
       </Link>
 
       <View style={s.langBlock}>
