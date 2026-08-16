@@ -9,7 +9,7 @@
     "userInterfaceStyle": "light",
     "experiments": {
       "typedRoutes": true,
-      "baseUrl": "/prescription-reader"
+      "baseUrl": "/"
     },
     "ios": {
       "supportsTablet": true,

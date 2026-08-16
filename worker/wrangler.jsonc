@@ -6,9 +6,10 @@
   "observability": {
     "enabled": true
   },
-  // GitHub Pages origin allowed to call this API. Update if the repo/user ever changes.
+  // Origins allowed to call this API, comma-separated. Keep the old GitHub Pages origin
+  // during the custom-domain transition, then drop it once rxhelper.jp is confirmed working.
   "vars": {
-    "ALLOWED_ORIGIN": "https://azabumin.github.io"
+    "ALLOWED_ORIGINS": "https://rxhelper.jp,https://azabumin.github.io"
   },
   "kv_namespaces": [
     { "binding": "RATE_LIMIT_KV", "id": "766c211f9e734392af7fa1581a131c2b" }

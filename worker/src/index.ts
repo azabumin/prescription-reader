@@ -1,6 +1,7 @@
 declare global {
   interface Env {
     ANTHROPIC_API_KEY: string;
+    ALLOWED_ORIGINS: string;
   }
 }
 
@@ -236,7 +237,8 @@ function buildCorsHeaders(origin: string, env: Env): Record<string, string> {
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
   };
-  if (origin === env.ALLOWED_ORIGIN || origin.startsWith('http://localhost:')) {
+  const allowedOrigins = env.ALLOWED_ORIGINS.split(',').map((o) => o.trim());
+  if (allowedOrigins.includes(origin) || origin.startsWith('http://localhost:')) {
     headers['Access-Control-Allow-Origin'] = origin;
   }
   return headers;
