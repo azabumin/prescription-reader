@@ -17,11 +17,19 @@ const CONTENT: Record<
     sections: [
       {
         heading: '사진 처리 방식',
-        body: '촬영하거나 선택한 사진은 분석을 위해 서버로 전송되고, Anthropic의 AI 모델로 곧바로 전달됩니다. 사진은 저희 서버에 저장되지 않으며, 분석이 끝나면 남지 않습니다. 로그인이나 회원가입이 없어 사진을 특정 개인과 연결해 보관하지 않습니다.',
+        body: '촬영하거나 선택한 사진은 분석을 위해 서버로 전송되고, Anthropic의 AI 모델로 곧바로 전달됩니다. 사진 자체는 저희 서버에 저장되지 않으며, 분석이 끝나면 남지 않습니다. 다만 이용을 위해서는 로그인이 필요하며, 분석 요청은 로그인하신 계정과 연결되어 처리됩니다.',
+      },
+      {
+        heading: '계정 정보',
+        body: '서비스 이용을 위해 이메일 주소와 비밀번호로 계정을 만드셔야 합니다. 비밀번호는 안전하게 암호화하여 저장하며, 저희도 원문 그대로는 확인할 수 없습니다. 계정과 함께 가입일, 무료체험 종료일, 구독 상태를 저장합니다. 계정 삭제를 원하시면 azabumin@gmail.com으로 문의해주세요.',
+      },
+      {
+        heading: '결제 정보',
+        body: '구독 결제는 결제대행사 ZEUS를 통해 처리되며, 카드 번호 등 결제 정보는 저희 서버에 저장되지 않습니다.',
       },
       {
         heading: '남기는 정보',
-        body: '무료로 계속 서비스하기 위해, 접속 IP 주소를 기준으로 하루 이용 횟수만 24시간 동안 임시로 기록합니다. 이 정보는 다음 날 자동으로 사라지며, 다른 목적으로 쓰이지 않습니다.',
+        body: '무료체험 종료 이후에도 서비스를 안정적으로 제공하기 위해, 접속 IP 주소를 기준으로 하루 이용 횟수만 24시간 동안 임시로 기록합니다. 이 정보는 다음 날 자동으로 사라지며, 다른 목적으로 쓰이지 않습니다.',
       },
       {
         heading: '기록 저장 및 캘린더 알림',
@@ -31,7 +39,10 @@ const CONTENT: Record<
         heading: '광고',
         body: '이 사이트는 Google AdSense를 통해 광고를 표시할 수 있습니다. Google은 쿠키를 사용해 관심사 기반 광고를 보여줄 수 있으며, Google 광고 설정(adssettings.google.com)에서 개인 맞춤 광고를 끌 수 있습니다.',
       },
-      { heading: '문의', body: '이 방침에 대해 궁금한 점이 있으면 앱 저장소(GitHub)의 이슈로 남겨주세요.' },
+      {
+        heading: '문의',
+        body: '이 방침에 대해 궁금한 점이 있으면 azabumin@gmail.com으로 문의하시거나 앱 저장소(GitHub)의 이슈로 남겨주세요.',
+      },
     ],
   },
   ja: {
@@ -40,11 +51,19 @@ const CONTENT: Record<
     sections: [
       {
         heading: '写真の取り扱い',
-        body: '撮影または選択した写真は、分析のためサーバーに送信され、そのままAnthropicのAIモデルに渡されます。写真は当方のサーバーには保存されず、分析後に残ることはありません。ログインや会員登録がないため、写真を特定の個人と結び付けて保存することもありません。',
+        body: '撮影または選択した写真は、分析のためサーバーに送信され、そのままAnthropicのAIモデルに渡されます。写真そのものは当方のサーバーには保存されず、分析後に残ることはありません。ただし、ご利用にはログインが必要で、分析リクエストはログイン中のアカウントと紐づけて処理されます。',
+      },
+      {
+        heading: 'アカウント情報',
+        body: 'サービスのご利用には、メールアドレスとパスワードによるアカウント登録が必要です。パスワードは安全な方法で暗号化して保存しており、当方が元のパスワードを確認することはできません。アカウントとともに、登録日・無料体験終了日・サブスクリプションの状態を保存します。アカウントの削除をご希望の場合は、azabumin@gmail.comまでご連絡ください。',
+      },
+      {
+        heading: '決済情報',
+        body: 'サブスクリプションのお支払いは決済代行会社ZEUSを通じて処理され、カード番号などの決済情報は当方のサーバーには保存されません。',
       },
       {
         heading: '記録する情報',
-        body: '無料でサービスを継続するため、接続元IPアドレスごとの1日あたりの利用回数のみ、24時間だけ一時的に記録します。この情報は翌日に自動的に消去され、他の目的には使用しません。',
+        body: '無料体験終了後もサービスを安定してご提供するため、接続元IPアドレスごとの1日あたりの利用回数のみ、24時間だけ一時的に記録します。この情報は翌日に自動的に消去され、他の目的には使用しません。',
       },
       {
         heading: '履歴の保存とカレンダーリマインダー',
@@ -56,7 +75,7 @@ const CONTENT: Record<
       },
       {
         heading: 'お問い合わせ',
-        body: 'このポリシーについてご質問がある場合は、アプリのリポジトリ(GitHub)のIssueにてご連絡ください。',
+        body: 'このポリシーについてご質問がある場合は、azabumin@gmail.comまでご連絡いただくか、アプリのリポジトリ(GitHub)のIssueにてご連絡ください。',
       },
     ],
   },
@@ -66,11 +85,19 @@ const CONTENT: Record<
     sections: [
       {
         heading: 'How Photos Are Handled',
-        body: "Photos you take or choose are sent to our server for analysis and passed directly to Anthropic's AI model. Photos are not stored on our server, and nothing remains once analysis is complete. There is no login or account system, so photos are never stored in a way that's linked to a specific person.",
+        body: "Photos you take or choose are sent to our server for analysis and passed directly to Anthropic's AI model. The photo itself is not stored on our server, and nothing remains once analysis is complete. However, using the service requires logging in, and analysis requests are processed as tied to your logged-in account.",
+      },
+      {
+        heading: 'Account Information',
+        body: 'Using the service requires creating an account with an email address and password. Your password is stored encrypted, in a way that even we cannot recover the original. Along with your account, we store your signup date, trial end date, and subscription status. To delete your account, please contact azabumin@gmail.com.',
+      },
+      {
+        heading: 'Payment Information',
+        body: 'Subscription payments are processed through our payment provider, ZEUS. Card numbers and other payment details are never stored on our servers.',
       },
       {
         heading: 'Information We Keep',
-        body: 'To keep this service free, we temporarily log only the number of daily analyses per IP address, for 24 hours. This information is automatically deleted the next day and is not used for any other purpose.',
+        body: 'To keep the service running reliably beyond the free trial period, we temporarily log only the number of daily analyses per IP address, for 24 hours. This information is automatically deleted the next day and is not used for any other purpose.',
       },
       {
         heading: 'Saved History & Calendar Reminders',
@@ -82,7 +109,7 @@ const CONTENT: Record<
       },
       {
         heading: 'Contact',
-        body: "If you have questions about this policy, please open an issue on the app's GitHub repository.",
+        body: "If you have questions about this policy, please contact azabumin@gmail.com or open an issue on the app's GitHub repository.",
       },
     ],
   },
@@ -92,11 +119,19 @@ const CONTENT: Record<
     sections: [
       {
         heading: 'Cách Xử Lý Ảnh',
-        body: 'Ảnh bạn chụp hoặc chọn sẽ được gửi đến máy chủ của chúng tôi để phân tích và chuyển trực tiếp đến mô hình AI của Anthropic. Ảnh không được lưu trữ trên máy chủ của chúng tôi, và không có gì còn lại sau khi phân tích hoàn tất. Không có hệ thống đăng nhập hay tài khoản, vì vậy ảnh không bao giờ được lưu trữ theo cách liên kết với một cá nhân cụ thể.',
+        body: 'Ảnh bạn chụp hoặc chọn sẽ được gửi đến máy chủ của chúng tôi để phân tích và chuyển trực tiếp đến mô hình AI của Anthropic. Bản thân bức ảnh không được lưu trữ trên máy chủ của chúng tôi, và không có gì còn lại sau khi phân tích hoàn tất. Tuy nhiên, để sử dụng dịch vụ bạn cần đăng nhập, và các yêu cầu phân tích được xử lý gắn liền với tài khoản đã đăng nhập của bạn.',
+      },
+      {
+        heading: 'Thông Tin Tài Khoản',
+        body: 'Để sử dụng dịch vụ, bạn cần tạo tài khoản bằng địa chỉ email và mật khẩu. Mật khẩu của bạn được lưu trữ dưới dạng mã hóa, đến mức ngay cả chúng tôi cũng không thể khôi phục mật khẩu gốc. Cùng với tài khoản, chúng tôi lưu ngày đăng ký, ngày kết thúc dùng thử và trạng thái đăng ký gói dịch vụ của bạn. Để xóa tài khoản, vui lòng liên hệ azabumin@gmail.com.',
+      },
+      {
+        heading: 'Thông Tin Thanh Toán',
+        body: 'Thanh toán gói đăng ký được xử lý thông qua nhà cung cấp dịch vụ thanh toán ZEUS. Số thẻ và các thông tin thanh toán khác không bao giờ được lưu trữ trên máy chủ của chúng tôi.',
       },
       {
         heading: 'Thông Tin Chúng Tôi Lưu Giữ',
-        body: 'Để duy trì dịch vụ miễn phí, chúng tôi chỉ tạm thời ghi lại số lượt phân tích hàng ngày theo địa chỉ IP, trong vòng 24 giờ. Thông tin này sẽ tự động bị xóa vào ngày hôm sau và không được sử dụng cho bất kỳ mục đích nào khác.',
+        body: 'Để duy trì dịch vụ hoạt động ổn định sau thời gian dùng thử miễn phí, chúng tôi chỉ tạm thời ghi lại số lượt phân tích hàng ngày theo địa chỉ IP, trong vòng 24 giờ. Thông tin này sẽ tự động bị xóa vào ngày hôm sau và không được sử dụng cho bất kỳ mục đích nào khác.',
       },
       {
         heading: 'Lịch Sử Đã Lưu & Nhắc Nhở Lịch',
@@ -108,7 +143,7 @@ const CONTENT: Record<
       },
       {
         heading: 'Liên Hệ',
-        body: 'Nếu bạn có thắc mắc về chính sách này, vui lòng mở một issue trên kho lưu trữ GitHub của ứng dụng.',
+        body: 'Nếu bạn có thắc mắc về chính sách này, vui lòng liên hệ azabumin@gmail.com hoặc mở một issue trên kho lưu trữ GitHub của ứng dụng.',
       },
     ],
   },
@@ -118,11 +153,19 @@ const CONTENT: Record<
     sections: [
       {
         heading: '照片处理方式',
-        body: '您拍摄或选择的照片会被发送到我们的服务器进行分析,并直接传递给Anthropic的AI模型。照片不会存储在我们的服务器上,分析完成后不会留下任何痕迹。由于没有登录或账户系统,照片永远不会以与特定个人关联的方式被存储。',
+        body: '您拍摄或选择的照片会被发送到我们的服务器进行分析,并直接传递给Anthropic的AI模型。照片本身不会存储在我们的服务器上,分析完成后不会留下任何痕迹。不过,使用本服务需要登录,分析请求会与您登录的账户关联处理。',
+      },
+      {
+        heading: '账户信息',
+        body: '使用本服务需要通过电子邮箱和密码创建账户。您的密码将以加密方式存储,即使是我们也无法还原出原始密码。除账户外,我们还会存储您的注册日期、试用期结束日期及订阅状态。如需删除账户,请联系azabumin@gmail.com。',
+      },
+      {
+        heading: '支付信息',
+        body: '订阅付款通过支付服务商ZEUS处理,银行卡号等支付信息不会存储在我们的服务器上。',
       },
       {
         heading: '我们保留的信息',
-        body: '为了保持本服务免费,我们仅临时记录每个IP地址每日的分析次数,保留24小时。该信息将在次日自动删除,不会用于任何其他目的。',
+        body: '为了在免费试用期结束后仍能稳定提供服务,我们仅临时记录每个IP地址每日的分析次数,保留24小时。该信息将在次日自动删除,不会用于任何其他目的。',
       },
       {
         heading: '保存的历史记录与日历提醒',
@@ -132,7 +175,7 @@ const CONTENT: Record<
         heading: '广告',
         body: '本网站可能通过Google AdSense展示广告。Google可能使用Cookie显示基于兴趣的广告;您可以在Google广告设置(adssettings.google.com)中关闭个性化广告。',
       },
-      { heading: '联系我们', body: '如果您对本政策有任何疑问,请在应用的GitHub仓库中提交issue。' },
+      { heading: '联系我们', body: '如果您对本政策有任何疑问,请联系azabumin@gmail.com,或在应用的GitHub仓库中提交issue。' },
     ],
   },
   id: {
@@ -141,11 +184,19 @@ const CONTENT: Record<
     sections: [
       {
         heading: 'Cara Foto Ditangani',
-        body: 'Foto yang Anda ambil atau pilih dikirim ke server kami untuk dianalisis dan diteruskan langsung ke model AI Anthropic. Foto tidak disimpan di server kami, dan tidak ada yang tersisa setelah analisis selesai. Tidak ada sistem login atau akun, sehingga foto tidak pernah disimpan dengan cara yang terhubung ke individu tertentu.',
+        body: 'Foto yang Anda ambil atau pilih dikirim ke server kami untuk dianalisis dan diteruskan langsung ke model AI Anthropic. Foto itu sendiri tidak disimpan di server kami, dan tidak ada yang tersisa setelah analisis selesai. Namun, untuk menggunakan layanan ini Anda harus masuk (login), dan permintaan analisis diproses terkait dengan akun Anda yang sedang login.',
+      },
+      {
+        heading: 'Informasi Akun',
+        body: 'Untuk menggunakan layanan ini, Anda perlu membuat akun dengan alamat email dan kata sandi. Kata sandi Anda disimpan dalam bentuk terenkripsi, sedemikian rupa sehingga bahkan kami tidak dapat memulihkan kata sandi asli. Bersama akun Anda, kami menyimpan tanggal pendaftaran, tanggal berakhirnya masa uji coba, dan status langganan Anda. Untuk menghapus akun Anda, silakan hubungi azabumin@gmail.com.',
+      },
+      {
+        heading: 'Informasi Pembayaran',
+        body: 'Pembayaran langganan diproses melalui penyedia pembayaran kami, ZEUS. Nomor kartu dan detail pembayaran lainnya tidak pernah disimpan di server kami.',
       },
       {
         heading: 'Informasi yang Kami Simpan',
-        body: 'Untuk menjaga layanan ini tetap gratis, kami hanya mencatat sementara jumlah analisis harian per alamat IP, selama 24 jam. Informasi ini akan otomatis terhapus keesokan harinya dan tidak digunakan untuk tujuan lain.',
+        body: 'Untuk menjaga layanan tetap berjalan dengan andal setelah masa uji coba gratis berakhir, kami hanya mencatat sementara jumlah analisis harian per alamat IP, selama 24 jam. Informasi ini akan otomatis terhapus keesokan harinya dan tidak digunakan untuk tujuan lain.',
       },
       {
         heading: 'Riwayat Tersimpan & Pengingat Kalender',
@@ -157,7 +208,7 @@ const CONTENT: Record<
       },
       {
         heading: 'Kontak',
-        body: 'Jika Anda memiliki pertanyaan tentang kebijakan ini, silakan buka issue di repositori GitHub aplikasi.',
+        body: 'Jika Anda memiliki pertanyaan tentang kebijakan ini, silakan hubungi azabumin@gmail.com atau buka issue di repositori GitHub aplikasi.',
       },
     ],
   },
@@ -167,11 +218,19 @@ const CONTENT: Record<
     sections: [
       {
         heading: 'Paano Hinahawakan ang mga Larawan',
-        body: 'Ang mga larawang kinuha o pinili mo ay ipinapadala sa aming server para sa pagsusuri at direktang ipinapasa sa AI model ng Anthropic. Hindi nakaimbak ang mga larawan sa aming server, at walang naiiwan kapag tapos na ang pagsusuri. Walang sistema ng pag-login o account, kaya hindi kailanman naiimbak ang mga larawan sa paraang naka-link sa isang partikular na tao.',
+        body: 'Ang mga larawang kinuha o pinili mo ay ipinapadala sa aming server para sa pagsusuri at direktang ipinapasa sa AI model ng Anthropic. Ang mismong larawan ay hindi nakaimbak sa aming server, at walang naiiwan kapag tapos na ang pagsusuri. Gayunpaman, kailangan mong mag-log in upang magamit ang serbisyo, at ang mga hiling sa pagsusuri ay pinoproseso na naka-ugnay sa iyong naka-log in na account.',
+      },
+      {
+        heading: 'Impormasyon ng Account',
+        body: 'Upang magamit ang serbisyo, kailangan kang gumawa ng account gamit ang email address at password. Ang iyong password ay naka-imbak nang naka-encrypt, sa paraang kahit kami ay hindi na maibabalik ang orihinal na password. Kasama ng iyong account, iniimbak namin ang petsa ng pagpaparehistro, petsa ng pagtatapos ng libreng pagsubok, at status ng iyong subscription. Upang burahin ang iyong account, mangyaring makipag-ugnayan sa azabumin@gmail.com.',
+      },
+      {
+        heading: 'Impormasyon sa Pagbabayad',
+        body: 'Ang mga bayad sa subscription ay pinoproseso sa pamamagitan ng aming provider ng pagbabayad, ZEUS. Ang mga numero ng card at iba pang detalye ng pagbabayad ay hindi kailanman naiimbak sa aming mga server.',
       },
       {
         heading: 'Impormasyong Iniimbak Namin',
-        body: 'Upang mapanatiling libre ang serbisyong ito, pansamantala lang naming itinatala ang bilang ng pang-araw-araw na pagsusuri kada IP address, sa loob ng 24 oras. Awtomatikong buburahin ang impormasyong ito kinabukasan at hindi ito ginagamit para sa anumang ibang layunin.',
+        body: 'Upang mapanatiling maaasahan ang serbisyo pagkatapos ng libreng panahon ng pagsubok, pansamantala lang naming itinatala ang bilang ng pang-araw-araw na pagsusuri kada IP address, sa loob ng 24 oras. Awtomatikong buburahin ang impormasyong ito kinabukasan at hindi ito ginagamit para sa anumang ibang layunin.',
       },
       {
         heading: 'Naka-save na Kasaysayan at Paalala sa Kalendaryo',
@@ -183,7 +242,7 @@ const CONTENT: Record<
       },
       {
         heading: 'Makipag-ugnayan',
-        body: 'Kung may mga tanong ka tungkol sa patakarang ito, mangyaring mag-open ng issue sa GitHub repository ng app.',
+        body: 'Kung may mga tanong ka tungkol sa patakarang ito, mangyaring makipag-ugnayan sa azabumin@gmail.com o mag-open ng issue sa GitHub repository ng app.',
       },
     ],
   },
@@ -193,11 +252,19 @@ const CONTENT: Record<
     sections: [
       {
         heading: 'วิธีจัดการรูปภาพ',
-        body: 'รูปภาพที่คุณถ่ายหรือเลือกจะถูกส่งไปยังเซิร์ฟเวอร์ของเราเพื่อวิเคราะห์และส่งต่อไปยังโมเดล AI ของ Anthropic โดยตรง รูปภาพจะไม่ถูกจัดเก็บบนเซิร์ฟเวอร์ของเรา และจะไม่มีสิ่งใดหลงเหลืออยู่หลังจากวิเคราะห์เสร็จสิ้น เนื่องจากไม่มีระบบเข้าสู่ระบบหรือบัญชีผู้ใช้ รูปภาพจึงไม่เคยถูกจัดเก็บในลักษณะที่เชื่อมโยงกับบุคคลใดบุคคลหนึ่ง',
+        body: 'รูปภาพที่คุณถ่ายหรือเลือกจะถูกส่งไปยังเซิร์ฟเวอร์ของเราเพื่อวิเคราะห์และส่งต่อไปยังโมเดล AI ของ Anthropic โดยตรง ตัวรูปภาพเองจะไม่ถูกจัดเก็บบนเซิร์ฟเวอร์ของเรา และจะไม่มีสิ่งใดหลงเหลืออยู่หลังจากวิเคราะห์เสร็จสิ้น อย่างไรก็ตาม การใช้บริการนี้จำเป็นต้องเข้าสู่ระบบ และคำขอวิเคราะห์จะถูกประมวลผลโดยเชื่อมโยงกับบัญชีที่คุณเข้าสู่ระบบอยู่',
+      },
+      {
+        heading: 'ข้อมูลบัญชี',
+        body: 'การใช้บริการนี้จำเป็นต้องสร้างบัญชีด้วยอีเมลและรหัสผ่าน รหัสผ่านของคุณจะถูกจัดเก็บในรูปแบบเข้ารหัส จนกระทั่งแม้แต่เราก็ไม่สามารถกู้คืนรหัสผ่านต้นฉบับได้ นอกจากบัญชีแล้ว เรายังจัดเก็บวันที่สมัคร วันที่สิ้นสุดการทดลองใช้ และสถานะการสมัครสมาชิกของคุณ หากต้องการลบบัญชี กรุณาติดต่อ azabumin@gmail.com',
+      },
+      {
+        heading: 'ข้อมูลการชำระเงิน',
+        body: 'การชำระเงินค่าสมัครสมาชิกจะดำเนินการผ่านผู้ให้บริการชำระเงินของเรา ZEUS หมายเลขบัตรและรายละเอียดการชำระเงินอื่นๆ จะไม่ถูกจัดเก็บบนเซิร์ฟเวอร์ของเราเลย',
       },
       {
         heading: 'ข้อมูลที่เราเก็บไว้',
-        body: 'เพื่อให้บริการนี้ฟรีต่อไป เราจะบันทึกจำนวนการวิเคราะห์รายวันต่อที่อยู่ IP เพียงชั่วคราวเป็นเวลา 24 ชั่วโมงเท่านั้น ข้อมูลนี้จะถูกลบโดยอัตโนมัติในวันถัดไปและไม่ถูกนำไปใช้เพื่อวัตถุประสงค์อื่นใด',
+        body: 'เพื่อให้บริการดำเนินต่อไปได้อย่างเสถียรหลังจากช่วงทดลองใช้ฟรีสิ้นสุดลง เราจะบันทึกจำนวนการวิเคราะห์รายวันต่อที่อยู่ IP เพียงชั่วคราวเป็นเวลา 24 ชั่วโมงเท่านั้น ข้อมูลนี้จะถูกลบโดยอัตโนมัติในวันถัดไปและไม่ถูกนำไปใช้เพื่อวัตถุประสงค์อื่นใด',
       },
       {
         heading: 'ประวัติที่บันทึกไว้และการแจ้งเตือนในปฏิทิน',
@@ -209,7 +276,7 @@ const CONTENT: Record<
       },
       {
         heading: 'ติดต่อเรา',
-        body: 'หากคุณมีคำถามเกี่ยวกับนโยบายนี้ กรุณาเปิด issue บน GitHub repository ของแอป',
+        body: 'หากคุณมีคำถามเกี่ยวกับนโยบายนี้ กรุณาติดต่อ azabumin@gmail.com หรือเปิด issue บน GitHub repository ของแอป',
       },
     ],
   },
@@ -219,11 +286,19 @@ const CONTENT: Record<
     sections: [
       {
         heading: 'ဓာတ်ပုံများကို ကိုင်တွယ်ပုံ',
-        body: 'သင်ရိုက်ကူး သို့မဟုတ် ရွေးချယ်သော ဓာတ်ပုံများကို ခွဲခြမ်းစိတ်ဖြာရန် ကျွန်ုပ်တို့၏ ဆာဗာသို့ ပေးပို့ပြီး Anthropic ၏ AI မော်ဒယ်သို့ တိုက်ရိုက် ပေးပို့ပါသည်။ ဓာတ်ပုံများကို ကျွန်ုပ်တို့ ဆာဗာတွင် သိမ်းဆည်းမထားပါ၊ ခွဲခြမ်းစိတ်ဖြာမှု ပြီးဆုံးပါက မည်သည့်အရာမျှ မကျန်ရှိတော့ပါ။ လော့ဂ်အင် သို့မဟုတ် အကောင့်စနစ် မရှိသောကြောင့် ဓာတ်ပုံများကို သီးခြားပုဂ္ဂိုလ်တစ်ဦးနှင့် ချိတ်ဆက်သည့် နည်းလမ်းဖြင့် ဘယ်တော့မှ မသိမ်းဆည်းပါ။',
+        body: 'သင်ရိုက်ကူး သို့မဟုတ် ရွေးချယ်သော ဓာတ်ပုံများကို ခွဲခြမ်းစိတ်ဖြာရန် ကျွန်ုပ်တို့၏ ဆာဗာသို့ ပေးပို့ပြီး Anthropic ၏ AI မော်ဒယ်သို့ တိုက်ရိုက် ပေးပို့ပါသည်။ ဓာတ်ပုံကိုယ်တိုင်ကို ကျွန်ုပ်တို့ ဆာဗာတွင် သိမ်းဆည်းမထားပါ၊ ခွဲခြမ်းစိတ်ဖြာမှု ပြီးဆုံးပါက မည်သည့်အရာမျှ မကျန်ရှိတော့ပါ။ သို့သော် ဝန်ဆောင်မှုကို အသုံးပြုရန် လော့ဂ်အင် ဝင်ရန် လိုအပ်ပြီး၊ ခွဲခြမ်းစိတ်ဖြာမှု တောင်းဆိုချက်များကို သင့်လော့ဂ်အင်ဝင်ထားသော အကောင့်နှင့် ချိတ်ဆက်၍ လုပ်ဆောင်ပါသည်။',
+      },
+      {
+        heading: 'အကောင့် အချက်အလက်',
+        body: 'ဝန်ဆောင်မှုကို အသုံးပြုရန် အီးမေးလ်လိပ်စာနှင့် စကားဝှက်ဖြင့် အကောင့်တစ်ခု ဖန်တီးရန် လိုအပ်ပါသည်။ သင့်စကားဝှက်ကို ကျွန်ုပ်တို့ပင် မူရင်းအတိုင်း ပြန်ရယူ၍ မရနိုင်အောင် ကုဒ်ဝှက်ပြီး သိမ်းဆည်းထားပါသည်။ အကောင့်နှင့်အတူ မှတ်ပုံတင်ရက်၊ စမ်းသပ်ကာလ ကုန်ဆုံးရက်နှင့် စာရင်းသွင်းမှု အခြေအနေကို သိမ်းဆည်းထားပါသည်။ အကောင့်ဖျက်ရန် ရှိပါက azabumin@gmail.com သို့ ဆက်သွယ်ပါ။',
+      },
+      {
+        heading: 'ငွေပေးချေမှု အချက်အလက်',
+        body: 'စာရင်းသွင်းမှု ငွေပေးချေမှုများကို ကျွန်ုပ်တို့၏ ငွေပေးချေမှု ဝန်ဆောင်သူ ZEUS မှတစ်ဆင့် လုပ်ဆောင်ပြီး၊ ကတ်နံပါတ်နှင့် အခြား ငွေပေးချေမှု အသေးစိတ်များကို ကျွန်ုပ်တို့ ဆာဗာများတွင် ဘယ်တော့မှ သိမ်းဆည်းမထားပါ။',
       },
       {
         heading: 'ကျွန်ုပ်တို့ သိမ်းဆည်းထားသည့် အချက်အလက်',
-        body: 'ဤဝန်ဆောင်မှုကို အခမဲ့ ဆက်လက်ထားရှိရန်၊ IP လိပ်စာတစ်ခုချင်းစီအလိုက် နေ့စဉ် ခွဲခြမ်းစိတ်ဖြာမှု အရေအတွက်ကိုသာ ၂၄ နာရီအတွင်း ယာယီမှတ်တမ်းတင်ပါသည်။ ဤအချက်အလက်ကို နောက်တစ်နေ့တွင် အလိုအလျောက် ဖျက်ပစ်ပြီး အခြားရည်ရွယ်ချက်အတွက် အသုံးမပြုပါ။',
+        body: 'အခမဲ့ စမ်းသပ်ကာလ ကုန်ဆုံးပြီးနောက်လည်း ဝန်ဆောင်မှုကို တည်ငြိမ်စွာ ဆက်လက်ပေးအပ်နိုင်ရန်၊ IP လိပ်စာတစ်ခုချင်းစီအလိုက် နေ့စဉ် ခွဲခြမ်းစိတ်ဖြာမှု အရေအတွက်ကိုသာ ၂၄ နာရီအတွင်း ယာယီမှတ်တမ်းတင်ပါသည်။ ဤအချက်အလက်ကို နောက်တစ်နေ့တွင် အလိုအလျောက် ဖျက်ပစ်ပြီး အခြားရည်ရွယ်ချက်အတွက် အသုံးမပြုပါ။',
       },
       {
         heading: 'သိမ်းဆည်းထားသော မှတ်တမ်းနှင့် ပြက္ခဒိန် သတိပေးချက်များ',
@@ -235,7 +310,7 @@ const CONTENT: Record<
       },
       {
         heading: 'ဆက်သွယ်ရန်',
-        body: 'ဤမူဝါဒနှင့်ပတ်သက်၍ သင့်တွင် မေးခွန်းများရှိပါက အက်ပ်၏ GitHub repository တွင် issue တစ်ခု ဖွင့်ပေးပါ။',
+        body: 'ဤမူဝါဒနှင့်ပတ်သက်၍ သင့်တွင် မေးခွန်းများရှိပါက azabumin@gmail.com သို့ ဆက်သွယ်ပါ သို့မဟုတ် အက်ပ်၏ GitHub repository တွင် issue တစ်ခု ဖွင့်ပေးပါ။',
       },
     ],
   },
@@ -245,11 +320,19 @@ const CONTENT: Record<
     sections: [
       {
         heading: 'फोटोहरू कसरी ह्यान्डल गरिन्छ',
-        body: 'तपाईंले खिच्नु भएको वा छान्नु भएको फोटोहरू विश्लेषणको लागि हाम्रो सर्भरमा पठाइन्छ र सीधै Anthropic को AI मोडेलमा पास गरिन्छ। फोटोहरू हाम्रो सर्भरमा भण्डारण गरिँदैन, र विश्लेषण पूरा भएपछि केही पनि बाँकी रहँदैन। लगइन वा खाता प्रणाली नभएकोले, फोटोहरू कहिल्यै पनि कुनै विशेष व्यक्तिसँग जोडिने तरिकाले भण्डारण गरिँदैन।',
+        body: 'तपाईंले खिच्नु भएको वा छान्नु भएको फोटोहरू विश्लेषणको लागि हाम्रो सर्भरमा पठाइन्छ र सीधै Anthropic को AI मोडेलमा पास गरिन्छ। फोटो आफैं हाम्रो सर्भरमा भण्डारण गरिँदैन, र विश्लेषण पूरा भएपछि केही पनि बाँकी रहँदैन। तथापि, सेवा प्रयोग गर्न लगइन आवश्यक छ, र विश्लेषण अनुरोधहरू तपाईंको लगइन गरिएको खातासँग जोडिएर प्रशोधन गरिन्छ।',
+      },
+      {
+        heading: 'खाता जानकारी',
+        body: 'सेवा प्रयोग गर्न, तपाईंले इमेल ठेगाना र पासवर्डको साथ खाता सिर्जना गर्नुपर्छ। तपाईंको पासवर्ड इन्क्रिप्ट गरिएको रूपमा भण्डारण गरिन्छ, यसरी हामीले पनि मूल पासवर्ड फिर्ता प्राप्त गर्न सक्दैनौं। तपाईंको खातासँगै, हामी दर्ता मिति, परीक्षण समाप्ति मिति, र सदस्यता स्थिति भण्डारण गर्छौं। तपाईंको खाता मेटाउन चाहनुहुन्छ भने, कृपया azabumin@gmail.com मा सम्पर्क गर्नुहोस्।',
+      },
+      {
+        heading: 'भुक्तानी जानकारी',
+        body: 'सदस्यता भुक्तानीहरू हाम्रो भुक्तानी प्रदायक, ZEUS मार्फत प्रशोधन गरिन्छ। कार्ड नम्बर र अन्य भुक्तानी विवरणहरू हाम्रो सर्भरमा कहिल्यै भण्डारण गरिँदैन।',
       },
       {
         heading: 'हामीले राख्ने जानकारी',
-        body: 'यो सेवा निःशुल्क राख्न, हामी प्रत्येक IP ठेगानाको दैनिक विश्लेषण संख्या मात्र २४ घण्टाको लागि अस्थायी रूपमा लग गर्छौं। यो जानकारी भोलिपल्ट स्वचालित रूपमा मेटिन्छ र अन्य कुनै उद्देश्यको लागि प्रयोग गरिँदैन।',
+        body: 'निःशुल्क परीक्षण अवधि समाप्त भएपछि पनि सेवालाई भरपर्दो रूपमा चलिरहन, हामी प्रत्येक IP ठेगानाको दैनिक विश्लेषण संख्या मात्र २४ घण्टाको लागि अस्थायी रूपमा लग गर्छौं। यो जानकारी भोलिपल्ट स्वचालित रूपमा मेटिन्छ र अन्य कुनै उद्देश्यको लागि प्रयोग गरिँदैन।',
       },
       {
         heading: 'सुरक्षित इतिहास र क्यालेन्डर रिमाइन्डरहरू',
@@ -261,7 +344,7 @@ const CONTENT: Record<
       },
       {
         heading: 'सम्पर्क',
-        body: 'यदि तपाईंसँग यो नीतिको बारेमा प्रश्नहरू छन् भने, कृपया एपको GitHub रिपोजिटरीमा issue खोल्नुहोस्।',
+        body: 'यदि तपाईंसँग यो नीतिको बारेमा प्रश्नहरू छन् भने, कृपया azabumin@gmail.com मा सम्पर्क गर्नुहोस् वा एपको GitHub रिपोजिटरीमा issue खोल्नुहोस्।',
       },
     ],
   },
@@ -271,11 +354,19 @@ const CONTENT: Record<
     sections: [
       {
         heading: 'Como as Fotos São Tratadas',
-        body: 'As fotos que você tira ou escolhe são enviadas ao nosso servidor para análise e repassadas diretamente ao modelo de IA da Anthropic. As fotos não são armazenadas em nosso servidor, e nada permanece após a conclusão da análise. Não há sistema de login ou conta, portanto as fotos nunca são armazenadas de forma vinculada a uma pessoa específica.',
+        body: 'As fotos que você tira ou escolhe são enviadas ao nosso servidor para análise e repassadas diretamente ao modelo de IA da Anthropic. A própria foto não é armazenada em nosso servidor, e nada permanece após a conclusão da análise. No entanto, usar o serviço requer login, e as solicitações de análise são processadas vinculadas à sua conta conectada.',
+      },
+      {
+        heading: 'Informações da Conta',
+        body: 'Para usar o serviço, você precisa criar uma conta com endereço de e-mail e senha. Sua senha é armazenada de forma criptografada, de modo que nem mesmo nós podemos recuperar a senha original. Junto com sua conta, armazenamos a data de cadastro, a data de término do período de teste e o status da assinatura. Para excluir sua conta, entre em contato pelo azabumin@gmail.com.',
+      },
+      {
+        heading: 'Informações de Pagamento',
+        body: 'Os pagamentos de assinatura são processados por meio do nosso provedor de pagamento, ZEUS. Números de cartão e outros detalhes de pagamento nunca são armazenados em nossos servidores.',
       },
       {
         heading: 'Informações que Mantemos',
-        body: 'Para manter este serviço gratuito, registramos temporariamente apenas o número de análises diárias por endereço IP, por 24 horas. Essas informações são excluídas automaticamente no dia seguinte e não são usadas para nenhuma outra finalidade.',
+        body: 'Para manter o serviço funcionando de forma confiável após o período de teste gratuito, registramos temporariamente apenas o número de análises diárias por endereço IP, por 24 horas. Essas informações são excluídas automaticamente no dia seguinte e não são usadas para nenhuma outra finalidade.',
       },
       {
         heading: 'Histórico Salvo e Lembretes de Calendário',
@@ -287,7 +378,7 @@ const CONTENT: Record<
       },
       {
         heading: 'Contato',
-        body: 'Se você tiver dúvidas sobre esta política, abra uma issue no repositório GitHub do aplicativo.',
+        body: 'Se você tiver dúvidas sobre esta política, entre em contato pelo azabumin@gmail.com ou abra uma issue no repositório GitHub do aplicativo.',
       },
     ],
   },
