@@ -27,4 +27,7 @@
   // PASSWORD_PEPPER is NOT set here — it's a secret (extra server-side input mixed into
   // every password hash, so a leaked DB alone isn't enough to crack passwords offline).
   // Run: wrangler secret put PASSWORD_PEPPER
+  // RESEND_API_KEY is NOT set here — it's a secret, and optional until the Resend account
+  // + rxhelper.jp domain verification is done (see src/email.ts). Run once ready:
+  // wrangler secret put RESEND_API_KEY
 }

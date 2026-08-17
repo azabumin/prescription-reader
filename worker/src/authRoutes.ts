@@ -144,7 +144,7 @@ export async function handleRequestPasswordReset(
   env: Env,
   corsHeaders: Record<string, string>,
 ): Promise<Response> {
-  let body: { email?: unknown };
+  let body: { email?: unknown; lang?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -177,10 +177,10 @@ export async function handleRequestPasswordReset(
     const resetUrl = `${base}/reset-password?token=${token}`;
 
     try {
-      await sendPasswordResetEmail(user.email, resetUrl);
+      await sendPasswordResetEmail(user.email, resetUrl, body.lang, env.RESEND_API_KEY);
     } catch (err) {
-      // Don't fail the request just because the email step isn't fully wired up yet --
-      // see email.ts for why sending is currently a stub.
+      // Don't fail the request just because the email provider had a hiccup -- the
+      // token itself is already stored and valid, so a retry (or manual link) still works.
       console.error('password_reset_email_failed', err);
     }
   }

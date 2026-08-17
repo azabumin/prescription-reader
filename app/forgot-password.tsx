@@ -26,7 +26,7 @@ export default function ForgotPasswordScreen() {
     if (submitting) return;
     setSubmitting(true);
     try {
-      await requestPasswordReset(email);
+      await requestPasswordReset(email, lang);
     } finally {
       // Always show the same "sent" state regardless of outcome -- the backend never
       // reveals whether the email is registered, so the UI shouldn't either.

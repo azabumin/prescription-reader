@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { WORKER_URL } from '../constants/config';
+import type { Lang } from '../types';
 
 const TOKEN_KEY = 'prescription-reader:authToken';
 const USER_KEY = 'prescription-reader:authUser';
@@ -90,8 +91,8 @@ export async function fetchMe(token: string): Promise<AuthUser> {
   return data.user;
 }
 
-export async function requestPasswordReset(email: string): Promise<void> {
-  const response = await postJson('/request-password-reset', { email });
+export async function requestPasswordReset(email: string, lang: Lang): Promise<void> {
+  const response = await postJson('/request-password-reset', { email, lang });
   if (!response.ok) throw new AuthError(await parseErrorCode(response), response.status);
 }
 

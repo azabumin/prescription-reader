@@ -7,6 +7,8 @@ declare global {
     ANTHROPIC_API_KEY: string;
     ALLOWED_ORIGINS: string;
     PASSWORD_PEPPER: string;
+    // Optional -- unset until the Resend account + DNS verification is done. See email.ts.
+    RESEND_API_KEY?: string;
   }
 }
 
