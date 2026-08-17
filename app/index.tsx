@@ -9,13 +9,23 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 
 import AdBanner from '../components/AdBanner';
 import { COLORS, FONT, RADIUS, SPACING } from '../constants/theme';
 import { analyzePrescriptionPhoto, AnalyzeError } from '../lib/api';
+import {
+  clearStoredAuth,
+  fetchMe,
+  isTrialOrSubscriptionActive,
+  loadStoredAuth,
+  logout as logoutRequest,
+  saveStoredAuth,
+  trialDaysRemaining,
+  type AuthUser,
+} from '../lib/auth';
 import { buildMedicationCalendar, hasSchedulableDoses } from '../lib/calendar';
 import { downloadTextFile } from '../lib/download';
 import { saveHistoryEntry } from '../lib/history';
@@ -31,6 +41,7 @@ function slotLabelKey(slot: TimeSlot): string {
 }
 
 export default function HomeScreen() {
+  const router = useRouter();
   const [lang, setLang] = useState<Lang>(detectDefaultLang());
   const [pickerOpen, setPickerOpen] = useState(false);
   const [imageUri, setImageUri] = useState<string | null>(null);
@@ -38,9 +49,12 @@ export default function HomeScreen() {
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [speaking, setSpeaking] = useState(false);
+  const [auth, setAuth] = useState<{ token: string; user: AuthUser } | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
 
   const t = STRINGS[lang];
   const currentLanguage = LANGUAGES.find((l) => l.code === lang)!;
+  const canUseService = !!auth && isTrialOrSubscriptionActive(auth.user);
 
   useEffect(() => stopSpeech, []);
 
@@ -52,6 +66,41 @@ export default function HomeScreen() {
       if (saved) setLang(saved);
     });
   }, []);
+
+  useEffect(() => {
+    loadStoredAuth().then((stored) => {
+      // Show the cached session immediately so the gate doesn't flash, then refresh
+      // from the server -- trial/subscription status can change server-side (trial
+      // lapsing, a future payment) without this device doing anything, so the cached
+      // copy alone can't be trusted for the analyze-or-not decision.
+      setAuth(stored);
+      setAuthChecked(true);
+      if (stored) {
+        fetchMe(stored.token)
+          .then((freshUser) => {
+            setAuth({ token: stored.token, user: freshUser });
+            saveStoredAuth(stored.token, freshUser);
+          })
+          .catch(() => {
+            // Session token no longer valid server-side -- drop the stale local copy.
+            clearStoredAuth();
+            setAuth(null);
+          });
+      }
+    });
+  }, []);
+
+  async function handleLogout() {
+    if (auth) {
+      logoutRequest(auth.token).catch(() => {
+        // best-effort -- even if this fails server-side, clearing the local token
+        // still logs the user out of this device
+      });
+    }
+    await clearStoredAuth();
+    setAuth(null);
+    reset();
+  }
 
   function toggleListen() {
     if (speaking) {
@@ -65,6 +114,7 @@ export default function HomeScreen() {
   }
 
   async function analyze(uri: string, targetLang: Lang = lang) {
+    if (!auth) return;
     stopSpeech();
     setSpeaking(false);
     setAnalyzing(true);
@@ -79,15 +129,29 @@ export default function HomeScreen() {
       if (!manipulated.base64) {
         throw new Error('no base64 output');
       }
-      const analysis = await analyzePrescriptionPhoto(manipulated.base64, 'image/jpeg', targetLang);
+      const analysis = await analyzePrescriptionPhoto(manipulated.base64, 'image/jpeg', targetLang, auth.token);
       setResult(analysis);
       saveHistoryEntry(analysis, targetLang).catch(() => {
         // best-effort local save; a failure here shouldn't block showing the result
       });
     } catch (e) {
       if (e instanceof AnalyzeError) {
+        if (e.code === 'unauthorized') {
+          // The session token is gone or expired server-side -- clear the stale local
+          // copy and send the user to log back in rather than showing a generic error.
+          await clearStoredAuth();
+          setAuth(null);
+          router.replace('/login');
+          return;
+        }
         setErrorMsg(
-          e.code === 'network' ? t.errorNetwork : e.code === 'rate_limited' ? t.errorRateLimited : t.errorServer
+          e.code === 'network'
+            ? t.errorNetwork
+            : e.code === 'rate_limited'
+              ? t.errorRateLimited
+              : e.code === 'trial_expired'
+                ? t.authTrialExpiredBody
+                : t.errorServer
         );
       } else {
         setErrorMsg(t.errorServer);
@@ -98,6 +162,7 @@ export default function HomeScreen() {
   }
 
   async function handlePick(source: 'camera' | 'library') {
+    if (!canUseService) return;
     setErrorMsg(null);
     try {
       const permission =
@@ -135,14 +200,26 @@ export default function HomeScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <TouchableOpacity
-        style={styles.langSwitch}
-        onPress={() => setPickerOpen(true)}
-        accessibilityRole="button"
-        accessibilityLabel={t.chooseLanguage}
-      >
-        <Text style={styles.langSwitchText}>{currentLanguage.native} ▾</Text>
-      </TouchableOpacity>
+      <View style={styles.topRow}>
+        {auth ? (
+          <TouchableOpacity onPress={handleLogout} accessibilityRole="button">
+            <Text style={styles.logoutText}>
+              {t.authLoggedInPrefix}
+              {auth.user.email} · {t.authLogoutButton}
+            </Text>
+          </TouchableOpacity>
+        ) : (
+          <View />
+        )}
+        <TouchableOpacity
+          style={styles.langSwitch}
+          onPress={() => setPickerOpen(true)}
+          accessibilityRole="button"
+          accessibilityLabel={t.chooseLanguage}
+        >
+          <Text style={styles.langSwitchText}>{currentLanguage.native} ▾</Text>
+        </TouchableOpacity>
+      </View>
 
       {pickerOpen && (
         <View style={styles.modalBackdrop}>
@@ -186,8 +263,37 @@ export default function HomeScreen() {
       <Text style={styles.title}>{t.appTitle}</Text>
       <Text style={styles.subtitle}>{t.appSubtitle}</Text>
 
-      {!imageUri && (
+      {!authChecked && (
+        <View style={styles.centerBlock}>
+          <ActivityIndicator color={COLORS.primary} size="large" />
+        </View>
+      )}
+
+      {authChecked && !auth && (
         <View style={styles.pickCard}>
+          <TouchableOpacity style={styles.primaryButton} onPress={() => router.push('/login')}>
+            <Text style={styles.primaryButtonText}>{t.authLoginButton}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.secondaryButton} onPress={() => router.push('/signup')}>
+            <Text style={styles.secondaryButtonText}>{t.authSignupButton}</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {authChecked && auth && !canUseService && (
+        <View style={styles.pickCard}>
+          <Text style={styles.medicationName}>{t.authTrialExpiredTitle}</Text>
+          <Text style={styles.helperText}>{t.authTrialExpiredBody}</Text>
+        </View>
+      )}
+
+      {authChecked && auth && canUseService && !imageUri && (
+        <View style={styles.pickCard}>
+          {auth.user.subscriptionStatus === 'trial' && (
+            <Text style={styles.trialBadge}>
+              {t.authTrialDaysLeftTemplate.replace('{days}', String(trialDaysRemaining(auth.user)))}
+            </Text>
+          )}
           <TouchableOpacity style={styles.primaryButton} onPress={() => handlePick('camera')}>
             <Text style={styles.primaryButtonText}>{t.takePhoto}</Text>
           </TouchableOpacity>
@@ -331,17 +437,38 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
   },
+  topRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SPACING.sm,
+  },
+  logoutText: {
+    color: COLORS.textMuted,
+    fontSize: FONT.small,
+  },
   langSwitch: {
     alignSelf: 'flex-end',
     paddingVertical: SPACING.xs,
     paddingHorizontal: SPACING.sm,
-    marginBottom: SPACING.sm,
   },
   langSwitchText: {
     color: COLORS.accent,
     fontWeight: '700',
     fontSize: FONT.small,
     textDecorationLine: 'underline',
+  },
+  trialBadge: {
+    alignSelf: 'center',
+    backgroundColor: COLORS.chipBg,
+    color: COLORS.primaryDark,
+    fontSize: FONT.small,
+    fontWeight: '700',
+    paddingVertical: SPACING.xs,
+    paddingHorizontal: SPACING.md,
+    borderRadius: RADIUS.pill,
+    marginBottom: SPACING.sm,
+    overflow: 'hidden',
   },
   modalBackdrop: {
     position: 'fixed' as 'absolute',

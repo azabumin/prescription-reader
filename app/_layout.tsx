@@ -22,6 +22,10 @@ export default function RootLayout() {
           <Stack.Screen name="terms" />
           <Stack.Screen name="tokushoho" />
           <Stack.Screen name="about" />
+          <Stack.Screen name="login" />
+          <Stack.Screen name="signup" />
+          <Stack.Screen name="forgot-password" />
+          <Stack.Screen name="reset-password" />
         </Stack>
       </SafeAreaProvider>
     </GestureHandlerRootView>

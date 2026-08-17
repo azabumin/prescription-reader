@@ -1,7 +1,12 @@
+import { canAnalyze, resolveSessionUser } from './auth';
+import { handleLogin, handleLogout, handleMe, handleRequestPasswordReset, handleResetPassword, handleSignup } from './authRoutes';
+import { jsonResponse } from './http';
+
 declare global {
   interface Env {
     ANTHROPIC_API_KEY: string;
     ALLOWED_ORIGINS: string;
+    PASSWORD_PEPPER: string;
   }
 }
 
@@ -167,8 +172,25 @@ export default {
     }
 
     const url = new URL(request.url);
-    if (url.pathname !== '/analyze' || request.method !== 'POST') {
+    const route = `${request.method} ${url.pathname}`;
+
+    if (route === 'POST /signup') return handleSignup(request, env, corsHeaders);
+    if (route === 'POST /login') return handleLogin(request, env, corsHeaders);
+    if (route === 'POST /logout') return handleLogout(request, env, corsHeaders);
+    if (route === 'GET /me') return handleMe(request, env, corsHeaders);
+    if (route === 'POST /request-password-reset') return handleRequestPasswordReset(request, env, corsHeaders);
+    if (route === 'POST /reset-password') return handleResetPassword(request, env, corsHeaders);
+
+    if (route !== 'POST /analyze') {
       return jsonResponse({ error: 'not_found' }, 404, corsHeaders);
+    }
+
+    const sessionUser = await resolveSessionUser(request, env.DB);
+    if (!sessionUser) {
+      return jsonResponse({ error: 'unauthorized' }, 401, corsHeaders);
+    }
+    if (!canAnalyze(sessionUser)) {
+      return jsonResponse({ error: 'trial_expired' }, 402, corsHeaders);
     }
 
     const ip = request.headers.get('CF-Connecting-IP') ?? 'unknown';
@@ -234,21 +256,14 @@ export default {
 
 function buildCorsHeaders(origin: string, env: Env): Record<string, string> {
   const headers: Record<string, string> = {
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   };
   const allowedOrigins = env.ALLOWED_ORIGINS.split(',').map((o) => o.trim());
   if (allowedOrigins.includes(origin) || origin.startsWith('http://localhost:')) {
     headers['Access-Control-Allow-Origin'] = origin;
   }
   return headers;
-}
-
-function jsonResponse(data: unknown, status: number, corsHeaders: Record<string, string>): Response {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { 'Content-Type': 'application/json', ...corsHeaders },
-  });
 }
 
 async function callClaude(base64Image: string, mediaType: string, lang: Lang, apiKey: string) {
