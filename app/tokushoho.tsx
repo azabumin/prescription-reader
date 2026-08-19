@@ -17,7 +17,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
     rows: [
       { label: '販売業者', value: '株式会社PRIAMOS' },
       { label: '運営統括責任者', value: '代表取締役　閔鐘基' },
-      { label: '所在地', value: '東京都江戸川区西葛西8-15-6-703' },
+      { label: '所在地', value: '東京都江戸川区西葛西8-15 新田住宅6-703' },
       { label: '電話番号', value: '080-3155-5076' },
       { label: 'メールアドレス', value: 'azabumin@gmail.com' },
       {
@@ -48,7 +48,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
     rows: [
       { label: '판매업자', value: '株式会社PRIAMOS (주식회사 PRIAMOS)' },
       { label: '운영총괄책임자', value: '대표이사 민종기 (閔鐘基)' },
-      { label: '소재지', value: '東京都江戸川区西葛西8-15-6-703 (일본 도쿄도 에도가와구 니시카사이)' },
+      { label: '소재지', value: '東京都江戸川区西葛西8-15 新田住宅6-703 (일본 도쿄도 에도가와구 니시카사이)' },
       { label: '전화번호', value: '080-3155-5076' },
       { label: '이메일 주소', value: 'azabumin@gmail.com' },
       {
@@ -80,7 +80,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
     rows: [
       { label: 'Business Name', value: 'PRIAMOS Co., Ltd. (株式会社 PRIAMOS)' },
       { label: 'Responsible Officer', value: 'Jong-gi Min, Representative Director (閔鐘基)' },
-      { label: 'Address', value: '8-15-6-703 Nishikasai, Edogawa-ku, Tokyo, Japan' },
+      { label: 'Address', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: 'Phone Number', value: '080-3155-5076' },
       { label: 'Email Address', value: 'azabumin@gmail.com' },
       {
@@ -112,7 +112,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
     rows: [
       { label: 'Đơn Vị Kinh Doanh', value: 'PRIAMOS Co., Ltd. (株式会社PRIAMOS)' },
       { label: 'Người Chịu Trách Nhiệm', value: 'Đại diện: Jong-gi Min (閔鐘基)' },
-      { label: 'Địa Chỉ', value: '8-15-6-703 Nishikasai, Edogawa-ku, Tokyo, Japan' },
+      { label: 'Địa Chỉ', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: 'Số Điện Thoại', value: '080-3155-5076' },
       { label: 'Địa Chỉ Email', value: 'azabumin@gmail.com' },
       {
@@ -144,7 +144,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
     rows: [
       { label: '经营者名称', value: 'PRIAMOS股份有限公司(株式会社PRIAMOS)' },
       { label: '运营负责人', value: '代表董事 闵钟基(閔鐘基)' },
-      { label: '所在地', value: '8-15-6-703 Nishikasai, Edogawa-ku, Tokyo, Japan' },
+      { label: '所在地', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: '电话号码', value: '080-3155-5076' },
       { label: '电子邮箱', value: 'azabumin@gmail.com' },
       {
@@ -173,7 +173,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
     rows: [
       { label: 'Nama Bisnis', value: 'PRIAMOS Co., Ltd. (株式会社PRIAMOS)' },
       { label: 'Penanggung Jawab', value: 'Direktur Perwakilan: Jong-gi Min (閔鐘基)' },
-      { label: 'Alamat', value: '8-15-6-703 Nishikasai, Edogawa-ku, Tokyo, Japan' },
+      { label: 'Alamat', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: 'Nomor Telepon', value: '080-3155-5076' },
       { label: 'Alamat Email', value: 'azabumin@gmail.com' },
       {
@@ -205,7 +205,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
     rows: [
       { label: 'Pangalan ng Negosyo', value: 'PRIAMOS Co., Ltd. (株式会社PRIAMOS)' },
       { label: 'Responsableng Opisyal', value: 'Representative Director: Jong-gi Min (閔鐘基)' },
-      { label: 'Address', value: '8-15-6-703 Nishikasai, Edogawa-ku, Tokyo, Japan' },
+      { label: 'Address', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: 'Numero ng Telepono', value: '080-3155-5076' },
       { label: 'Email Address', value: 'azabumin@gmail.com' },
       {
@@ -237,7 +237,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
     rows: [
       { label: 'ชื่อผู้ประกอบการ', value: 'PRIAMOS Co., Ltd. (株式会社PRIAMOS)' },
       { label: 'ผู้รับผิดชอบดำเนินงาน', value: 'กรรมการผู้แทน: Jong-gi Min (閔鐘基)' },
-      { label: 'ที่อยู่', value: '8-15-6-703 Nishikasai, Edogawa-ku, Tokyo, Japan' },
+      { label: 'ที่อยู่', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: 'หมายเลขโทรศัพท์', value: '080-3155-5076' },
       { label: 'อีเมล', value: 'azabumin@gmail.com' },
       {
@@ -269,7 +269,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
     rows: [
       { label: 'စီးပွားရေးလုပ်ငန်း အမည်', value: 'PRIAMOS Co., Ltd. (株式会社PRIAMOS)' },
       { label: 'တာဝန်ခံ အရာရှိ', value: 'Representative Director: Jong-gi Min (閔鐘基)' },
-      { label: 'လိပ်စာ', value: '8-15-6-703 Nishikasai, Edogawa-ku, Tokyo, Japan' },
+      { label: 'လိပ်စာ', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: 'ဖုန်းနံပါတ်', value: '080-3155-5076' },
       { label: 'အီးမေးလ်လိပ်စာ', value: 'azabumin@gmail.com' },
       {
@@ -301,7 +301,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
     rows: [
       { label: 'व्यवसायको नाम', value: 'PRIAMOS Co., Ltd. (株式会社PRIAMOS)' },
       { label: 'जिम्मेवार अधिकारी', value: 'प्रतिनिधि निर्देशक: Jong-gi Min (閔鐘基)' },
-      { label: 'ठेगाना', value: '8-15-6-703 Nishikasai, Edogawa-ku, Tokyo, Japan' },
+      { label: 'ठेगाना', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: 'फोन नम्बर', value: '080-3155-5076' },
       { label: 'इमेल ठेगाना', value: 'azabumin@gmail.com' },
       {
@@ -333,7 +333,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
     rows: [
       { label: 'Nome da Empresa', value: 'PRIAMOS Co., Ltd. (株式会社PRIAMOS)' },
       { label: 'Responsável', value: 'Diretor Representante: Jong-gi Min (閔鐘基)' },
-      { label: 'Endereço', value: '8-15-6-703 Nishikasai, Edogawa-ku, Tokyo, Japan' },
+      { label: 'Endereço', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: 'Número de Telefone', value: '080-3155-5076' },
       { label: 'Endereço de E-mail', value: 'azabumin@gmail.com' },
       {
