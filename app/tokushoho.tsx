@@ -20,7 +20,10 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
       { label: '所在地', value: '東京都江戸川区西葛西8-15-6-703' },
       { label: '電話番号', value: '080-3155-5076' },
       { label: 'メールアドレス', value: 'azabumin@gmail.com' },
-      { label: '販売価格', value: '月額プラン ¥480（税込）\n年額プラン ¥3,600（税込）' },
+      {
+        label: '販売価格',
+        value: '月額プラン ¥480（税込）\n※12ヶ月連続でご利用いただいた場合、13ヶ月目のご利用料金が無料になります。',
+      },
       {
         label: '商品代金以外の必要料金',
         value: 'インターネット接続料金など、通信に関する費用はお客様のご負担となります。',
@@ -48,7 +51,10 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
       { label: '소재지', value: '東京都江戸川区西葛西8-15-6-703 (일본 도쿄도 에도가와구 니시카사이)' },
       { label: '전화번호', value: '080-3155-5076' },
       { label: '이메일 주소', value: 'azabumin@gmail.com' },
-      { label: '판매가격', value: '월간 플랜 ¥480 (세금 포함)\n연간 플랜 ¥3,600 (세금 포함)' },
+      {
+        label: '판매가격',
+        value: '월간 플랜 ¥480 (세금 포함)\n※12개월 연속 이용 시, 13개월째 이용료가 무료가 됩니다.',
+      },
       {
         label: '상품대금 이외 필요 요금',
         value: '인터넷 접속료 등 통신 관련 비용은 고객님 부담입니다.',
@@ -77,7 +83,10 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
       { label: 'Address', value: '8-15-6-703 Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: 'Phone Number', value: '080-3155-5076' },
       { label: 'Email Address', value: 'azabumin@gmail.com' },
-      { label: 'Price', value: 'Monthly Plan ¥480 (tax included)\nAnnual Plan ¥3,600 (tax included)' },
+      {
+        label: 'Price',
+        value: 'Monthly Plan ¥480 (tax included)\n※If you use the service for 12 consecutive months, the 13th month is free.',
+      },
       {
         label: 'Additional Fees',
         value: 'Internet connection charges and other communication costs are the customer’s responsibility.',
@@ -106,7 +115,10 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
       { label: 'Địa Chỉ', value: '8-15-6-703 Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: 'Số Điện Thoại', value: '080-3155-5076' },
       { label: 'Địa Chỉ Email', value: 'azabumin@gmail.com' },
-      { label: 'Giá Bán', value: 'Gói tháng ¥480 (đã bao gồm thuế)\nGói năm ¥3.600 (đã bao gồm thuế)' },
+      {
+        label: 'Giá Bán',
+        value: 'Gói tháng ¥480 (đã bao gồm thuế)\n※Nếu bạn sử dụng dịch vụ liên tục trong 12 tháng, tháng thứ 13 sẽ được miễn phí.',
+      },
       {
         label: 'Phí Bổ Sung',
         value: 'Cước phí kết nối internet và các chi phí liên lạc khác do khách hàng chi trả.',
@@ -135,7 +147,10 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
       { label: '所在地', value: '8-15-6-703 Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: '电话号码', value: '080-3155-5076' },
       { label: '电子邮箱', value: 'azabumin@gmail.com' },
-      { label: '销售价格', value: '月付方案 ¥480(含税)\n年付方案 ¥3,600(含税)' },
+      {
+        label: '销售价格',
+        value: '月付方案 ¥480(含税)\n※如果您连续使用本服务12个月,第13个月将免费。',
+      },
       { label: '商品价款以外的费用', value: '互联网连接费用等通信相关费用由客户自行承担。' },
       { label: '支付方式', value: '信用卡支付(通过ZEUS代收)' },
       {
@@ -161,7 +176,10 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
       { label: 'Alamat', value: '8-15-6-703 Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: 'Nomor Telepon', value: '080-3155-5076' },
       { label: 'Alamat Email', value: 'azabumin@gmail.com' },
-      { label: 'Harga', value: 'Paket Bulanan ¥480 (termasuk pajak)\nPaket Tahunan ¥3.600 (termasuk pajak)' },
+      {
+        label: 'Harga',
+        value: 'Paket Bulanan ¥480 (termasuk pajak)\n※Jika Anda menggunakan layanan ini selama 12 bulan berturut-turut, bulan ke-13 akan gratis.',
+      },
       {
         label: 'Biaya Tambahan',
         value: 'Biaya koneksi internet dan biaya komunikasi lainnya menjadi tanggung jawab pelanggan.',
@@ -190,7 +208,10 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
       { label: 'Address', value: '8-15-6-703 Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: 'Numero ng Telepono', value: '080-3155-5076' },
       { label: 'Email Address', value: 'azabumin@gmail.com' },
-      { label: 'Presyo', value: 'Buwanang Plano ¥480 (kasama ang buwis)\nTaunang Plano ¥3,600 (kasama ang buwis)' },
+      {
+        label: 'Presyo',
+        value: 'Buwanang Plano ¥480 (kasama ang buwis)\n※Kung gagamitin mo ang serbisyo nang 12 magkakasunod na buwan, libre ang ika-13 buwan.',
+      },
       {
         label: 'Karagdagang Bayad',
         value: 'Ang mga bayarin sa koneksyon sa internet at iba pang gastos sa komunikasyon ay pananagutan ng customer.',
@@ -219,7 +240,10 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
       { label: 'ที่อยู่', value: '8-15-6-703 Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: 'หมายเลขโทรศัพท์', value: '080-3155-5076' },
       { label: 'อีเมล', value: 'azabumin@gmail.com' },
-      { label: 'ราคาขาย', value: 'แผนรายเดือน ¥480 (รวมภาษี)\nแผนรายปี ¥3,600 (รวมภาษี)' },
+      {
+        label: 'ราคาขาย',
+        value: 'แผนรายเดือน ¥480 (รวมภาษี)\n※หากคุณใช้บริการต่อเนื่อง 12 เดือน เดือนที่ 13 จะไม่มีค่าใช้จ่าย',
+      },
       {
         label: 'ค่าใช้จ่ายเพิ่มเติม',
         value: 'ค่าบริการเชื่อมต่ออินเทอร์เน็ตและค่าใช้จ่ายด้านการสื่อสารอื่นๆ เป็นความรับผิดชอบของลูกค้า',
@@ -248,7 +272,10 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
       { label: 'လိပ်စာ', value: '8-15-6-703 Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: 'ဖုန်းနံပါတ်', value: '080-3155-5076' },
       { label: 'အီးမေးလ်လိပ်စာ', value: 'azabumin@gmail.com' },
-      { label: 'ဈေးနှုန်း', value: 'လစဉ်အစီအစဉ် ¥480 (အခွန်ပါ)\nနှစ်စဉ်အစီအစဉ် ¥3,600 (အခွန်ပါ)' },
+      {
+        label: 'ဈေးနှုန်း',
+        value: 'လစဉ်အစီအစဉ် ¥480 (အခွန်ပါ)\n※၁၂ လ ဆက်တိုက် အသုံးပြုပါက ၁၃ လမြောက်ကို အခမဲ့ ရရှိမည် ဖြစ်သည်။',
+      },
       {
         label: 'ထပ်ဆောင်း ကုန်ကျစရိတ်',
         value: 'အင်တာနက် ချိတ်ဆက်ခ နှင့် အခြား ဆက်သွယ်ရေးဆိုင်ရာ ကုန်ကျစရိတ်များသည် customer ၏ တာဝန် ဖြစ်သည်။',
@@ -277,7 +304,10 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
       { label: 'ठेगाना', value: '8-15-6-703 Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: 'फोन नम्बर', value: '080-3155-5076' },
       { label: 'इमेल ठेगाना', value: 'azabumin@gmail.com' },
-      { label: 'मूल्य', value: 'मासिक योजना ¥480 (कर सहित)\nवार्षिक योजना ¥3,600 (कर सहित)' },
+      {
+        label: 'मूल्य',
+        value: 'मासिक योजना ¥480 (कर सहित)\n※यदि तपाईंले लगातार १२ महिना सेवा प्रयोग गर्नुभयो भने, १३ औं महिना निःशुल्क हुन्छ।',
+      },
       {
         label: 'थप शुल्कहरू',
         value: 'इन्टरनेट जडान शुल्क र अन्य सञ्चार लागतहरू ग्राहकको जिम्मेवारी हो।',
@@ -306,7 +336,10 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
       { label: 'Endereço', value: '8-15-6-703 Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: 'Número de Telefone', value: '080-3155-5076' },
       { label: 'Endereço de E-mail', value: 'azabumin@gmail.com' },
-      { label: 'Preço', value: 'Plano Mensal ¥480 (imposto incluído)\nPlano Anual ¥3.600 (imposto incluído)' },
+      {
+        label: 'Preço',
+        value: 'Plano Mensal ¥480 (imposto incluído)\n※Se você usar o serviço por 12 meses consecutivos, o 13º mês será gratuito.',
+      },
       {
         label: 'Taxas Adicionais',
         value: 'As taxas de conexão à internet e outros custos de comunicação são de responsabilidade do cliente.',

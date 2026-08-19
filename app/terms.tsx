@@ -29,7 +29,7 @@ const CONTENT: Record<
       },
       {
         heading: '구독 및 결제',
-        body: '가입 시점부터 7일간 무료로 이용하실 수 있으며, 이후 계속 이용하시려면 월간 또는 연간 구독이 필요합니다. 결제는 신용카드로 결제대행사 ZEUS를 통해 처리되며, 구독은 매 결제 주기마다 자동으로 갱신됩니다. 디지털 서비스의 특성상 이미 결제하신 요금은 원칙적으로 환불해 드리지 않습니다. 다음 자동 갱신 중지(해지)는 마이페이지에서 언제든지 신청하실 수 있으며, 해지 후에도 이미 결제하신 기간의 종료일까지는 계속 서비스를 이용하실 수 있습니다.',
+        body: '가입 시점부터 7일간 무료로 이용하실 수 있으며, 이후 계속 이용하시려면 월간 구독이 필요합니다. 12개월 연속으로 이용하시면 13개월째 이용료가 무료가 됩니다. 결제는 신용카드로 결제대행사 ZEUS를 통해 처리되며, 구독은 매 결제 주기마다 자동으로 갱신됩니다. 디지털 서비스의 특성상 이미 결제하신 요금은 원칙적으로 환불해 드리지 않습니다. 다음 자동 갱신 중지(해지)는 마이페이지에서 언제든지 신청하실 수 있으며, 해지 후에도 이미 결제하신 기간의 종료일까지는 계속 서비스를 이용하실 수 있습니다.',
       },
       {
         heading: '이용 제한',
@@ -60,7 +60,7 @@ const CONTENT: Record<
       },
       {
         heading: 'サブスクリプションとお支払い',
-        body: 'ご登録時点から7日間は無料でご利用いただけ、以降も引き続きご利用いただくには月額または年額のサブスクリプションが必要です。お支払いはクレジットカードにより決済代行会社ZEUSを通じて処理され、サブスクリプションは各契約期間ごとに自動的に更新されます。デジタルサービスの性質上、お支払い済みの料金の返金は原則としてお受けしておりません。次回の自動更新の停止(解約)はいつでもマイページから手続きいただけ、解約後もお支払い済みの期間の終了日まで引き続きサービスをご利用いただけます。',
+        body: 'ご登録時点から7日間は無料でご利用いただけ、以降も引き続きご利用いただくには月額のサブスクリプションが必要です。12ヶ月連続でご利用いただくと、13ヶ月目のご利用料金が無料になります。お支払いはクレジットカードにより決済代行会社ZEUSを通じて処理され、サブスクリプションは各契約期間ごとに自動的に更新されます。デジタルサービスの性質上、お支払い済みの料金の返金は原則としてお受けしておりません。次回の自動更新の停止(解約)はいつでもマイページから手続きいただけ、解約後もお支払い済みの期間の終了日まで引き続きサービスをご利用いただけます。',
       },
       {
         heading: '利用制限',
@@ -91,7 +91,7 @@ const CONTENT: Record<
       },
       {
         heading: 'Subscription & Payment',
-        body: 'You can use the service free for 7 days from the time you sign up; continued use after that requires a monthly or annual subscription. Payment is made by credit card and processed through our payment provider, ZEUS, and the subscription renews automatically each billing period. Due to the nature of digital services, fees already paid are not refundable in principle. You may stop the next automatic renewal (cancel) at any time from My Page, and even after cancellation you can continue using the service until the end of the period you already paid for.',
+        body: 'You can use the service free for 7 days from the time you sign up; continued use after that requires a monthly subscription. If you use the service for 12 consecutive months, the 13th month is free. Payment is made by credit card and processed through our payment provider, ZEUS, and the subscription renews automatically each billing period. Due to the nature of digital services, fees already paid are not refundable in principle. You may stop the next automatic renewal (cancel) at any time from My Page, and even after cancellation you can continue using the service until the end of the period you already paid for.',
       },
       {
         heading: 'Usage Limits',
@@ -125,7 +125,7 @@ const CONTENT: Record<
       },
       {
         heading: 'Gói Đăng Ký & Thanh Toán',
-        body: 'Bạn có thể sử dụng dịch vụ miễn phí trong 7 ngày kể từ khi đăng ký; để tiếp tục sử dụng sau đó cần có gói đăng ký hàng tháng hoặc hàng năm. Thanh toán được thực hiện bằng thẻ tín dụng, xử lý qua nhà cung cấp thanh toán ZEUS, và gói đăng ký sẽ tự động gia hạn theo mỗi chu kỳ thanh toán. Do tính chất của dịch vụ kỹ thuật số, các khoản phí đã thanh toán về nguyên tắc sẽ không được hoàn lại. Bạn có thể dừng gia hạn tự động tiếp theo (hủy) bất cứ lúc nào từ Trang Của Tôi, và ngay cả sau khi hủy, bạn vẫn có thể tiếp tục sử dụng dịch vụ cho đến hết thời hạn đã thanh toán.',
+        body: 'Bạn có thể sử dụng dịch vụ miễn phí trong 7 ngày kể từ khi đăng ký; để tiếp tục sử dụng sau đó cần có gói đăng ký hàng tháng. Nếu bạn sử dụng dịch vụ liên tục trong 12 tháng, tháng thứ 13 sẽ được miễn phí. Thanh toán được thực hiện bằng thẻ tín dụng, xử lý qua nhà cung cấp thanh toán ZEUS, và gói đăng ký sẽ tự động gia hạn theo mỗi chu kỳ thanh toán. Do tính chất của dịch vụ kỹ thuật số, các khoản phí đã thanh toán về nguyên tắc sẽ không được hoàn lại. Bạn có thể dừng gia hạn tự động tiếp theo (hủy) bất cứ lúc nào từ Trang Của Tôi, và ngay cả sau khi hủy, bạn vẫn có thể tiếp tục sử dụng dịch vụ cho đến hết thời hạn đã thanh toán.',
       },
       {
         heading: 'Giới Hạn Sử Dụng',
@@ -159,7 +159,7 @@ const CONTENT: Record<
       },
       {
         heading: '订阅与付款',
-        body: '注册后可免费使用7天;此后如需继续使用,需订阅月付或年付方案。付款通过信用卡完成,由支付服务商ZEUS处理,订阅将在每个计费周期自动续费。鉴于数字服务的性质,已支付的费用原则上不予退还。您可以随时在"我的页面"中停止下一次自动续费(取消),即使取消后,您仍可继续使用服务直至已支付期限结束。',
+        body: '注册后可免费使用7天;此后如需继续使用,需订阅月付方案。如果您连续使用本服务12个月,第13个月将免费。付款通过信用卡完成,由支付服务商ZEUS处理,订阅将在每个计费周期自动续费。鉴于数字服务的性质,已支付的费用原则上不予退还。您可以随时在"我的页面"中停止下一次自动续费(取消),即使取消后,您仍可继续使用服务直至已支付期限结束。',
       },
       {
         heading: '使用限制',
@@ -190,7 +190,7 @@ const CONTENT: Record<
       },
       {
         heading: 'Langganan & Pembayaran',
-        body: 'Anda dapat menggunakan layanan ini secara gratis selama 7 hari sejak mendaftar; penggunaan berkelanjutan setelah itu memerlukan langganan bulanan atau tahunan. Pembayaran dilakukan dengan kartu kredit dan diproses melalui penyedia pembayaran kami, ZEUS, dan langganan diperpanjang secara otomatis setiap periode penagihan. Karena sifat layanan digital, biaya yang sudah dibayarkan pada prinsipnya tidak dapat dikembalikan. Anda dapat menghentikan perpanjangan otomatis berikutnya (membatalkan) kapan saja dari Halaman Saya, dan bahkan setelah pembatalan, Anda tetap dapat menggunakan layanan hingga akhir periode yang sudah dibayar.',
+        body: 'Anda dapat menggunakan layanan ini secara gratis selama 7 hari sejak mendaftar; penggunaan berkelanjutan setelah itu memerlukan langganan bulanan. Jika Anda menggunakan layanan ini selama 12 bulan berturut-turut, bulan ke-13 akan gratis. Pembayaran dilakukan dengan kartu kredit dan diproses melalui penyedia pembayaran kami, ZEUS, dan langganan diperpanjang secara otomatis setiap periode penagihan. Karena sifat layanan digital, biaya yang sudah dibayarkan pada prinsipnya tidak dapat dikembalikan. Anda dapat menghentikan perpanjangan otomatis berikutnya (membatalkan) kapan saja dari Halaman Saya, dan bahkan setelah pembatalan, Anda tetap dapat menggunakan layanan hingga akhir periode yang sudah dibayar.',
       },
       {
         heading: 'Batasan Penggunaan',
@@ -224,7 +224,7 @@ const CONTENT: Record<
       },
       {
         heading: 'Subscription at Pagbabayad',
-        body: 'Maaari mong gamitin ang serbisyo nang libre sa loob ng 7 araw mula nang mag-sign up ka; kailangan ng buwanang o taunang subscription para sa patuloy na paggamit pagkatapos noon. Ang pagbabayad ay gagawin gamit ang credit card at pinoproseso sa pamamagitan ng aming provider ng pagbabayad, ZEUS, at awtomatikong nagre-renew ang subscription sa bawat billing period. Dahil sa katangian ng mga digital na serbisyo, ang mga bayad na na-charge ay hindi na maibabalik sa prinsipyo. Maaari mong ihinto ang susunod na awtomatikong pag-renew (kanselahin) anumang oras mula sa My Page, at kahit pagkatapos kanselahin, maaari mo pa ring gamitin ang serbisyo hanggang sa katapusan ng panahong nabayaran mo na.',
+        body: 'Maaari mong gamitin ang serbisyo nang libre sa loob ng 7 araw mula nang mag-sign up ka; kailangan ng buwanang subscription para sa patuloy na paggamit pagkatapos noon. Kung gagamitin mo ang serbisyo nang 12 magkakasunod na buwan, libre ang ika-13 buwan. Ang pagbabayad ay gagawin gamit ang credit card at pinoproseso sa pamamagitan ng aming provider ng pagbabayad, ZEUS, at awtomatikong nagre-renew ang subscription sa bawat billing period. Dahil sa katangian ng mga digital na serbisyo, ang mga bayad na na-charge ay hindi na maibabalik sa prinsipyo. Maaari mong ihinto ang susunod na awtomatikong pag-renew (kanselahin) anumang oras mula sa My Page, at kahit pagkatapos kanselahin, maaari mo pa ring gamitin ang serbisyo hanggang sa katapusan ng panahong nabayaran mo na.',
       },
       {
         heading: 'Mga Limitasyon sa Paggamit',
@@ -258,7 +258,7 @@ const CONTENT: Record<
       },
       {
         heading: 'การสมัครสมาชิกและการชำระเงิน',
-        body: 'คุณสามารถใช้บริการฟรีได้ 7 วันนับจากวันที่ลงทะเบียน หลังจากนั้นจำเป็นต้องสมัครสมาชิกรายเดือนหรือรายปีเพื่อใช้งานต่อ การชำระเงินทำผ่านบัตรเครดิตและดำเนินการผ่านผู้ให้บริการชำระเงินของเรา ZEUS และการสมัครสมาชิกจะต่ออายุอัตโนมัติทุกรอบการเรียกเก็บเงิน เนื่องจากลักษณะของบริการดิจิทัล ค่าธรรมเนียมที่ชำระแล้วโดยหลักการจะไม่สามารถขอคืนได้ คุณสามารถหยุดการต่ออายุอัตโนมัติครั้งถัดไป (ยกเลิก) ได้ทุกเมื่อจากหน้า My Page และแม้หลังจากยกเลิกแล้ว คุณยังคงสามารถใช้บริการต่อไปได้จนกว่าจะสิ้นสุดระยะเวลาที่ชำระเงินไว้แล้ว',
+        body: 'คุณสามารถใช้บริการฟรีได้ 7 วันนับจากวันที่ลงทะเบียน หลังจากนั้นจำเป็นต้องสมัครสมาชิกรายเดือนเพื่อใช้งานต่อ หากคุณใช้บริการต่อเนื่อง 12 เดือน เดือนที่ 13 จะไม่มีค่าใช้จ่าย การชำระเงินทำผ่านบัตรเครดิตและดำเนินการผ่านผู้ให้บริการชำระเงินของเรา ZEUS และการสมัครสมาชิกจะต่ออายุอัตโนมัติทุกรอบการเรียกเก็บเงิน เนื่องจากลักษณะของบริการดิจิทัล ค่าธรรมเนียมที่ชำระแล้วโดยหลักการจะไม่สามารถขอคืนได้ คุณสามารถหยุดการต่ออายุอัตโนมัติครั้งถัดไป (ยกเลิก) ได้ทุกเมื่อจากหน้า My Page และแม้หลังจากยกเลิกแล้ว คุณยังคงสามารถใช้บริการต่อไปได้จนกว่าจะสิ้นสุดระยะเวลาที่ชำระเงินไว้แล้ว',
       },
       {
         heading: 'ข้อจำกัดในการใช้งาน',
@@ -292,7 +292,7 @@ const CONTENT: Record<
       },
       {
         heading: 'စာရင်းသွင်းမှုနှင့် ငွေပေးချေမှု',
-        body: 'မှတ်ပုံတင်ချိန်မှစ၍ ၇ ရက်ကြာ အခမဲ့ အသုံးပြုနိုင်ပြီး၊ ထို့နောက် ဆက်လက်အသုံးပြုရန် လစဉ် သို့မဟုတ် နှစ်စဉ် စာရင်းသွင်းမှု လိုအပ်ပါသည်။ ငွေပေးချေမှုကို အကြွေးဝယ်ကတ်ဖြင့် ကျွန်ုပ်တို့၏ ငွေပေးချေမှု ဝန်ဆောင်သူ ZEUS မှတစ်ဆင့် လုပ်ဆောင်ပြီး၊ စာရင်းသွင်းမှုသည် ငွေတောင်းခံသည့် ကာလတိုင်း အလိုအလျောက် သက်တမ်းတိုးမည် ဖြစ်သည်။ ဒစ်ဂျစ်တယ် ဝန်ဆောင်မှုများ၏ သဘောသဘာဝကြောင့်၊ ပေးချေပြီးသား ကြေးများကို အခြေခံမူအရ ငွေပြန်အမ်းမည် မဟုတ်ပါ။ နောက်တစ်ကြိမ် အလိုအလျောက် သက်တမ်းတိုးခြင်းကို My Page မှ အချိန်မရွေး ရပ်တန့် (ပယ်ဖျက်) နိုင်ပြီး၊ ပယ်ဖျက်ပြီးနောက်တွင်ပင်၊ သင် ပေးချေပြီးသား ကာလ၏ အဆုံးထိ ဝန်ဆောင်မှုကို ဆက်လက် အသုံးပြုနိုင်ပါသည်။',
+        body: 'မှတ်ပုံတင်ချိန်မှစ၍ ၇ ရက်ကြာ အခမဲ့ အသုံးပြုနိုင်ပြီး၊ ထို့နောက် ဆက်လက်အသုံးပြုရန် လစဉ် စာရင်းသွင်းမှု လိုအပ်ပါသည်။ ၁၂ လ ဆက်တိုက် အသုံးပြုပါက ၁၃ လမြောက်ကို အခမဲ့ ရရှိမည် ဖြစ်သည်။ ငွေပေးချေမှုကို အကြွေးဝယ်ကတ်ဖြင့် ကျွန်ုပ်တို့၏ ငွေပေးချေမှု ဝန်ဆောင်သူ ZEUS မှတစ်ဆင့် လုပ်ဆောင်ပြီး၊ စာရင်းသွင်းမှုသည် ငွေတောင်းခံသည့် ကာလတိုင်း အလိုအလျောက် သက်တမ်းတိုးမည် ဖြစ်သည်။ ဒစ်ဂျစ်တယ် ဝန်ဆောင်မှုများ၏ သဘောသဘာဝကြောင့်၊ ပေးချေပြီးသား ကြေးများကို အခြေခံမူအရ ငွေပြန်အမ်းမည် မဟုတ်ပါ။ နောက်တစ်ကြိမ် အလိုအလျောက် သက်တမ်းတိုးခြင်းကို My Page မှ အချိန်မရွေး ရပ်တန့် (ပယ်ဖျက်) နိုင်ပြီး၊ ပယ်ဖျက်ပြီးနောက်တွင်ပင်၊ သင် ပေးချေပြီးသား ကာလ၏ အဆုံးထိ ဝန်ဆောင်မှုကို ဆက်လက် အသုံးပြုနိုင်ပါသည်။',
       },
       {
         heading: 'အသုံးပြုမှု ကန့်သတ်ချက်များ',
@@ -326,7 +326,7 @@ const CONTENT: Record<
       },
       {
         heading: 'सदस्यता र भुक्तानी',
-        body: 'साइन अप गरेको समयदेखि तपाईं ७ दिनसम्म सेवा निःशुल्क प्रयोग गर्न सक्नुहुन्छ; त्यसपछि निरन्तर प्रयोगको लागि मासिक वा वार्षिक सदस्यता आवश्यक हुन्छ। भुक्तानी क्रेडिट कार्डबाट गरिन्छ र हाम्रो भुक्तानी प्रदायक, ZEUS मार्फत प्रशोधन गरिन्छ, र सदस्यता प्रत्येक बिलिङ अवधिमा स्वचालित रूपमा नवीकरण हुन्छ। डिजिटल सेवाहरूको प्रकृतिका कारण, पहिले नै तिरिसकेको शुल्क सिद्धान्ततः फिर्ता गरिँदैन। तपाईंले My Page बाट जुनसुकै बेला अर्को स्वचालित नवीकरण रोक्न (रद्द गर्न) सक्नुहुन्छ, र रद्द गरेपछि पनि, तपाईंले पहिले नै तिरिसकेको अवधिको अन्त्यसम्म सेवा प्रयोग गर्न जारी राख्न सक्नुहुन्छ।',
+        body: 'साइन अप गरेको समयदेखि तपाईं ७ दिनसम्म सेवा निःशुल्क प्रयोग गर्न सक्नुहुन्छ; त्यसपछि निरन्तर प्रयोगको लागि मासिक सदस्यता आवश्यक हुन्छ। यदि तपाईंले लगातार १२ महिना सेवा प्रयोग गर्नुभयो भने, १३ औं महिना निःशुल्क हुन्छ। भुक्तानी क्रेडिट कार्डबाट गरिन्छ र हाम्रो भुक्तानी प्रदायक, ZEUS मार्फत प्रशोधन गरिन्छ, र सदस्यता प्रत्येक बिलिङ अवधिमा स्वचालित रूपमा नवीकरण हुन्छ। डिजिटल सेवाहरूको प्रकृतिका कारण, पहिले नै तिरिसकेको शुल्क सिद्धान्ततः फिर्ता गरिँदैन। तपाईंले My Page बाट जुनसुकै बेला अर्को स्वचालित नवीकरण रोक्न (रद्द गर्न) सक्नुहुन्छ, र रद्द गरेपछि पनि, तपाईंले पहिले नै तिरिसकेको अवधिको अन्त्यसम्म सेवा प्रयोग गर्न जारी राख्न सक्नुहुन्छ।',
       },
       {
         heading: 'प्रयोग सीमाहरू',
@@ -360,7 +360,7 @@ const CONTENT: Record<
       },
       {
         heading: 'Assinatura e Pagamento',
-        body: 'Você pode usar o serviço gratuitamente por 7 dias a partir do cadastro; o uso contínuo depois disso requer uma assinatura mensal ou anual. O pagamento é feito por cartão de crédito e processado por meio do nosso provedor de pagamento, ZEUS, e a assinatura é renovada automaticamente a cada período de cobrança. Devido à natureza dos serviços digitais, as taxas já pagas não são reembolsáveis em princípio. Você pode interromper a próxima renovação automática (cancelar) a qualquer momento em Minha Página, e mesmo após o cancelamento, você pode continuar usando o serviço até o final do período já pago.',
+        body: 'Você pode usar o serviço gratuitamente por 7 dias a partir do cadastro; o uso contínuo depois disso requer uma assinatura mensal. Se você usar o serviço por 12 meses consecutivos, o 13º mês será gratuito. O pagamento é feito por cartão de crédito e processado por meio do nosso provedor de pagamento, ZEUS, e a assinatura é renovada automaticamente a cada período de cobrança. Devido à natureza dos serviços digitais, as taxas já pagas não são reembolsáveis em princípio. Você pode interromper a próxima renovação automática (cancelar) a qualquer momento em Minha Página, e mesmo após o cancelamento, você pode continuar usando o serviço até o final do período já pago.',
       },
       {
         heading: 'Limites de Uso',
