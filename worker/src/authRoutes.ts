@@ -14,6 +14,7 @@ import { sendPasswordResetEmail } from './email';
 import { jsonResponse } from './http';
 
 const MIN_PASSWORD_LENGTH = 8;
+const AUTH_DAILY_ATTEMPT_LIMIT = 20;
 
 function normalizeEmail(email: unknown): string | null {
   if (typeof email !== 'string') return null;
@@ -21,11 +22,28 @@ function normalizeEmail(email: unknown): string | null {
   return trimmed.length > 0 ? trimmed : null;
 }
 
+// Separate KV prefix from the AI-cost rate limiter in index.ts (that one guards /analyze
+// spend) -- this one guards against credential-stuffing/brute-force on login and signup-spam.
+async function checkAndBumpAuthAttempts(env: Env, ip: string): Promise<boolean> {
+  const today = new Date().toISOString().slice(0, 10);
+  const key = `auth-attempt:${ip}:${today}`;
+  const countRaw = await env.RATE_LIMIT_KV.get(key);
+  const count = parseInt(countRaw ?? '0', 10);
+  if (count >= AUTH_DAILY_ATTEMPT_LIMIT) return false;
+  await env.RATE_LIMIT_KV.put(key, String(count + 1), { expirationTtl: 60 * 60 * 26 });
+  return true;
+}
+
 export async function handleSignup(
   request: Request,
   env: Env,
   corsHeaders: Record<string, string>,
 ): Promise<Response> {
+  const ip = request.headers.get('CF-Connecting-IP') ?? 'unknown';
+  if (!(await checkAndBumpAuthAttempts(env, ip))) {
+    return jsonResponse({ error: 'rate_limited' }, 429, corsHeaders);
+  }
+
   let body: { email?: unknown; password?: unknown };
   try {
     body = await request.json();
@@ -82,6 +100,11 @@ export async function handleLogin(
   env: Env,
   corsHeaders: Record<string, string>,
 ): Promise<Response> {
+  const ip = request.headers.get('CF-Connecting-IP') ?? 'unknown';
+  if (!(await checkAndBumpAuthAttempts(env, ip))) {
+    return jsonResponse({ error: 'rate_limited' }, 429, corsHeaders);
+  }
+
   let body: { email?: unknown; password?: unknown };
   try {
     body = await request.json();
