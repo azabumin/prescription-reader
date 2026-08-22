@@ -67,7 +67,7 @@ const ANALYSIS_SCHEMA = {
           purpose: {
             type: 'string',
             description:
-              "This medication's general purpose, briefly, but ONLY if you are highly confident it matches the exact drug/formula name identified above — never the purpose of a different, more familiar-sounding drug. If not highly confident, say the exact purpose should be confirmed with the pharmacist/doctor instead of guessing.",
+              "This medication's general purpose, briefly, but ONLY if you are highly confident it matches the exact drug/formula name identified above — never the purpose of a different, more familiar-sounding drug, and never a guessed therapeutic category either (a wrong category claim is exactly the same kind of harm as a wrong drug name). If not highly confident, say the exact purpose should be confirmed with the pharmacist/doctor instead of guessing.",
           },
           precaution: { type: 'string', description: 'Precautions or warnings, briefly.' },
         },
@@ -139,7 +139,11 @@ Common Korean pharmacy shorthand to read correctly:
 - 필요시 = PRN, as needed · 매식후/식후 = after meals · 식전 = before meals
 - 취침전 = before bed · 공복시 = on an empty stomach · 1일 1회/2회/3회 = once/twice/three-times daily
 
-1. Identify the medication name(s) shown (there may be more than one).
+1. Identify EVERY distinct medication name shown. A label listing 5 medication names must
+   produce exactly 5 entries in items — one per medication. Never merge two or more
+   medications into a single combined entry, even when their dose/timing instructions look
+   identical (e.g. "1 tablet after breakfast" for all of them is common and is not a reason
+   to collapse them together).
 2. For each medication:
    - State the dose per administration in plain language.
    - Classify its timing into the fixed time-slot set the schema defines (morning/noon/
@@ -149,19 +153,32 @@ Common Korean pharmacy shorthand to read correctly:
    - Put anything the fixed slots can't express (meal-relative timing, fasting, max PRN
      doses per day) into the timing detail field, in plain language.
    - State its general purpose and any precautions, in plain everyday language, not
-     technical medical jargon — but only state a purpose you are highly confident matches
-     this exact drug/formula (see the safety rule above); otherwise say it should be
-     confirmed with the pharmacist/doctor.
+     technical medical jargon. For common, well-established medications — most standard
+     blood pressure, cholesterol/triglyceride, diabetes, pain-relief, and antibiotic drugs
+     sold in Japan/Korea, including combination products, as long as you can identify the
+     active ingredient(s) with confidence — state the real purpose plainly and specifically.
+     Do not hedge into "confirm with your pharmacist" just because a brand name looks
+     unfamiliar or it's a combination product; that fallback is for names you genuinely
+     cannot resolve with confidence (illegible text, truly obscure or ambiguous formula
+     names — see the safety rule above), not routine medications you actually recognize. A
+     vague non-answer for a medication you know is not the safe choice, it is a missed
+     explanation — plainly stating what a medication is for is the entire point of this app.
+     But do not guess a therapeutic category either when you're unsure — a wrong "appears to
+     be a blood-pressure medication" is the same kind of harm as a wrong drug name. The line
+     is confidence, not effort: state it plainly when you actually know it, defer to the
+     pharmacist/doctor when you don't, and never fill the gap with a plausible-sounding guess.
 3. Write a brief overall note that this is not medical advice — just the label's own text
    restated in plain language — and that the reader should ask a pharmacist or doctor with
    any questions about taking the medication.
 4. If any part of the photo is blurry or illegible, say so rather than guessing at it.
 
-FINAL CHECK before answering: for each medication, re-read the name you are about to output
-and confirm it names the SAME substance as what is printed on the label — not a different,
-more familiar drug or Kampo formula. Then re-read every field and confirm it is written in
-${targetLanguageName}, not in the label's own language. Write your entire response in
-${targetLanguageName}, including every field. Do not mix in other languages.`;
+FINAL CHECK before answering: count the distinct medication names on the label and confirm
+items has exactly that many entries — if you merged any together, split them back out now.
+For each medication, re-read the name you are about to output and confirm it names the SAME
+substance as what is printed on the label — not a different, more familiar drug or Kampo
+formula. Then re-read every field and confirm it is written in ${targetLanguageName}, not in
+the label's own language. Write your entire response in ${targetLanguageName}, including every
+field. Do not mix in other languages.`;
 }
 
 export default {
@@ -278,7 +295,13 @@ async function callClaude(base64Image: string, mediaType: string, lang: Lang, ap
     },
     body: JSON.stringify({
       model: MODEL,
-      max_tokens: 1536,
+      // A real prescription can list 4-5+ medications, each needing a real purpose/precaution
+      // explanation, not just a dosage line -- 1536 was tight enough that a multi-medication
+      // label in a token-heavier target language could push the model to compress multiple
+      // medications into fewer items or shorten "purpose" into a vague fallback just to fit
+      // the budget. Same failure class already hit once in the sibling food-calorie-scanner
+      // app's dishCandidates feature -- raise generously rather than re-debug this per report.
+      max_tokens: 3072,
       temperature: 0,
       output_config: { format: { type: 'json_schema', schema: ANALYSIS_SCHEMA } },
       messages: [
