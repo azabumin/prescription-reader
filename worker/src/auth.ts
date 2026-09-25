@@ -102,8 +102,12 @@ export type UserRow = {
   password_salt: string;
   created_at: string;
   trial_ends_at: string;
-  subscription_status: 'trial' | 'active' | 'expired' | 'canceled';
+  // 'registered' = a card was authorized via ZEUS LinkPoint (money=0) but no charge has
+  // happened yet -- the first real charge is scheduled separately, see payments.ts.
+  subscription_status: 'trial' | 'active' | 'expired' | 'canceled' | 'registered';
   subscription_expires_at: string | null;
+  next_charge_due_at: string | null;
+  canceled_at: string | null;
 };
 
 export type SessionUser = {
@@ -112,16 +116,32 @@ export type SessionUser = {
   trialEndsAt: string;
   subscriptionStatus: UserRow['subscription_status'];
   subscriptionExpiresAt: string | null;
+  nextChargeDueAt: string | null;
+  // The customer stopped the next renewal from My Page; access lasts until subscriptionExpiresAt.
+  cancelAtPeriodEnd: boolean;
 };
 
-function toSessionUser(user: UserRow): SessionUser {
-  return {
+// The site owner's own account (used to demo the app / verify it works) should never be
+// blocked by trial expiry or the ZEUS payment gate, which isn't wired up yet anyway.
+// This overrides the *response*, not the DB row -- nothing here looks like a real
+// ZEUS-billed subscription, it just always resolves as active for this one email.
+const ADMIN_EMAILS = new Set(['azabumin@gmail.com']);
+
+function applyAdminOverride(user: SessionUser): SessionUser {
+  if (!ADMIN_EMAILS.has(user.email.toLowerCase())) return user;
+  return { ...user, subscriptionStatus: 'active', subscriptionExpiresAt: null, cancelAtPeriodEnd: false };
+}
+
+export function toSessionUser(user: UserRow): SessionUser {
+  return applyAdminOverride({
     id: user.id,
     email: user.email,
     trialEndsAt: user.trial_ends_at,
     subscriptionStatus: user.subscription_status,
     subscriptionExpiresAt: user.subscription_expires_at,
-  };
+    nextChargeDueAt: user.next_charge_due_at ?? null,
+    cancelAtPeriodEnd: !!user.canceled_at,
+  });
 }
 
 export function extractBearerToken(request: Request): string | null {

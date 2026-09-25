@@ -6,6 +6,7 @@ import {
   isValidEmail,
   resetTokenExpiry,
   resolveSessionUser,
+  toSessionUser,
   trialEndsAt,
   verifyPassword,
   type UserRow,
@@ -70,7 +71,7 @@ export async function handleSignup(
   const inserted = await env.DB.prepare(
     `INSERT INTO users (email, password_hash, password_salt, created_at, trial_ends_at, subscription_status)
      VALUES (?, ?, ?, ?, ?, 'trial')
-     RETURNING id, email, created_at, trial_ends_at, subscription_status, subscription_expires_at`,
+     RETURNING id, email, created_at, trial_ends_at, subscription_status, subscription_expires_at, next_charge_due_at, canceled_at`,
   )
     .bind(email, hash, salt, now.toISOString(), trialEndsAt(now))
     .first<UserRow>();
@@ -80,19 +81,8 @@ export async function handleSignup(
   }
 
   const token = await createSession(env.DB, inserted.id);
-  return jsonResponse(
-    {
-      token,
-      user: {
-        email: inserted.email,
-        trialEndsAt: inserted.trial_ends_at,
-        subscriptionStatus: inserted.subscription_status,
-        subscriptionExpiresAt: inserted.subscription_expires_at,
-      },
-    },
-    201,
-    corsHeaders,
-  );
+  const { id: _id, ...user } = toSessionUser(inserted);
+  return jsonResponse({ token, user }, 201, corsHeaders);
 }
 
 export async function handleLogin(
@@ -127,19 +117,8 @@ export async function handleLogin(
   }
 
   const token = await createSession(env.DB, user.id);
-  return jsonResponse(
-    {
-      token,
-      user: {
-        email: user.email,
-        trialEndsAt: user.trial_ends_at,
-        subscriptionStatus: user.subscription_status,
-        subscriptionExpiresAt: user.subscription_expires_at,
-      },
-    },
-    200,
-    corsHeaders,
-  );
+  const { id: _id, ...sessionUser } = toSessionUser(user);
+  return jsonResponse({ token, user: sessionUser }, 200, corsHeaders);
 }
 
 export async function handleLogout(

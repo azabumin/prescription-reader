@@ -1,6 +1,8 @@
+import { handleCancelSubscription, handleResumeSubscription } from './account';
 import { canAnalyze, resolveSessionUser } from './auth';
 import { handleLogin, handleLogout, handleMe, handleRequestPasswordReset, handleResetPassword, handleSignup } from './authRoutes';
 import { jsonResponse } from './http';
+import { handleCheckoutStart, handleZeusWebhook } from './payments';
 
 declare global {
   interface Env {
@@ -9,6 +11,9 @@ declare global {
     PASSWORD_PEPPER: string;
     // Optional -- unset until the Resend account + DNS verification is done. See email.ts.
     RESEND_API_KEY?: string;
+    // ZEUS-issued IP code (clientip) for LinkPoint. Not set yet -- ZEUS issues it once the
+    // merchant screening fully completes. Run: wrangler secret put ZEUS_IP_CODE
+    ZEUS_IP_CODE: string;
   }
 }
 
@@ -105,6 +110,24 @@ about what they are taking. To prevent this:
   one. If you cannot translate a Kampo name with full confidence, keep its original Japanese
   reading (romanized) plus "(a traditional Japanese herbal formula)" rather than describing a
   different formula's effects.
+- The same character-by-character discipline applies to manufacturer/brand suffixes in 「 」
+  brackets (e.g. サワイ, トーワ, アメル) and to plain katakana chemical names — these are easy
+  to silently "autocorrect" into a different, more familiar word. This has also happened in
+  real use: サワイ was output as サイ, ダパグリフロジン was output as ダバガトリフロドン,
+  ブロチゾラム was output as プロチゾラム (a single voiced/semi-voiced mark — ブ vs プ —
+  changes which drug it is), and a label's own ボルズィ was output as ボルタレン, an entirely
+  different, unrelated pain medication that just happens to be far more famous. Recognizing a
+  famous drug name is not evidence that it is the one printed on this label — re-read the actual
+  characters printed, do not let a familiar name you recognize override them.
+- This same discipline applies to the dosing schedule printed in the 用法 (usage) box, not just
+  the drug name — a specific clock time (e.g. 20時 = 8:00 PM) or day-interval (e.g. 2日に1枚 =
+  one patch every 2 days; 1-20日貼付 = apply on days 1 through 20) must be transcribed exactly,
+  never normalized to a more common-sounding pattern. This has also happened in real use: a
+  label reading "1日1回20時に内服" (once daily, at 8 PM) was output as "1日3回毎食後" (three
+  times daily, after every meal) — a different, more generic-sounding schedule that is simply
+  not what was printed. Likewise "1-20日貼付" (日 = day) was misread as "1-20回貼付" (回 =
+  times/count). Before filling in timeSlots/timingDetail, re-read the exact digits and unit
+  characters (時/日/回) printed in the usage box character by character.
 - Before writing the "purpose" field, silently double-check: does this purpose actually match
   the specific drug/formula name you just identified — not a similarly-named or more famous
   drug? If you are not highly confident about a specific drug's real-world purpose, say so
@@ -176,9 +199,12 @@ FINAL CHECK before answering: count the distinct medication names on the label a
 items has exactly that many entries — if you merged any together, split them back out now.
 For each medication, re-read the name you are about to output and confirm it names the SAME
 substance as what is printed on the label — not a different, more familiar drug or Kampo
-formula. Then re-read every field and confirm it is written in ${targetLanguageName}, not in
-the label's own language. Write your entire response in ${targetLanguageName}, including every
-field. Do not mix in other languages.`;
+formula — and that every character/mark (including manufacturer suffixes and voiced/semi-
+voiced marks) matches what is actually printed. Separately, re-read the 用法 usage box's exact
+digits and unit characters (時/日/回) and confirm timeSlots/timingDetail match that literal
+schedule, not a more common-sounding one. Then re-read every field and confirm it is written in
+${targetLanguageName}, not in the label's own language. Write your entire response in
+${targetLanguageName}, including every field. Do not mix in other languages.`;
 }
 
 export default {
@@ -199,6 +225,21 @@ export default {
     if (route === 'GET /me') return handleMe(request, env, corsHeaders);
     if (route === 'POST /request-password-reset') return handleRequestPasswordReset(request, env, corsHeaders);
     if (route === 'POST /reset-password') return handleResetPassword(request, env, corsHeaders);
+
+    if (route === 'GET /payments/webhook') return handleZeusWebhook(request, env);
+    if (route === 'POST /payments/checkout') {
+      const sessionUser = await resolveSessionUser(request, env.DB);
+      if (!sessionUser) return jsonResponse({ error: 'unauthorized' }, 401, corsHeaders);
+      return handleCheckoutStart(request, env, corsHeaders, sessionUser.id);
+    }
+
+    if (route === 'POST /account/cancel' || route === 'POST /account/resume') {
+      const sessionUser = await resolveSessionUser(request, env.DB);
+      if (!sessionUser) return jsonResponse({ error: 'unauthorized' }, 401, corsHeaders);
+      return route === 'POST /account/cancel'
+        ? handleCancelSubscription(env, corsHeaders, sessionUser.id)
+        : handleResumeSubscription(env, corsHeaders, sessionUser.id);
+    }
 
     if (route !== 'POST /analyze') {
       return jsonResponse({ error: 'not_found' }, 404, corsHeaders);
@@ -302,7 +343,6 @@ async function callClaude(base64Image: string, mediaType: string, lang: Lang, ap
       // the budget. Same failure class already hit once in the sibling food-calorie-scanner
       // app's dishCandidates feature -- raise generously rather than re-debug this per report.
       max_tokens: 3072,
-      temperature: 0,
       output_config: { format: { type: 'json_schema', schema: ANALYSIS_SCHEMA } },
       messages: [
         {

@@ -15,7 +15,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
     title: '特定商取引法に基づく表記',
     updated: '最終更新日: 2026年8月',
     rows: [
-      { label: '販売業者', value: '株式会社PRIAMOS' },
+      { label: '販売業者', value: '株式会社Ｐｒｉａｍｏｓ' },
       { label: '運営統括責任者', value: '代表取締役　閔鐘基' },
       { label: '所在地', value: '東京都江戸川区西葛西8-15 新田住宅6-703' },
       { label: '電話番号', value: '080-3155-5076' },
@@ -31,7 +31,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
       { label: 'お支払い方法', value: 'クレジットカード決済（ZEUS決済代行）' },
       {
         label: 'お支払い時期',
-        value: 'ご登録時に決済され、以降は毎月自動更新（自動課金）となります。',
+        value: '無料体験期間（7日間）の終了後、確認画面でお支払いのお手続きを完了した時点で決済され、以降は毎月自動更新（自動課金）となります。無料体験のみでご利用を終了される場合、お手続きや料金は不要です。',
       },
       { label: 'サービス提供時期', value: 'お支払い完了後、直ちにご利用いただけます。' },
       {
@@ -46,7 +46,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
     title: '특정상거래법에 따른 표기',
     updated: '최종 수정일: 2026년 8월',
     rows: [
-      { label: '판매업자', value: '株式会社PRIAMOS (주식회사 PRIAMOS)' },
+      { label: '판매업자', value: '株式会社Ｐｒｉａｍｏｓ (주식회사 PRIAMOS)' },
       { label: '운영총괄책임자', value: '대표이사 민종기 (閔鐘基)' },
       { label: '소재지', value: '東京都江戸川区西葛西8-15 新田住宅6-703 (일본 도쿄도 에도가와구 니시카사이)' },
       { label: '전화번호', value: '080-3155-5076' },
@@ -62,7 +62,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
       { label: '결제 방법', value: '신용카드 결제 (ZEUS 결제대행)' },
       {
         label: '결제 시기',
-        value: '등록 시 결제되며, 이후 매월 자동으로 갱신(자동 결제)됩니다.',
+        value: '7일 무료체험 종료 후, 확인 화면에서 결제 절차를 완료한 시점에 결제되며, 이후 매월 자동으로 갱신(자동 결제)됩니다. 무료체험만 이용하고 종료하시는 경우 별도의 절차나 요금은 필요하지 않습니다.',
       },
       { label: '서비스 제공 시기', value: '결제 완료 후 즉시 이용하실 수 있습니다.' },
       {
@@ -78,7 +78,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
     title: 'Notice Under Japan’s Act on Specified Commercial Transactions',
     updated: 'Last updated: August 2026',
     rows: [
-      { label: 'Business Name', value: 'PRIAMOS Co., Ltd. (株式会社 PRIAMOS)' },
+      { label: 'Business Name', value: 'PRIAMOS Co., Ltd. (株式会社Ｐｒｉａｍｏｓ)' },
       { label: 'Responsible Officer', value: 'Jong-gi Min, Representative Director (閔鐘基)' },
       { label: 'Address', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: 'Phone Number', value: '080-3155-5076' },
@@ -94,7 +94,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
       { label: 'Payment Method', value: 'Credit card (processed via ZEUS)' },
       {
         label: 'Payment Timing',
-        value: 'Charged at the time of registration; thereafter renews automatically every month (auto-billing).',
+        value: 'After the 7-day free trial ends, you are charged when you complete payment on the confirmation screen; thereafter renews automatically every month (auto-billing). If you only use the free trial, no steps or fees are required.',
       },
       { label: 'Service Delivery Timing', value: 'The service is available immediately after payment is completed.' },
       {
@@ -110,7 +110,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
     title: 'Thông Báo Theo Luật Giao Dịch Thương Mại Đặc Định Của Nhật Bản',
     updated: 'Cập nhật lần cuối: Tháng 8 năm 2026',
     rows: [
-      { label: 'Đơn Vị Kinh Doanh', value: 'PRIAMOS Co., Ltd. (株式会社PRIAMOS)' },
+      { label: 'Đơn Vị Kinh Doanh', value: 'PRIAMOS Co., Ltd. (株式会社Ｐｒｉａｍｏｓ)' },
       { label: 'Người Chịu Trách Nhiệm', value: 'Đại diện: Jong-gi Min (閔鐘基)' },
       { label: 'Địa Chỉ', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: 'Số Điện Thoại', value: '080-3155-5076' },
@@ -126,7 +126,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
       { label: 'Phương Thức Thanh Toán', value: 'Thanh toán bằng thẻ tín dụng (xử lý qua ZEUS)' },
       {
         label: 'Thời Điểm Thanh Toán',
-        value: 'Được tính phí tại thời điểm đăng ký; sau đó tự động gia hạn hàng tháng (tự động thanh toán).',
+        value: 'Sau khi kết thúc 7 ngày dùng thử miễn phí, bạn bị tính phí vào thời điểm hoàn tất thanh toán trên màn hình xác nhận; sau đó tự động gia hạn hàng tháng (tự động thanh toán). Nếu chỉ dùng thử miễn phí rồi dừng, bạn không cần làm thủ tục và không mất phí.',
       },
       { label: 'Thời Điểm Cung Cấp Dịch Vụ', value: 'Dịch vụ khả dụng ngay sau khi hoàn tất thanh toán.' },
       {
@@ -142,7 +142,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
     title: '根据日本《特定商取引法》的表示',
     updated: '最后更新:2026年8月',
     rows: [
-      { label: '经营者名称', value: 'PRIAMOS股份有限公司(株式会社PRIAMOS)' },
+      { label: '经营者名称', value: 'PRIAMOS股份有限公司(株式会社Ｐｒｉａｍｏｓ)' },
       { label: '运营负责人', value: '代表董事 闵钟基(閔鐘基)' },
       { label: '所在地', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: '电话号码', value: '080-3155-5076' },
@@ -155,7 +155,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
       { label: '支付方式', value: '信用卡支付(通过ZEUS代收)' },
       {
         label: '支付时间',
-        value: '注册时收费;此后每月自动续费(自动扣款)。',
+        value: '7天免费试用结束后,在确认页面完成付款时收费;此后每月自动续费(自动扣款)。若仅使用免费试用后结束,无需任何手续,也不产生费用。',
       },
       { label: '服务提供时间', value: '支付完成后即可立即使用服务。' },
       {
@@ -171,7 +171,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
     title: 'Pemberitahuan Berdasarkan Undang-Undang Transaksi Komersial Tertentu Jepang',
     updated: 'Terakhir diperbarui: Agustus 2026',
     rows: [
-      { label: 'Nama Bisnis', value: 'PRIAMOS Co., Ltd. (株式会社PRIAMOS)' },
+      { label: 'Nama Bisnis', value: 'PRIAMOS Co., Ltd. (株式会社Ｐｒｉａｍｏｓ)' },
       { label: 'Penanggung Jawab', value: 'Direktur Perwakilan: Jong-gi Min (閔鐘基)' },
       { label: 'Alamat', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: 'Nomor Telepon', value: '080-3155-5076' },
@@ -187,7 +187,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
       { label: 'Metode Pembayaran', value: 'Kartu kredit (diproses melalui ZEUS)' },
       {
         label: 'Waktu Pembayaran',
-        value: 'Ditagih pada saat pendaftaran; selanjutnya diperbarui secara otomatis setiap bulan (penagihan otomatis).',
+        value: 'Setelah masa uji coba gratis 7 hari berakhir, Anda ditagih saat menyelesaikan pembayaran di layar konfirmasi; selanjutnya diperbarui secara otomatis setiap bulan (penagihan otomatis). Jika hanya menggunakan uji coba gratis, tidak diperlukan prosedur apa pun dan tidak ada biaya.',
       },
       { label: 'Waktu Penyediaan Layanan', value: 'Layanan tersedia segera setelah pembayaran selesai.' },
       {
@@ -203,7 +203,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
     title: 'Paunawa Ayon sa Batas ng Japan sa mga Tinukoy na Transaksyong Komersyal',
     updated: 'Huling na-update: Agosto 2026',
     rows: [
-      { label: 'Pangalan ng Negosyo', value: 'PRIAMOS Co., Ltd. (株式会社PRIAMOS)' },
+      { label: 'Pangalan ng Negosyo', value: 'PRIAMOS Co., Ltd. (株式会社Ｐｒｉａｍｏｓ)' },
       { label: 'Responsableng Opisyal', value: 'Representative Director: Jong-gi Min (閔鐘基)' },
       { label: 'Address', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: 'Numero ng Telepono', value: '080-3155-5076' },
@@ -219,7 +219,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
       { label: 'Paraan ng Pagbabayad', value: 'Credit card (pinoproseso sa pamamagitan ng ZEUS)' },
       {
         label: 'Oras ng Pagbabayad',
-        value: 'Sisingilin sa oras ng pagpaparehistro; pagkatapos ay awtomatikong nag-re-renew bawat buwan (auto-billing).',
+        value: 'Pagkatapos ng 7-araw na libreng subok, sisingilin ka kapag nakumpleto mo ang pagbabayad sa screen ng kumpirmasyon; pagkatapos ay awtomatikong nag-re-renew bawat buwan (auto-billing). Kung libreng subok lang ang gagamitin mo, walang kailangang gawin at walang bayad.',
       },
       { label: 'Oras ng Paghahatid ng Serbisyo', value: 'Available agad ang serbisyo pagkatapos makumpleto ang bayad.' },
       {
@@ -235,7 +235,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
     title: 'ประกาศตามพระราชบัญญัติธุรกรรมพาณิชย์เฉพาะของญี่ปุ่น',
     updated: 'อัปเดตล่าสุด: สิงหาคม 2026',
     rows: [
-      { label: 'ชื่อผู้ประกอบการ', value: 'PRIAMOS Co., Ltd. (株式会社PRIAMOS)' },
+      { label: 'ชื่อผู้ประกอบการ', value: 'PRIAMOS Co., Ltd. (株式会社Ｐｒｉａｍｏｓ)' },
       { label: 'ผู้รับผิดชอบดำเนินงาน', value: 'กรรมการผู้แทน: Jong-gi Min (閔鐘基)' },
       { label: 'ที่อยู่', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: 'หมายเลขโทรศัพท์', value: '080-3155-5076' },
@@ -251,7 +251,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
       { label: 'วิธีการชำระเงิน', value: 'บัตรเครดิต (ดำเนินการผ่าน ZEUS)' },
       {
         label: 'กำหนดเวลาชำระเงิน',
-        value: 'เรียกเก็บเงินเมื่อลงทะเบียน จากนั้นจะต่ออายุอัตโนมัติทุกเดือน (เรียกเก็บเงินอัตโนมัติ)',
+        value: 'หลังจากช่วงทดลองใช้ฟรี 7 วันสิ้นสุดลง จะเรียกเก็บเงินเมื่อคุณชำระเงินเสร็จสิ้นในหน้าจอยืนยัน จากนั้นจะต่ออายุอัตโนมัติทุกเดือน (เรียกเก็บเงินอัตโนมัติ) หากใช้เพียงช่วงทดลองใช้ฟรีแล้วเลิกใช้ ไม่ต้องทำขั้นตอนใด ๆ และไม่มีค่าใช้จ่าย',
       },
       { label: 'กำหนดเวลาให้บริการ', value: 'บริการพร้อมใช้งานทันทีหลังจากชำระเงินเสร็จสมบูรณ์' },
       {
@@ -267,7 +267,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
     title: 'ဂျပန်နိုင်ငံ၏ သတ်မှတ်ကုန်သွယ်မှုဆိုင်ရာ အက်ဥပဒေအရ အသိပေးချက်',
     updated: 'နောက်ဆုံးမွမ်းမံသည့်ရက်: ၂၀၂၆ ခုနှစ် သြဂုတ်လ',
     rows: [
-      { label: 'စီးပွားရေးလုပ်ငန်း အမည်', value: 'PRIAMOS Co., Ltd. (株式会社PRIAMOS)' },
+      { label: 'စီးပွားရေးလုပ်ငန်း အမည်', value: 'PRIAMOS Co., Ltd. (株式会社Ｐｒｉａｍｏｓ)' },
       { label: 'တာဝန်ခံ အရာရှိ', value: 'Representative Director: Jong-gi Min (閔鐘基)' },
       { label: 'လိပ်စာ', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: 'ဖုန်းနံပါတ်', value: '080-3155-5076' },
@@ -283,7 +283,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
       { label: 'ငွေပေးချေမှု နည်းလမ်း', value: 'အကြွေးဝယ်ကတ် (ZEUS မှတစ်ဆင့် လုပ်ဆောင်သည်)' },
       {
         label: 'ငွေပေးချေမှု အချိန်',
-        value: 'မှတ်ပုံတင်ချိန်တွင် ငွေကောက်ခံပြီး၊ ထို့နောက် လစဉ် အလိုအလျောက် သက်တမ်းတိုးမည် (auto-billing)။',
+        value: '၇ ရက် အခမဲ့စမ်းသပ်ကာလ ပြီးဆုံးပြီးနောက် အတည်ပြုစာမျက်နှာတွင် ငွေပေးချေမှု ပြီးမြောက်သည့်အချိန်၌ ငွေကောက်ခံပြီး၊ ထို့နောက် လစဉ် အလိုအလျောက် သက်တမ်းတိုးမည် (auto-billing)။ အခမဲ့စမ်းသပ်ကာလကိုသာ အသုံးပြုပြီး ရပ်လိုပါက ဆောင်ရွက်ရန်မလိုဘဲ ကျသင့်ငွေလည်း မရှိပါ။',
       },
       { label: 'ဝန်ဆောင်မှု ပေးအပ်မည့် အချိန်', value: 'ငွေပေးချေမှု ပြီးဆုံးပြီးနောက် ဝန်ဆောင်မှုကို ချက်ချင်း အသုံးပြုနိုင်ပါသည်။' },
       {
@@ -299,7 +299,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
     title: 'जापानको विशेष वाणिज्य कारोबार ऐन अन्तर्गत सूचना',
     updated: 'अन्तिम अद्यावधिक: अगस्ट २०२६',
     rows: [
-      { label: 'व्यवसायको नाम', value: 'PRIAMOS Co., Ltd. (株式会社PRIAMOS)' },
+      { label: 'व्यवसायको नाम', value: 'PRIAMOS Co., Ltd. (株式会社Ｐｒｉａｍｏｓ)' },
       { label: 'जिम्मेवार अधिकारी', value: 'प्रतिनिधि निर्देशक: Jong-gi Min (閔鐘基)' },
       { label: 'ठेगाना', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: 'फोन नम्बर', value: '080-3155-5076' },
@@ -315,7 +315,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
       { label: 'भुक्तानी विधि', value: 'क्रेडिट कार्ड (ZEUS मार्फत प्रशोधन गरिन्छ)' },
       {
         label: 'भुक्तानी समय',
-        value: 'दर्ता गर्दा शुल्क लिइन्छ; त्यसपछि हरेक महिना स्वचालित रूपमा नवीकरण हुन्छ (स्वचालित बिलिङ)।',
+        value: '७ दिने निःशुल्क परीक्षण सकिएपछि, पुष्टि स्क्रिनमा भुक्तानी पूरा गर्दा शुल्क लिइन्छ; त्यसपछि हरेक महिना स्वचालित रूपमा नवीकरण हुन्छ (स्वचालित बिलिङ)। निःशुल्क परीक्षण मात्र प्रयोग गरेर रोक्नुभयो भने कुनै प्रक्रिया वा शुल्क आवश्यक पर्दैन।',
       },
       { label: 'सेवा प्रदान गर्ने समय', value: 'भुक्तानी पूरा भएपछि सेवा तुरुन्तै उपलब्ध हुन्छ।' },
       {
@@ -331,7 +331,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
     title: 'Aviso Nos Termos da Lei de Transações Comerciais Específicas do Japão',
     updated: 'Última atualização: agosto de 2026',
     rows: [
-      { label: 'Nome da Empresa', value: 'PRIAMOS Co., Ltd. (株式会社PRIAMOS)' },
+      { label: 'Nome da Empresa', value: 'PRIAMOS Co., Ltd. (株式会社Ｐｒｉａｍｏｓ)' },
       { label: 'Responsável', value: 'Diretor Representante: Jong-gi Min (閔鐘基)' },
       { label: 'Endereço', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
       { label: 'Número de Telefone', value: '080-3155-5076' },
@@ -347,7 +347,7 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
       { label: 'Método de Pagamento', value: 'Cartão de crédito (processado via ZEUS)' },
       {
         label: 'Prazo de Pagamento',
-        value: 'Cobrado no momento do registro; depois renova automaticamente todo mês (cobrança automática).',
+        value: 'Após o fim do teste gratuito de 7 dias, a cobrança ocorre quando você conclui o pagamento na tela de confirmação; depois renova automaticamente todo mês (cobrança automática). Se você usar apenas o teste gratuito, não é necessário nenhum procedimento e não há cobrança.',
       },
       { label: 'Prazo de Fornecimento do Serviço', value: 'O serviço fica disponível imediatamente após a conclusão do pagamento.' },
       {

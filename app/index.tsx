@@ -122,10 +122,17 @@ export default function HomeScreen() {
     setErrorMsg(null);
     setResult(null);
     try {
+      // Claude's vision encoder processes images up to ~1568px on the long edge without
+      // further benefit -- 1568px is already the ceiling, so a blurry/low-quality source
+      // photo (weak phone camera, poor lighting, camera shake) can't be fixed by resizing
+      // bigger. What we *can* control is not throwing away detail ourselves: compress a
+      // little lighter (0.95) so fine kanji/katakana edges don't pick up extra JPEG
+      // artifacts, and nudge the user toward a sharper source photo (see photoTip in the
+      // capture screen) since that's the only lever left against weak camera hardware.
       const manipulated = await ImageManipulator.manipulateAsync(
         uri,
-        [{ resize: { width: 1200 } }],
-        { compress: 0.75, format: ImageManipulator.SaveFormat.JPEG, base64: true }
+        [{ resize: { width: 1568 } }],
+        { compress: 0.95, format: ImageManipulator.SaveFormat.JPEG, base64: true }
       );
       if (!manipulated.base64) {
         throw new Error('no base64 output');
@@ -210,12 +217,21 @@ export default function HomeScreen() {
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.topRow}>
         {auth ? (
-          <TouchableOpacity onPress={handleLogout} accessibilityRole="button">
-            <Text style={styles.logoutText}>
+          <View style={styles.accountBlock}>
+            <Text style={styles.logoutText} numberOfLines={1}>
               {t.authLoggedInPrefix}
-              {auth.user.email} · {t.authLogoutButton}
+              {auth.user.email}
             </Text>
-          </TouchableOpacity>
+            <View style={styles.accountLinks}>
+              <Link href="/account" style={styles.accountLink}>
+                {t.accountTitle}
+              </Link>
+              <Text style={styles.logoutText}>·</Text>
+              <TouchableOpacity onPress={handleLogout} accessibilityRole="button">
+                <Text style={styles.accountLink}>{t.authLogoutButton}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         ) : (
           <View />
         )}
@@ -292,6 +308,9 @@ export default function HomeScreen() {
         <View style={styles.pickCard}>
           <Text style={styles.medicationName}>{t.authTrialExpiredTitle}</Text>
           <Text style={styles.helperText}>{t.authTrialExpiredBody}</Text>
+          <TouchableOpacity style={styles.primaryButton} onPress={() => router.push('/subscribe')}>
+            <Text style={styles.primaryButtonText}>{t.authSubscribeButton}</Text>
+          </TouchableOpacity>
         </View>
       )}
 
@@ -302,6 +321,7 @@ export default function HomeScreen() {
               {t.authTrialDaysLeftTemplate.replace('{days}', String(trialDaysRemaining(auth.user)))}
             </Text>
           )}
+          <Text style={styles.photoTip}>{t.photoTip}</Text>
           <TouchableOpacity style={styles.primaryButton} onPress={() => handlePick('camera')}>
             <Text style={styles.primaryButtonText}>{t.takePhoto}</Text>
           </TouchableOpacity>
@@ -451,6 +471,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: SPACING.sm,
   },
+  accountBlock: {
+    flexShrink: 1,
+    gap: 2,
+  },
+  accountLinks: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+  },
+  accountLink: {
+    color: COLORS.accent,
+    fontWeight: '700',
+    fontSize: FONT.small,
+    textDecorationLine: 'underline',
+  },
   logoutText: {
     color: COLORS.textMuted,
     fontSize: FONT.small,
@@ -580,6 +615,12 @@ const styles = StyleSheet.create({
     fontSize: FONT.small,
     color: COLORS.textMuted,
     marginTop: SPACING.sm,
+    lineHeight: 19,
+  },
+  photoTip: {
+    fontSize: FONT.small,
+    color: COLORS.textMuted,
+    marginBottom: SPACING.sm,
     lineHeight: 19,
   },
   errorText: {

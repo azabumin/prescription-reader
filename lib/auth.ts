@@ -9,8 +9,14 @@ const USER_KEY = 'prescription-reader:authUser';
 export type AuthUser = {
   email: string;
   trialEndsAt: string;
-  subscriptionStatus: 'trial' | 'active' | 'expired' | 'canceled';
+  // 'registered' = a card was authorized via ZEUS LinkPoint (money=0) but no charge has
+  // happened yet -- the first real charge is scheduled separately, see worker/src/payments.ts.
+  subscriptionStatus: 'trial' | 'active' | 'expired' | 'canceled' | 'registered';
   subscriptionExpiresAt: string | null;
+  // Optional: a session cached before these existed lacks them until the next /me refresh.
+  nextChargeDueAt?: string | null;
+  // The customer stopped the next renewal from My Page; access lasts until the paid period ends.
+  cancelAtPeriodEnd?: boolean;
 };
 
 export type AuthErrorCode =
@@ -21,6 +27,7 @@ export type AuthErrorCode =
   | 'invalid_credentials'
   | 'invalid_or_expired_token'
   | 'unauthorized'
+  | 'not_subscribed'
   | 'server';
 
 export class AuthError extends Error {
@@ -40,6 +47,7 @@ async function parseErrorCode(response: Response): Promise<AuthErrorCode> {
       'invalid_credentials',
       'invalid_or_expired_token',
       'unauthorized',
+      'not_subscribed',
     ];
     if (body.error && (known as string[]).includes(body.error)) return body.error as AuthErrorCode;
   } catch {
@@ -91,6 +99,15 @@ export async function fetchMe(token: string): Promise<AuthUser> {
   return data.user;
 }
 
+async function accountAction(path: '/account/cancel' | '/account/resume', token: string): Promise<AuthUser> {
+  const response = await postJson(path, {}, token);
+  if (!response.ok) throw new AuthError(await parseErrorCode(response), response.status);
+  return ((await response.json()) as { user: AuthUser }).user;
+}
+
+export const cancelSubscription = (token: string) => accountAction('/account/cancel', token);
+export const resumeSubscription = (token: string) => accountAction('/account/resume', token);
+
 export async function requestPasswordReset(email: string, lang: Lang): Promise<void> {
   const response = await postJson('/request-password-reset', { email, lang });
   if (!response.ok) throw new AuthError(await parseErrorCode(response), response.status);
@@ -126,6 +143,19 @@ export function isTrialOrSubscriptionActive(user: AuthUser, now: Date = new Date
     return new Date(user.subscriptionExpiresAt).getTime() > now.getTime();
   }
   return false;
+}
+
+export type AccountState = 'trial' | 'active' | 'canceled' | 'inactive';
+
+// What My Page should show: paid up (renewing or cancellation pending), still in the free
+// trial, or locked out (trial over / paid period lapsed).
+export function accountState(user: AuthUser, now: Date = new Date()): AccountState {
+  const paid =
+    user.subscriptionStatus === 'active' &&
+    (!user.subscriptionExpiresAt || new Date(user.subscriptionExpiresAt).getTime() > now.getTime());
+  if (paid) return user.cancelAtPeriodEnd ? 'canceled' : 'active';
+  if (new Date(user.trialEndsAt).getTime() > now.getTime()) return 'trial';
+  return 'inactive';
 }
 
 export function trialDaysRemaining(user: AuthUser, now: Date = new Date()): number {

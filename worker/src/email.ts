@@ -81,13 +81,68 @@ function resolveTemplateLang(lang: unknown): Lang {
   return typeof lang === 'string' && lang in TEMPLATES ? (lang as Lang) : 'en';
 }
 
-function textToHtml(text: string, url: string): string {
+function plainTextToHtml(text: string): string {
   const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const linked = escaped.replace(url, `<a href="${url}">${url}</a>`);
-  return linked
+  return escaped
     .split('\n\n')
     .map((paragraph) => `<p>${paragraph.replace(/\n/g, '<br/>')}</p>`)
     .join('\n');
+}
+
+function textToHtml(text: string, url: string): string {
+  const linked = plainTextToHtml(text).replace(url, `<a href="${url}">${url}</a>`);
+  return linked;
+}
+
+const PAYMENT_FAILED_FROM = 'RxHelper <noreply@rxhelper.jp>';
+const PAYMENT_FAILED_SUBJECT = '【重要】お支払いが完了しませんでした / Payment Failed';
+
+// Not localized per-user (we don't store a server-side language preference, unlike the
+// password-reset email above which gets `lang` straight from the live request) -- bilingual
+// JA/EN covers the large majority of this app's users well enough for a safety-net notice.
+function paymentFailedBody(): string {
+  return (
+    '（日本語）\n' +
+    'いつもご利用いただきありがとうございます。\n' +
+    'ご登録のクレジットカードでのお支払い処理が完了しませんでした。\n' +
+    'カードの有効期限切れや利用限度額などが原因の場合がございます。\n' +
+    'お手数ですが、アプリからカード情報をご確認・更新ください。\n' +
+    '一定期間お支払いが確認できない場合、ご利用を停止させていただきます。\n\n' +
+    '(English)\n' +
+    'Thank you for using our service.\n' +
+    "We were unable to process your payment with the credit card on file.\n" +
+    'This can happen if the card has expired or reached its limit.\n' +
+    'Please check and update your card details in the app.\n' +
+    'If payment cannot be confirmed within the grace period, your access will be paused.'
+  );
+}
+
+export async function sendPaymentFailedEmail(email: string, resendApiKey: string | undefined): Promise<void> {
+  const text = paymentFailedBody();
+  if (!resendApiKey) {
+    console.log('payment_failed_email_not_configured', { email });
+    return;
+  }
+
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${resendApiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: PAYMENT_FAILED_FROM,
+      to: email,
+      subject: PAYMENT_FAILED_SUBJECT,
+      text,
+      html: plainTextToHtml(text),
+    }),
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(`Resend API ${response.status}: ${errText}`);
+  }
 }
 
 export async function sendPasswordResetEmail(
