@@ -13,6 +13,7 @@ import {
   loadCard,
   saveCard,
   type FreeTextField,
+  type HistoryMedication,
   type JpLevel,
   type PharmacyCard,
 } from '../lib/pharmacyCard';
@@ -34,7 +35,7 @@ import type { Lang } from '../types';
 // A memo the patient fills in their own language and shows on their phone at the pharmacy
 // counter, where it reads in Japanese. Everything stays on this device (no server calls).
 
-function Chip({ label, selected, onPress, radio }: { label: string; selected: boolean; onPress: () => void; radio?: boolean }) {
+function Chip({ label, tag, selected, onPress, radio }: { label: string; tag?: string; selected: boolean; onPress: () => void; radio?: boolean }) {
   return (
     <TouchableOpacity
       accessibilityRole={radio ? 'radio' : 'checkbox'}
@@ -42,7 +43,10 @@ function Chip({ label, selected, onPress, radio }: { label: string; selected: bo
       style={[styles.chip, selected && styles.chipOn]}
       onPress={onPress}
     >
-      <Text style={[styles.chipText, selected && styles.chipTextOn]}>{label}</Text>
+      <Text style={[styles.chipText, selected && styles.chipTextOn]}>
+        {label}
+        {!!tag && <Text style={[styles.chipTag, selected && styles.chipTextOn]}>{'  '}{tag}</Text>}
+      </Text>
     </TouchableOpacity>
   );
 }
@@ -55,7 +59,7 @@ export default function PharmacyCardScreen() {
   const [lang, setLang] = useState<Lang>(detectDefaultLang());
   const [card, setCard] = useState<PharmacyCard | null>(null);
   const [mode, setMode] = useState<'edit' | 'show'>('edit');
-  const [historyNames, setHistoryNames] = useState<string[]>([]);
+  const [historyNames, setHistoryNames] = useState<HistoryMedication[]>([]);
   const [confirmClear, setConfirmClear] = useState(false);
   const [notice, setNotice] = useState('');
   const scrollRef = useRef<ScrollView>(null);
@@ -89,6 +93,14 @@ export default function PharmacyCardScreen() {
       });
       return next;
     });
+  }
+
+  function toggleMed(m: HistoryMedication) {
+    if (!card) return;
+    const medsLang = { ...card.medsLang };
+    if (card.meds.includes(m.name)) delete medsLang[m.name];
+    else medsLang[m.name] = m.lang;
+    update({ meds: toggled(card.meds, m.name), medsLang });
   }
 
   function switchMode(next: 'edit' | 'show') {
@@ -214,12 +226,19 @@ export default function PharmacyCardScreen() {
       <View style={styles.section}>
         <Text style={styles.question}>{ui.meds}</Text>
         <Text style={styles.helper}>{ui.medsFromHistory}</Text>
+        {historyNames.length > 0 && <Text style={styles.helper}>{ui.medsPreferJa}</Text>}
         {historyNames.length === 0 ? (
           <Text style={styles.helper}>{ui.medsNoHistory}</Text>
         ) : (
           <View style={styles.chipRow}>
-            {historyNames.map((name) => (
-              <Chip key={name} label={name} selected={card.meds.includes(name)} onPress={() => update({ meds: toggled(card.meds, name) })} />
+            {historyNames.map((m) => (
+              <Chip
+                key={m.name}
+                label={m.name}
+                tag={LANGUAGES.find((l) => l.code === m.lang)?.native}
+                selected={card.meds.includes(m.name)}
+                onPress={() => toggleMed(m)}
+              />
             ))}
           </View>
         )}
@@ -320,13 +339,21 @@ function JapaneseCard({ card }: { card: PharmacyCard }) {
   });
   rows.push({ label: JA_CARD.conditions, value: card.conditions.length ? ja(CONDITION_OPTIONS, card.conditions) : JA_CARD.noneEntered });
   if (card.pregnancy.length) rows.push({ label: JA_CARD.pregnancy, value: ja(PREGNANCY_OPTIONS, card.pregnancy), strong: true });
-  const meds = card.meds.join('、');
+  // Japanese names read as-is; the rest are grouped under the language they are written in. Memos saved before
+  // medsLang existed fall back to: kana in the name = Japanese, otherwise the memo's language.
+  const medLang = (name: string): Lang => card.medsLang[name] ?? (/[\u3040-\u30ff]/.test(name) ? 'ja' : card.lang);
+  const jaMeds = card.meds.filter((n) => medLang(n) === 'ja');
+  const otherLangs = [...new Set(card.meds.map(medLang).filter((l) => l !== 'ja'))];
   rows.push({
     label: JA_CARD.meds,
-    value: meds || (card.medsOther.trim() ? '' : JA_CARD.noneEntered),
+    value: jaMeds.join('、') || (card.meds.length || card.medsOther.trim() ? '' : JA_CARD.noneEntered),
     extra: (
       <>
-        {!!meds && card.lang !== 'ja' && <Text style={styles.cardNote}>{JA_CARD.fromHistory(langJa)}</Text>}
+        {otherLangs.map((l) => (
+          <Text key={l} style={styles.cardOriginal}>
+            {JA_CARD.fromHistory(LANG_NAME_JA[l])}：{card.meds.filter((n) => medLang(n) === l).join('、')}
+          </Text>
+        ))}
         {original('medsOther')}
       </>
     ),
@@ -443,6 +470,10 @@ const styles = StyleSheet.create({
   chipText: {
     fontSize: FONT.label - 1,
     color: COLORS.text,
+  },
+  chipTag: {
+    fontSize: FONT.small - 1,
+    color: COLORS.textMuted,
   },
   chipTextOn: {
     color: '#FFFFFF',

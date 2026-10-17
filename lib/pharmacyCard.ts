@@ -21,6 +21,9 @@ export type PharmacyCard = {
   pregnancy: string[];
   avoid: string[];
   meds: string[]; // medication names picked from the local scan history
+  // language of the scan each picked name came from (history names are written in the language the scan was
+  // analyzed in, so the same drug can appear once in Japanese and once in, say, Korean)
+  medsLang: Record<string, Lang>;
   medsOther: string;
   child: boolean;
   weight: string;
@@ -43,6 +46,7 @@ export function emptyCard(lang: Lang): PharmacyCard {
     pregnancy: [],
     avoid: [],
     meds: [],
+    medsLang: {},
     medsOther: '',
     child: false,
     weight: '',
@@ -87,15 +91,18 @@ export function isCardEmpty(card: PharmacyCard): boolean {
   );
 }
 
-// Distinct medication names from past scans, newest first, so the patient can tick what they take.
-export async function historyMedicationNames(): Promise<string[]> {
+export type HistoryMedication = { name: string; lang: Lang };
+
+// Distinct medication names from past scans so the patient can tick what they take. Names written in Japanese
+// come first (the pharmacist reads them as-is), then the rest, each newest first.
+export async function historyMedicationNames(): Promise<HistoryMedication[]> {
   const entries = await listHistory();
-  const names: string[] = [];
+  const meds: HistoryMedication[] = [];
   for (const entry of entries) {
     for (const item of entry.result.items) {
       const name = item.name.trim();
-      if (name && !names.includes(name)) names.push(name);
+      if (name && !meds.some((m) => m.name === name)) meds.push({ name, lang: entry.lang });
     }
   }
-  return names.slice(0, 20);
+  return [...meds.filter((m) => m.lang === 'ja'), ...meds.filter((m) => m.lang !== 'ja')].slice(0, 20);
 }
