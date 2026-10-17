@@ -13,7 +13,7 @@ const CONTENT: Record<
 > = {
   ko: {
     title: '개인정보처리방침',
-    updated: '최종 수정일: 2026년 8월',
+    updated: '최종 수정일: 2026년 10월',
     sections: [
       {
         heading: '사진 처리 방식',
@@ -36,6 +36,10 @@ const CONTENT: Record<
         body: '분석 결과(약 이름, 복용 시간표 등 텍스트)는 다시 보실 수 있도록 이 기기의 브라우저에만 저장됩니다. 사진은 이 저장에 포함되지 않으며, 어디로도 전송되지 않습니다. "캘린더에 알림 추가" 기능은 기기에서 직접 파일을 만들어 다운로드할 뿐, 저희 서버나 제3자에게 아무 정보도 전달하지 않습니다.',
       },
       {
+        heading: '약국에서 보여 주는 메모',
+        body: '「약국에서 보여 주는 메모」에 입력한 내용(알레르기, 부작용 이력, 치료 중인 병, 사용 중인 약 등)은 이 기기의 브라우저에만 저장됩니다. 저희 서버나 제3자에게 전송되지 않습니다. 「메모 지우기」로 언제든지 삭제할 수 있습니다.',
+      },
+      {
         heading: '광고',
         body: '이 사이트는 Google AdSense를 통해 광고를 표시할 수 있습니다. Google은 쿠키를 사용해 관심사 기반 광고를 보여줄 수 있으며, Google 광고 설정(adssettings.google.com)에서 개인 맞춤 광고를 끌 수 있습니다.',
       },
@@ -47,7 +51,7 @@ const CONTENT: Record<
   },
   ja: {
     title: 'プライバシーポリシー',
-    updated: '最終更新日: 2026年8月',
+    updated: '最終更新日: 2026年10月',
     sections: [
       {
         heading: '写真の取り扱い',
@@ -70,6 +74,10 @@ const CONTENT: Record<
         body: '分析結果(お薬の名前、服用スケジュールなどのテキスト)は、後で見返せるようこの端末のブラウザ内にのみ保存されます。写真はこの保存には含まれず、どこにも送信されません。「カレンダーにリマインダーを追加」機能は端末上でファイルを作成してダウンロードするだけで、当方のサーバーや第三者に情報が送られることはありません。',
       },
       {
+        heading: '薬局で見せるメモ',
+        body: '「薬局で見せるメモ」に入力した内容（アレルギー、副作用歴、治療中の病気、使用中の薬など）は、この端末のブラウザ内にのみ保存されます。当方のサーバーや第三者には送信されません。「メモを消す」でいつでも削除できます。',
+      },
+      {
         heading: '広告',
         body: '当サイトはGoogle AdSenseを通じて広告を表示する場合があります。Googleはクッキーを使用して興味・関心に基づく広告を表示することがあり、Google広告設定(adssettings.google.com)からパーソナライズ広告をオフにできます。',
       },
@@ -81,7 +89,7 @@ const CONTENT: Record<
   },
   en: {
     title: 'Privacy Policy',
-    updated: 'Last updated: August 2026',
+    updated: 'Last updated: October 2026',
     sections: [
       {
         heading: 'How Photos Are Handled',
@@ -104,6 +112,10 @@ const CONTENT: Record<
         body: 'Analysis results (medication names, dosing schedules, etc. as text) are saved only in this device\'s browser so you can look back at them later. Photos are never included in this storage and are never sent anywhere. The "Add to Calendar" feature creates and downloads a file directly on your device — it never sends any information to our server or a third party.',
       },
       {
+        heading: 'Pharmacy Memo',
+        body: 'What you enter in the "Memo to show at the pharmacy" (allergies, side effects, illnesses, current medicines, etc.) is saved only in this device\'s browser. It is never sent to our server or any third party. You can delete it at any time with "Delete memo".',
+      },
+      {
         heading: 'Advertising',
         body: "This site may display ads through Google AdSense. Google may use cookies to show interest-based ads; you can turn off personalized ads at Google's Ad Settings (adssettings.google.com).",
       },
@@ -115,7 +127,7 @@ const CONTENT: Record<
   },
   vi: {
     title: 'Chính Sách Bảo Mật',
-    updated: 'Cập nhật lần cuối: Tháng 8 năm 2026',
+    updated: 'Cập nhật lần cuối: Tháng 10 năm 2026',
     sections: [
       {
         heading: 'Cách Xử Lý Ảnh',
@@ -138,6 +150,10 @@ const CONTENT: Record<
         body: 'Kết quả phân tích (tên thuốc, lịch trình dùng thuốc, v.v. dưới dạng văn bản) chỉ được lưu trong trình duyệt của thiết bị này để bạn có thể xem lại sau. Ảnh không bao giờ được bao gồm trong bộ nhớ này và không bao giờ được gửi đi bất cứ đâu. Tính năng "Thêm Vào Lịch" tạo và tải xuống tệp trực tiếp trên thiết bị của bạn — nó không bao giờ gửi bất kỳ thông tin nào đến máy chủ của chúng tôi hoặc bên thứ ba.',
       },
       {
+        heading: 'Ghi Chú Cho Nhà Thuốc',
+        body: 'Nội dung bạn nhập vào "Ghi chú đưa cho nhà thuốc xem" (dị ứng, tác dụng phụ, bệnh đang điều trị, thuốc đang dùng…) chỉ được lưu trong trình duyệt của thiết bị này. Nội dung này không được gửi đến máy chủ của chúng tôi hay bên thứ ba. Bạn có thể xóa bất cứ lúc nào bằng "Xóa ghi chú".',
+      },
+      {
         heading: 'Quảng Cáo',
         body: 'Trang web này có thể hiển thị quảng cáo thông qua Google AdSense. Google có thể sử dụng cookie để hiển thị quảng cáo dựa trên sở thích; bạn có thể tắt quảng cáo cá nhân hóa tại Cài đặt Quảng cáo của Google (adssettings.google.com).',
       },
@@ -149,7 +165,7 @@ const CONTENT: Record<
   },
   zh: {
     title: '隐私政策',
-    updated: '最后更新:2026年8月',
+    updated: '最后更新:2026年10月',
     sections: [
       {
         heading: '照片处理方式',
@@ -172,6 +188,10 @@ const CONTENT: Record<
         body: '分析结果(药品名称、服药时间表等文本内容)仅保存在本设备的浏览器中,以便您日后查看。照片绝不会包含在此存储中,也绝不会被发送到任何地方。"添加到日历"功能会直接在您的设备上创建并下载文件——它绝不会向我们的服务器或第三方发送任何信息。',
       },
       {
+        heading: '给药店看的备忘',
+        body: '您在「给药店看的备忘」中填写的内容（过敏、副作用、正在治疗的疾病、正在使用的药等）只保存在本设备的浏览器中，不会发送到我们的服务器或任何第三方。您可以随时通过「删除备忘」删除。',
+      },
+      {
         heading: '广告',
         body: '本网站可能通过Google AdSense展示广告。Google可能使用Cookie显示基于兴趣的广告;您可以在Google广告设置(adssettings.google.com)中关闭个性化广告。',
       },
@@ -180,7 +200,7 @@ const CONTENT: Record<
   },
   id: {
     title: 'Kebijakan Privasi',
-    updated: 'Terakhir diperbarui: Agustus 2026',
+    updated: 'Terakhir diperbarui: Oktober 2026',
     sections: [
       {
         heading: 'Cara Foto Ditangani',
@@ -203,6 +223,10 @@ const CONTENT: Record<
         body: 'Hasil analisis (nama obat, jadwal dosis, dll. sebagai teks) hanya disimpan di browser perangkat ini agar Anda dapat melihatnya kembali nanti. Foto tidak pernah disertakan dalam penyimpanan ini dan tidak pernah dikirim ke mana pun. Fitur "Tambahkan ke Kalender" membuat dan mengunduh file langsung di perangkat Anda — fitur ini tidak pernah mengirim informasi apa pun ke server kami atau pihak ketiga.',
       },
       {
+        heading: 'Catatan untuk Apotek',
+        body: 'Isi "Catatan untuk ditunjukkan di apotek" (alergi, efek samping, penyakit yang sedang diobati, obat yang sedang dipakai, dll.) hanya disimpan di browser perangkat ini. Isi tersebut tidak pernah dikirim ke server kami atau pihak ketiga. Anda dapat menghapusnya kapan saja dengan "Hapus catatan".',
+      },
+      {
         heading: 'Iklan',
         body: 'Situs ini mungkin menampilkan iklan melalui Google AdSense. Google dapat menggunakan cookie untuk menampilkan iklan berbasis minat; Anda dapat menonaktifkan iklan yang dipersonalisasi di Setelan Iklan Google (adssettings.google.com).',
       },
@@ -214,7 +238,7 @@ const CONTENT: Record<
   },
   tl: {
     title: 'Patakaran sa Privacy',
-    updated: 'Huling na-update: Agosto 2026',
+    updated: 'Huling na-update: Oktubre 2026',
     sections: [
       {
         heading: 'Paano Hinahawakan ang mga Larawan',
@@ -237,6 +261,10 @@ const CONTENT: Record<
         body: 'Ang mga resulta ng pagsusuri (mga pangalan ng gamot, iskedyul ng pag-inom, atbp. bilang teksto) ay naka-save lamang sa browser ng device na ito upang mabalikan mo ang mga ito sa ibang pagkakataon. Hindi kailanman kasama ang mga larawan sa storage na ito at hindi kailanman ipinapadala kahit saan. Ang feature na "Idagdag sa Kalendaryo" ay gumagawa at nagda-download ng file direkta sa iyong device — hindi ito kailanman nagpapadala ng anumang impormasyon sa aming server o sa third party.',
       },
       {
+        heading: 'Memo para sa Botika',
+        body: 'Ang isinulat mo sa "Memo na ipapakita sa botika" (allergy, side effect, mga sakit na ginagamot, mga gamot na ginagamit, atbp.) ay naka-save lang sa browser ng device na ito. Hindi ito ipinapadala sa aming server o sa sinumang third party. Maaari mo itong burahin anumang oras gamit ang "Burahin ang memo".',
+      },
+      {
         heading: 'Advertising',
         body: 'Maaaring magpakita ang site na ito ng mga ad sa pamamagitan ng Google AdSense. Maaaring gumamit ang Google ng cookies upang magpakita ng mga ad batay sa interes; maaari mong i-off ang mga personalized na ad sa Ad Settings ng Google (adssettings.google.com).',
       },
@@ -248,7 +276,7 @@ const CONTENT: Record<
   },
   th: {
     title: 'นโยบายความเป็นส่วนตัว',
-    updated: 'อัปเดตล่าสุด: สิงหาคม 2026',
+    updated: 'อัปเดตล่าสุด: ตุลาคม 2026',
     sections: [
       {
         heading: 'วิธีจัดการรูปภาพ',
@@ -271,6 +299,10 @@ const CONTENT: Record<
         body: 'ผลการวิเคราะห์ (ชื่อยา ตารางการใช้ยา ฯลฯ ในรูปแบบข้อความ) จะถูกบันทึกไว้ในเบราว์เซอร์ของอุปกรณ์นี้เท่านั้น เพื่อให้คุณย้อนกลับมาดูได้ในภายหลัง รูปภาพจะไม่ถูกรวมอยู่ในการจัดเก็บนี้และจะไม่ถูกส่งไปที่ใดเลย ฟีเจอร์ "เพิ่มลงในปฏิทิน" จะสร้างและดาวน์โหลดไฟล์โดยตรงบนอุปกรณ์ของคุณ — จะไม่ส่งข้อมูลใดๆ ไปยังเซิร์ฟเวอร์ของเราหรือบุคคลที่สาม',
       },
       {
+        heading: 'บันทึกสำหรับร้านยา',
+        body: 'ข้อมูลที่คุณกรอกใน "บันทึกสำหรับแสดงที่ร้านยา" (การแพ้ ผลข้างเคียง โรคที่กำลังรักษา ยาที่ใช้อยู่ ฯลฯ) จะถูกเก็บไว้ในเบราว์เซอร์ของอุปกรณ์นี้เท่านั้น และจะไม่ถูกส่งไปยังเซิร์ฟเวอร์ของเราหรือบุคคลที่สาม คุณสามารถลบได้ตลอดเวลาด้วย "ลบบันทึก"',
+      },
+      {
         heading: 'โฆษณา',
         body: 'เว็บไซต์นี้อาจแสดงโฆษณาผ่าน Google AdSense Google อาจใช้คุกกี้เพื่อแสดงโฆษณาตามความสนใจ คุณสามารถปิดโฆษณาที่ปรับให้เหมาะกับคุณได้ที่การตั้งค่าโฆษณาของ Google (adssettings.google.com)',
       },
@@ -282,7 +314,7 @@ const CONTENT: Record<
   },
   my: {
     title: 'ကိုယ်ရေးအချက်အလက် မူဝါဒ',
-    updated: 'နောက်ဆုံးမွမ်းမံသည့်ရက်: ၂၀၂၆ ခုနှစ် သြဂုတ်လ',
+    updated: 'နောက်ဆုံးမွမ်းမံသည့်ရက်: ၂၀၂၆ ခုနှစ် အောက်တိုဘာလ',
     sections: [
       {
         heading: 'ဓာတ်ပုံများကို ကိုင်တွယ်ပုံ',
@@ -305,6 +337,10 @@ const CONTENT: Record<
         body: 'ခွဲခြမ်းစိတ်ဖြာမှု ရလဒ်များ (ဆေးအမည်များ၊ ဆေးသောက်ချိန်ဇယားများ စသည်ဖြင့် စာသားအနေဖြင့်) ကို နောက်ပိုင်းတွင် ပြန်ကြည့်နိုင်ရန် ဤစက်ပစ္စည်း၏ ဘရောက်ဇာတွင်သာ သိမ်းဆည်းထားပါသည်။ ဓာတ်ပုံများကို ဤသိုလှောင်မှုတွင် ဘယ်တော့မှ ထည့်သွင်းမထားပါ၊ ဘယ်နေရာသို့မှ ပေးပို့ခြင်းလည်း မရှိပါ။ "ပြက္ခဒိန်သို့ ထည့်ရန်" ဝန်ဆောင်မှုသည် သင့်စက်ပစ္စည်းပေါ်တွင် ဖိုင်တစ်ခုကို တိုက်ရိုက် ဖန်တီးပြီး ဒေါင်းလုဒ်လုပ်ပေးသည် — ၎င်းသည် ကျွန်ုပ်တို့ ဆာဗာ သို့မဟုတ် တတိယပါတီသို့ မည်သည့်အချက်အလက်ကိုမျှ ဘယ်တော့မှ ပေးပို့ခြင်း မရှိပါ။',
       },
       {
+        heading: 'ဆေးဆိုင်ပြရန် မှတ်စု',
+        body: '"ဆေးဆိုင်တွင် ပြရန် မှတ်စု" တွင် ဖြည့်ထားသော အကြောင်းအရာများ (ဓာတ်မတည့်မှု၊ ဘေးထွက်ဆိုးကျိုး၊ ကုသနေသော ရောဂါ၊ သုံးနေသော ဆေး စသည်) ကို ဤစက်၏ ဘရောက်ဇာထဲတွင်သာ သိမ်းဆည်းပါသည်။ ကျွန်ုပ်တို့၏ ဆာဗာ သို့မဟုတ် တတိယပုဂ္ဂိုလ်ထံ မပို့ပါ။ "မှတ်စု ဖျက်ရန်" ဖြင့် အချိန်မရွေး ဖျက်နိုင်ပါသည်။',
+      },
+      {
         heading: 'ကြော်ငြာများ',
         body: 'ဤဆိုက်သည် Google AdSense မှတစ်ဆင့် ကြော်ငြာများ ပြသနိုင်ပါသည်။ Google သည် စိတ်ဝင်စားမှုအခြေခံ ကြော်ငြာများ ပြသရန် ကွတ်ကီးများ အသုံးပြုနိုင်ပါသည်၊ Google ၏ ကြော်ငြာ ဆက်တင်များ (adssettings.google.com) တွင် ပုဂ္ဂိုလ်ရေးသီးသန့် ကြော်ငြာများကို ပိတ်နိုင်ပါသည်။',
       },
@@ -316,7 +352,7 @@ const CONTENT: Record<
   },
   ne: {
     title: 'गोपनीयता नीति',
-    updated: 'अन्तिम अद्यावधिक: अगस्ट २०२६',
+    updated: 'अन्तिम अद्यावधिक: अक्टोबर २०२६',
     sections: [
       {
         heading: 'फोटोहरू कसरी ह्यान्डल गरिन्छ',
@@ -339,6 +375,10 @@ const CONTENT: Record<
         body: 'विश्लेषण परिणामहरू (औषधिको नाम, सेवन तालिका, आदि पाठको रूपमा) पछि हेर्न सक्नुभएको लागि यो उपकरणको ब्राउजरमा मात्र सुरक्षित गरिन्छ। फोटोहरू यस भण्डारणमा कहिल्यै समावेश गरिँदैन र कहीं पनि पठाइँदैन। "क्यालेन्डरमा थप्नुहोस्" सुविधाले तपाईंको उपकरणमा सीधै फाइल सिर्जना गर्छ र डाउनलोड गर्छ — यसले हाम्रो सर्भर वा तेस्रो पक्षमा कुनै जानकारी कहिल्यै पठाउँदैन।',
       },
       {
+        heading: 'फार्मेसीलाई देखाउने नोट',
+        body: '"फार्मेसीमा देखाउने नोट" मा लेखिएका कुरा (एलर्जी, साइड इफेक्ट, उपचार गराइरहेको रोग, प्रयोग गरिरहेको औषधि आदि) यही उपकरणको ब्राउजरमा मात्र सुरक्षित हुन्छन्। हाम्रो सर्भर वा कुनै तेस्रो पक्षलाई पठाइँदैन। "नोट मेटाउनुहोस्" थिचेर जुनसुकै बेला मेटाउन सकिन्छ।',
+      },
+      {
         heading: 'विज्ञापन',
         body: 'यो साइटले Google AdSense मार्फत विज्ञापनहरू देखाउन सक्छ। Google ले रुचिमा आधारित विज्ञापनहरू देखाउन कुकीहरू प्रयोग गर्न सक्छ; तपाईं Google को विज्ञापन सेटिङहरू (adssettings.google.com) मा व्यक्तिगत विज्ञापनहरू बन्द गर्न सक्नुहुन्छ।',
       },
@@ -350,7 +390,7 @@ const CONTENT: Record<
   },
   pt: {
     title: 'Política de Privacidade',
-    updated: 'Última atualização: agosto de 2026',
+    updated: 'Última atualização: outubro de 2026',
     sections: [
       {
         heading: 'Como as Fotos São Tratadas',
@@ -371,6 +411,10 @@ const CONTENT: Record<
       {
         heading: 'Histórico Salvo e Lembretes de Calendário',
         body: 'Os resultados da análise (nomes de medicamentos, horários de dosagem, etc. como texto) são salvos apenas no navegador deste dispositivo para que você possa consultá-los depois. As fotos nunca são incluídas neste armazenamento e nunca são enviadas a lugar nenhum. O recurso "Adicionar ao Calendário" cria e baixa um arquivo diretamente no seu dispositivo — ele nunca envia nenhuma informação ao nosso servidor ou a terceiros.',
+      },
+      {
+        heading: 'Nota para a Farmácia',
+        body: 'O que você preenche na "Nota para mostrar na farmácia" (alergias, efeitos colaterais, doenças em tratamento, remédios em uso etc.) fica salvo apenas no navegador deste aparelho. Nunca é enviado ao nosso servidor nem a terceiros. Você pode apagá-la a qualquer momento em "Apagar nota".',
       },
       {
         heading: 'Publicidade',

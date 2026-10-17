@@ -32,6 +32,7 @@ import { downloadTextFile } from '../lib/download';
 import { saveHistoryEntry } from '../lib/history';
 import { detectDefaultLang, STRINGS } from '../lib/i18n';
 import { loadLangPref, saveLangPref } from '../lib/langPref';
+import { CARD_UI } from '../lib/pharmacyCardStrings';
 import { isSpeechSupported, speak, stopSpeech } from '../lib/speech';
 import { buildSpokenSummary } from '../lib/speechText';
 import { LANGUAGES, TIME_SLOTS } from '../types';
@@ -328,6 +329,9 @@ export default function HomeScreen() {
           <TouchableOpacity style={styles.secondaryButton} onPress={() => handlePick('library')}>
             <Text style={styles.secondaryButtonText}>{t.pickPhoto}</Text>
           </TouchableOpacity>
+          <TouchableOpacity style={styles.secondaryButton} onPress={() => router.push('/pharmacy-card')}>
+            <Text style={styles.secondaryButtonText}>{CARD_UI[lang].linkLabel}</Text>
+          </TouchableOpacity>
           {!!errorMsg && <Text style={styles.errorText}>{errorMsg}</Text>}
           <Text style={styles.helperText}>{t.disclaimer}</Text>
         </View>
@@ -432,6 +436,10 @@ export default function HomeScreen() {
       <View style={styles.footer}>
         <Link href="/history" style={styles.footerLink}>
           {t.footerHistory}
+        </Link>
+        <Text style={styles.footerDot}>·</Text>
+        <Link href="/pharmacy-card" style={styles.footerLink}>
+          {CARD_UI[lang].linkLabel}
         </Link>
         <Text style={styles.footerDot}>·</Text>
         <Link href="/about" style={styles.footerLink}>
