@@ -344,14 +344,18 @@ function JapaneseCard({ card }: { card: PharmacyCard }) {
   const medLang = (name: string): Lang => card.medsLang[name] ?? (/[\u3040-\u30ff]/.test(name) ? 'ja' : card.lang);
   const jaMeds = card.meds.filter((n) => medLang(n) === 'ja');
   const otherLangs = [...new Set(card.meds.map(medLang).filter((l) => l !== 'ja'))];
+  // one medicine per line with a leading bullet, so a list of several is easy to scan at the counter
+  const bulletList = (names: string[]) => names.map((n) => `・${n}`).join('\n');
   rows.push({
     label: JA_CARD.meds,
-    value: jaMeds.join('、') || (card.meds.length || card.medsOther.trim() ? '' : JA_CARD.noneEntered),
+    value: bulletList(jaMeds) || (card.meds.length || card.medsOther.trim() ? '' : JA_CARD.noneEntered),
     extra: (
       <>
         {otherLangs.map((l) => (
           <Text key={l} style={styles.cardOriginal}>
-            {JA_CARD.fromHistory(LANG_NAME_JA[l])}：{card.meds.filter((n) => medLang(n) === l).join('、')}
+            {JA_CARD.fromHistory(LANG_NAME_JA[l])}
+            {'\n'}
+            {bulletList(card.meds.filter((n) => medLang(n) === l))}
           </Text>
         ))}
         {original('medsOther')}
