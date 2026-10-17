@@ -313,7 +313,9 @@ export default function PharmacyCardScreen() {
 
 // The part the pharmacist reads: always Japanese, large type, answers as a label/value list.
 function JapaneseCard({ card }: { card: PharmacyCard }) {
-  const ja = (list: CardOption[], codes: string[]) => codes.map((c) => optionLabel(list, c, 'ja')).join('、');
+  // one item per line with a leading bullet, so several answers are easy to scan at the counter
+  const bulletList = (names: string[]) => names.map((n) => `・${n}`).join('\n');
+  const ja = (list: CardOption[], codes: string[]) => bulletList(codes.map((c) => optionLabel(list, c, 'ja')));
   const langJa = LANG_NAME_JA[card.lang];
   const original = (field: FreeTextField) => {
     const text = card[field].trim();
@@ -344,8 +346,6 @@ function JapaneseCard({ card }: { card: PharmacyCard }) {
   const medLang = (name: string): Lang => card.medsLang[name] ?? (/[\u3040-\u30ff]/.test(name) ? 'ja' : card.lang);
   const jaMeds = card.meds.filter((n) => medLang(n) === 'ja');
   const otherLangs = [...new Set(card.meds.map(medLang).filter((l) => l !== 'ja'))];
-  // one medicine per line with a leading bullet, so a list of several is easy to scan at the counter
-  const bulletList = (names: string[]) => names.map((n) => `・${n}`).join('\n');
   rows.push({
     label: JA_CARD.meds,
     value: bulletList(jaMeds) || (card.meds.length || card.medsOther.trim() ? '' : JA_CARD.noneEntered),
