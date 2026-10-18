@@ -103,6 +103,13 @@ export default function PharmacyCardScreen() {
     update({ meds: toggled(card.meds, m.name), medsLang });
   }
 
+  function hideMed(name: string) {
+    if (!card) return;
+    const medsLang = { ...card.medsLang };
+    delete medsLang[name];
+    update({ meds: card.meds.filter((n) => n !== name), medsLang, hiddenMeds: [...card.hiddenMeds, name] });
+  }
+
   function switchMode(next: 'edit' | 'show') {
     setMode(next);
     scrollRef.current?.scrollTo({ y: 0, animated: false });
@@ -153,6 +160,15 @@ export default function PharmacyCardScreen() {
   }
 
   const tApp = STRINGS[lang];
+  // Candidates = history names minus the ones the patient hid, plus anything already picked whose scan has since been
+  // deleted from history (otherwise it would stay on the card with no way to untick it).
+  const candidates: HistoryMedication[] = [
+    ...historyNames.filter((m) => !card.hiddenMeds.includes(m.name)),
+    ...card.meds
+      .filter((n) => !historyNames.some((m) => m.name === n))
+      .map((n) => ({ name: n, lang: card.medsLang[n] ?? card.lang })),
+  ];
+  const hiddenCount = historyNames.filter((m) => card.hiddenMeds.includes(m.name)).length;
   return (
     <ScrollView ref={scrollRef} contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       <Link href="/" style={styles.backLink}>
@@ -226,21 +242,36 @@ export default function PharmacyCardScreen() {
       <View style={styles.section}>
         <Text style={styles.question}>{ui.meds}</Text>
         <Text style={styles.helper}>{ui.medsFromHistory}</Text>
-        {historyNames.length > 0 && <Text style={styles.helper}>{ui.medsPreferJa}</Text>}
-        {historyNames.length === 0 ? (
+        {candidates.length > 0 && <Text style={styles.helper}>{ui.medsPreferJa}</Text>}
+        {candidates.length === 0 && hiddenCount === 0 ? (
           <Text style={styles.helper}>{ui.medsNoHistory}</Text>
         ) : (
           <View style={styles.chipRow}>
-            {historyNames.map((m) => (
-              <Chip
-                key={m.name}
-                label={m.name}
-                tag={LANGUAGES.find((l) => l.code === m.lang)?.native}
-                selected={card.meds.includes(m.name)}
-                onPress={() => toggleMed(m)}
-              />
+            {candidates.map((m) => (
+              <View key={m.name} style={styles.medChip}>
+                <Chip
+                  label={m.name}
+                  tag={LANGUAGES.find((l) => l.code === m.lang)?.native}
+                  selected={card.meds.includes(m.name)}
+                  onPress={() => toggleMed(m)}
+                />
+                <TouchableOpacity
+                  accessibilityRole="button"
+                  accessibilityLabel={`${ui.medsHide}: ${m.name}`}
+                  style={styles.hideButton}
+                  onPress={() => hideMed(m.name)}
+                  hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+                >
+                  <Text style={styles.hideButtonText}>×</Text>
+                </TouchableOpacity>
+              </View>
             ))}
           </View>
+        )}
+        {hiddenCount > 0 && (
+          <TouchableOpacity accessibilityRole="button" onPress={() => update({ hiddenMeds: [] })}>
+            <Text style={styles.linkText}>{ui.medsShowHidden.replace('{n}', String(hiddenCount))}</Text>
+          </TouchableOpacity>
         )}
         <TextInput
           style={[styles.input, styles.inputMulti]}
@@ -452,6 +483,23 @@ const styles = StyleSheet.create({
     fontSize: FONT.small,
     color: COLORS.textMuted,
     lineHeight: 18,
+  },
+  medChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  hideButton: {
+    width: 26,
+    height: 26,
+    marginLeft: 2,
+    borderRadius: RADIUS.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  hideButtonText: {
+    fontSize: 18,
+    lineHeight: 20,
+    color: COLORS.textMuted,
   },
   chipRow: {
     flexDirection: 'row',

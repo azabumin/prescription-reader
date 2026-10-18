@@ -24,6 +24,7 @@ export type PharmacyCard = {
   // language of the scan each picked name came from (history names are written in the language the scan was
   // analyzed in, so the same drug can appear once in Japanese and once in, say, Korean)
   medsLang: Record<string, Lang>;
+  hiddenMeds: string[]; // history names the patient removed from the memo's candidate list (history itself is kept)
   medsOther: string;
   child: boolean;
   weight: string;
@@ -47,6 +48,7 @@ export function emptyCard(lang: Lang): PharmacyCard {
     avoid: [],
     meds: [],
     medsLang: {},
+    hiddenMeds: [],
     medsOther: '',
     child: false,
     weight: '',
