@@ -243,7 +243,7 @@ export default {
     }
 
     // No login: the pharmacy memo works without an account. Rate-limited separately inside the handler.
-    if (route === 'POST /translate-memo') return handleTranslateMemo(request, env, corsHeaders, MODEL);
+    if (route === 'POST /translate-memo') return handleTranslateMemo(request, env, corsHeaders);
 
     if (route !== 'POST /analyze') {
       return jsonResponse({ error: 'not_found' }, 404, corsHeaders);

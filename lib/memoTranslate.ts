@@ -1,4 +1,5 @@
 import { WORKER_URL } from '../constants/config';
+import type { Lang } from '../types';
 import type { FreeTextField } from './pharmacyCard';
 
 export type MemoTranslateErrorCode = 'network' | 'rate_limited' | 'server';
@@ -14,7 +15,7 @@ export class MemoTranslateError extends Error {
 // them into Japanese. Called only when the patient taps the translate button; nothing is stored server-side.
 // Returns the Japanese text per field; fields the server did not return are simply missing.
 export async function translateMemoFields(
-  fields: { key: FreeTextField; text: string }[]
+  fields: { key: FreeTextField; text: string; lang: Lang }[]
 ): Promise<Partial<Record<FreeTextField, string>>> {
   let response: Response;
   try {

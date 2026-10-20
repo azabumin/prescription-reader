@@ -119,7 +119,7 @@ export default function PharmacyCardScreen() {
 
   async function translateNow() {
     if (!card || translating) return;
-    const fields = untranslatedFields(card).map((key) => ({ key, text: card[key].trim() }));
+    const fields = untranslatedFields(card).map((key) => ({ key, text: card[key].trim(), lang: card.textLang[key] ?? card.lang }));
     if (fields.length === 0) return;
     setTranslating(true);
     setTranslateMsg(null);
