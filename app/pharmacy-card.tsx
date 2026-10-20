@@ -1,17 +1,21 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Link, useFocusEffect } from 'expo-router';
 
 import { COLORS, FONT, RADIUS, SPACING } from '../constants/theme';
 import { detectDefaultLang, STRINGS } from '../lib/i18n';
 import { loadLangPref, saveLangPref } from '../lib/langPref';
+import { MemoTranslateError, translateMemoFields } from '../lib/memoTranslate';
 import {
   clearCard,
+  currentTranslation,
   emptyCard,
+  FREE_TEXT_FIELDS,
   historyMedicationNames,
   isCardEmpty,
   loadCard,
   saveCard,
+  untranslatedFields,
   type FreeTextField,
   type HistoryMedication,
   type JpLevel,
@@ -33,7 +37,8 @@ import { LANGUAGES } from '../types';
 import type { Lang } from '../types';
 
 // A memo the patient fills in their own language and shows on their phone at the pharmacy
-// counter, where it reads in Japanese. Everything stays on this device (no server calls).
+// counter, where it reads in Japanese. Everything stays on this device; the only server call is the
+// optional translation of the free-text fields, made when the patient taps the translate button.
 
 function Chip({ label, tag, selected, onPress, radio }: { label: string; tag?: string; selected: boolean; onPress: () => void; radio?: boolean }) {
   return (
@@ -62,6 +67,8 @@ export default function PharmacyCardScreen() {
   const [historyNames, setHistoryNames] = useState<HistoryMedication[]>([]);
   const [confirmClear, setConfirmClear] = useState(false);
   const [notice, setNotice] = useState('');
+  const [translating, setTranslating] = useState(false);
+  const [translateMsg, setTranslateMsg] = useState<{ text: string; ok: boolean } | null>(null);
   const scrollRef = useRef<ScrollView>(null);
   const ui = CARD_UI[lang];
 
@@ -84,7 +91,7 @@ export default function PharmacyCardScreen() {
     setCard((prev) => {
       const base = prev ?? emptyCard(lang);
       const textLang = { ...base.textLang };
-      (['adrDrug', 'medsOther', 'notes'] as FreeTextField[]).forEach((f) => {
+      FREE_TEXT_FIELDS.forEach((f) => {
         if (f in patch) textLang[f] = lang;
       });
       const next = { ...base, ...patch, lang, textLang, updatedAt: new Date().toISOString() };
@@ -110,8 +117,70 @@ export default function PharmacyCardScreen() {
     update({ meds: card.meds.filter((n) => n !== name), medsLang, hiddenMeds: [...card.hiddenMeds, name] });
   }
 
+  async function translateNow() {
+    if (!card || translating) return;
+    const fields = untranslatedFields(card).map((key) => ({ key, text: card[key].trim() }));
+    if (fields.length === 0) return;
+    setTranslating(true);
+    setTranslateMsg(null);
+    try {
+      const result = await translateMemoFields(fields);
+      setCard((prev) => {
+        if (!prev) return prev;
+        const translations = { ...prev.translations };
+        fields.forEach((f) => {
+          const ja = result[f.key];
+          if (ja) translations[f.key] = { src: f.text, ja };
+        });
+        const next = { ...prev, translations };
+        saveCard(next).catch(() => {});
+        return next;
+      });
+      const allDone = fields.every((f) => result[f.key]);
+      setTranslateMsg(allDone ? { text: ui.translated, ok: true } : { text: ui.translateFailed, ok: false });
+    } catch (e) {
+      const limited = e instanceof MemoTranslateError && e.code === 'rate_limited';
+      setTranslateMsg({ text: limited ? ui.translateLimit : ui.translateFailed, ok: false });
+    } finally {
+      setTranslating(false);
+    }
+  }
+
+  function translateBlock() {
+    return (
+      <View style={styles.translateBox}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          style={[styles.translateButton, translating && styles.translateButtonBusy]}
+          onPress={translateNow}
+          disabled={translating}
+        >
+          {translating ? <ActivityIndicator color={COLORS.primary} /> : null}
+          <Text style={styles.translateButtonText}>{translating ? ui.translating : ui.translate}</Text>
+        </TouchableOpacity>
+        <Text style={styles.helper}>{ui.translateNote}</Text>
+      </View>
+    );
+  }
+
+  function digitsInput(value: string, onChange: (v: string) => void, label: string) {
+    return (
+      <View style={styles.weightRow}>
+        <Text style={styles.helper}>{label}</Text>
+        <TextInput
+          style={[styles.input, styles.inputWeight]}
+          value={value}
+          onChangeText={(v) => onChange(v.replace(/[^0-9]/g, '').slice(0, 2))}
+          keyboardType="number-pad"
+          accessibilityLabel={label}
+        />
+      </View>
+    );
+  }
+
   function switchMode(next: 'edit' | 'show') {
     setMode(next);
+    setTranslateMsg(null);
     scrollRef.current?.scrollTo({ y: 0, animated: false });
   }
 
@@ -154,6 +223,13 @@ export default function PharmacyCardScreen() {
             <Text style={styles.smallButtonText}>{ui.edit}</Text>
           </TouchableOpacity>
         </View>
+        {untranslatedFields(card).length > 0 && (
+          <View style={styles.pendingBox}>
+            <Text style={styles.pendingText}>{ui.translatePending}</Text>
+            {translateBlock()}
+          </View>
+        )}
+        {!!translateMsg && <Text style={[styles.notice, !translateMsg.ok && styles.noticeError]}>{translateMsg.text}</Text>}
         {isCardEmpty(card) ? <Text style={styles.emptyText}>{ui.empty}</Text> : <JapaneseCard card={card} />}
       </ScrollView>
     );
@@ -235,8 +311,19 @@ export default function PharmacyCardScreen() {
       <View style={styles.section}>
         <Text style={styles.question}>{ui.conditions}</Text>
         {chips(CONDITION_OPTIONS, card.conditions, 'conditions')}
+        <TextInput
+          style={styles.input}
+          value={card.conditionsOther}
+          onChangeText={(v) => update({ conditionsOther: v })}
+          placeholder={ui.conditionsOther}
+          placeholderTextColor={COLORS.textMuted}
+          accessibilityLabel={ui.conditionsOther}
+        />
         <Text style={[styles.question, styles.subQuestion]}>{ui.pregnancy}</Text>
         {chips(PREGNANCY_OPTIONS, card.pregnancy, 'pregnancy')}
+        {card.pregnancy.includes('pregnant') && digitsInput(card.pregnancyWeek, (v) => update({ pregnancyWeek: v }), ui.pregnancyWeek)}
+        {card.pregnancy.includes('breastfeeding') &&
+          digitsInput(card.nursingChildAge, (v) => update({ nursingChildAge: v }), ui.nursingChildAge)}
       </View>
 
       <View style={styles.section}>
@@ -282,11 +369,27 @@ export default function PharmacyCardScreen() {
           accessibilityLabel={ui.medsOther}
           multiline
         />
+        <TextInput
+          style={styles.input}
+          value={card.medsOtherIngredient}
+          onChangeText={(v) => update({ medsOtherIngredient: v })}
+          placeholder={ui.medsOtherIngredient}
+          placeholderTextColor={COLORS.textMuted}
+          accessibilityLabel={ui.medsOtherIngredient}
+        />
       </View>
 
       <View style={styles.section}>
         <Text style={styles.question}>{ui.avoid}</Text>
         {chips(AVOID_OPTIONS, card.avoid, 'avoid')}
+        <TextInput
+          style={styles.input}
+          value={card.avoidOther}
+          onChangeText={(v) => update({ avoidOther: v })}
+          placeholder={ui.avoidOther}
+          placeholderTextColor={COLORS.textMuted}
+          accessibilityLabel={ui.avoidOther}
+        />
       </View>
 
       <View style={styles.section}>
@@ -316,6 +419,9 @@ export default function PharmacyCardScreen() {
         />
         <Text style={styles.helper}>{ui.freeHint}</Text>
       </View>
+
+      {untranslatedFields(card).length > 0 && translateBlock()}
+      {!!translateMsg && <Text style={[styles.notice, !translateMsg.ok && styles.noticeError]}>{translateMsg.text}</Text>}
 
       <Text style={styles.helper}>{ui.autosave}</Text>
       <TouchableOpacity accessibilityRole="button" style={styles.primaryButton} onPress={() => switchMode('show')}>
@@ -348,13 +454,42 @@ function JapaneseCard({ card }: { card: PharmacyCard }) {
   const bulletList = (names: string[]) => names.map((n) => `・${n}`).join('\n');
   const ja = (list: CardOption[], codes: string[]) => bulletList(codes.map((c) => optionLabel(list, c, 'ja')));
   const langJa = LANG_NAME_JA[card.lang];
-  const original = (field: FreeTextField) => {
+  let anyTranslated = false;
+  // A free-text answer: Japanese as written, the AI translation with the original under it, or (not translated yet)
+  // the original labelled as untranslated. `prefix` names the sub-item, e.g. 成分名.
+  const original = (field: FreeTextField, prefix?: string) => {
     const text = card[field].trim();
     if (!text) return null;
     const fieldLang = card.textLang[field] ?? card.lang;
+    const lead = prefix ? `${prefix}｜` : '';
+    if (fieldLang === 'ja') {
+      return (
+        <Text key={field} style={styles.cardOriginal}>
+          {lead}
+          {JA_CARD.originalJa}：{text}
+        </Text>
+      );
+    }
+    const ja = currentTranslation(card, field);
+    if (ja) {
+      anyTranslated = true;
+      return (
+        <View key={field} style={styles.cardTranslated}>
+          <Text style={styles.cardAiLabel}>
+            {lead}
+            {JA_CARD.aiLabel(LANG_NAME_JA[fieldLang])}
+          </Text>
+          <Text style={styles.cardTranslatedText}>{ja}</Text>
+          <Text style={styles.cardOriginalSmall}>
+            {JA_CARD.originalShort(LANG_NAME_JA[fieldLang])}：{text}
+          </Text>
+        </View>
+      );
+    }
     return (
-      <Text style={styles.cardOriginal}>
-        {fieldLang === 'ja' ? JA_CARD.originalJa : JA_CARD.original(LANG_NAME_JA[fieldLang])}：{text}
+      <Text key={field} style={styles.cardOriginal}>
+        {lead}
+        {JA_CARD.original(LANG_NAME_JA[fieldLang])}：{text}
       </Text>
     );
   };
@@ -370,8 +505,17 @@ function JapaneseCard({ card }: { card: PharmacyCard }) {
     extra: card.adrYes ? original('adrDrug') : null,
     strong: !!card.adrYes,
   });
-  rows.push({ label: JA_CARD.conditions, value: card.conditions.length ? ja(CONDITION_OPTIONS, card.conditions) : JA_CARD.noneEntered });
-  if (card.pregnancy.length) rows.push({ label: JA_CARD.pregnancy, value: ja(PREGNANCY_OPTIONS, card.pregnancy), strong: true });
+  rows.push({
+    label: JA_CARD.conditions,
+    value: card.conditions.length ? ja(CONDITION_OPTIONS, card.conditions) : card.conditionsOther.trim() ? '' : JA_CARD.noneEntered,
+    extra: original('conditionsOther'),
+  });
+  if (card.pregnancy.length) {
+    const preg = card.pregnancy.map((c) =>
+      c === 'pregnant' ? JA_CARD.pregnant(card.pregnancyWeek) : c === 'breastfeeding' ? JA_CARD.nursing(card.nursingChildAge) : optionLabel(PREGNANCY_OPTIONS, c, 'ja')
+    );
+    rows.push({ label: JA_CARD.pregnancy, value: bulletList(preg), strong: true });
+  }
   // Japanese names read as-is; the rest are grouped under the language they are written in. Memos saved before
   // medsLang existed fall back to: kana in the name = Japanese, otherwise the memo's language.
   const medLang = (name: string): Lang => card.medsLang[name] ?? (/[\u3040-\u30ff]/.test(name) ? 'ja' : card.lang);
@@ -379,7 +523,7 @@ function JapaneseCard({ card }: { card: PharmacyCard }) {
   const otherLangs = [...new Set(card.meds.map(medLang).filter((l) => l !== 'ja'))];
   rows.push({
     label: JA_CARD.meds,
-    value: bulletList(jaMeds) || (card.meds.length || card.medsOther.trim() ? '' : JA_CARD.noneEntered),
+    value: bulletList(jaMeds) || (card.meds.length || card.medsOther.trim() || card.medsOtherIngredient.trim() ? '' : JA_CARD.noneEntered),
     extra: (
       <>
         {otherLangs.map((l) => (
@@ -390,10 +534,12 @@ function JapaneseCard({ card }: { card: PharmacyCard }) {
           </Text>
         ))}
         {original('medsOther')}
+        {original('medsOtherIngredient', JA_CARD.ingredient)}
       </>
     ),
   });
-  if (card.avoid.length) rows.push({ label: JA_CARD.avoid, value: ja(AVOID_OPTIONS, card.avoid) });
+  if (card.avoid.length || card.avoidOther.trim())
+    rows.push({ label: JA_CARD.avoid, value: card.avoid.length ? ja(AVOID_OPTIONS, card.avoid) : '', extra: original('avoidOther') });
   if (card.child) rows.push({ label: JA_CARD.child, value: card.weight ? JA_CARD.childWeight(card.weight) : JA_CARD.childNoWeight, strong: true });
   if (card.notes.trim()) rows.push({ label: JA_CARD.notes, value: '', extra: original('notes') });
 
@@ -418,6 +564,7 @@ function JapaneseCard({ card }: { card: PharmacyCard }) {
         </View>
       ))}
       <Text style={styles.cardFoot}>{JA_CARD.foot}</Text>
+      {anyTranslated && <Text style={styles.cardFoot}>{JA_CARD.aiFoot}</Text>}
       {!!updated && <Text style={styles.cardFoot}>{JA_CARD.updated(updated)}</Text>}
     </View>
   );
@@ -677,5 +824,67 @@ const styles = StyleSheet.create({
     fontSize: FONT.small,
     color: COLORS.textMuted,
     marginTop: SPACING.xs,
+  },
+  cardTranslated: {
+    backgroundColor: COLORS.chipBg,
+    borderRadius: RADIUS.sm,
+    padding: SPACING.sm,
+    marginTop: 2,
+    gap: 2,
+  },
+  cardAiLabel: {
+    fontSize: FONT.small,
+    fontWeight: '700',
+    color: COLORS.primaryDark,
+  },
+  cardTranslatedText: {
+    fontSize: FONT.label + 2,
+    color: COLORS.text,
+    lineHeight: 24,
+  },
+  cardOriginalSmall: {
+    fontSize: FONT.small,
+    color: COLORS.textMuted,
+  },
+  translateBox: {
+    gap: SPACING.xs,
+    marginTop: SPACING.xs,
+    marginBottom: SPACING.sm,
+  },
+  translateButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: SPACING.sm,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    borderRadius: RADIUS.md,
+    paddingVertical: 12,
+    backgroundColor: COLORS.card,
+  },
+  translateButtonBusy: {
+    opacity: 0.7,
+  },
+  translateButtonText: {
+    color: COLORS.primary,
+    fontSize: FONT.label + 1,
+    fontWeight: '800',
+  },
+  pendingBox: {
+    backgroundColor: COLORS.card,
+    borderRadius: RADIUS.lg,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    padding: SPACING.md,
+    marginBottom: SPACING.md,
+    gap: SPACING.xs,
+  },
+  pendingText: {
+    fontSize: FONT.label,
+    color: COLORS.text,
+    fontWeight: '700',
+  },
+  noticeError: {
+    color: COLORS.danger,
   },
 });

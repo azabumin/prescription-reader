@@ -37,7 +37,7 @@ const CONTENT: Record<
       },
       {
         heading: '약국에서 보여 주는 메모',
-        body: '「약국에서 보여 주는 메모」에 입력한 내용(알레르기, 부작용 이력, 치료 중인 병, 사용 중인 약 등)은 이 기기의 브라우저에만 저장됩니다. 저희 서버나 제3자에게 전송되지 않습니다. 「메모 지우기」로 언제든지 삭제할 수 있습니다.',
+        body: '「약국에서 보여 주는 메모」에 입력한 내용(알레르기, 부작용 이력, 치료 중인 병, 사용 중인 약 등)은 이 기기의 브라우저에만 저장됩니다. 다만 자유롭게 쓴 칸의 글만은 「일본어로 번역」을 눌렀을 때에 한해 번역을 위해 저희 서버를 거쳐 Anthropic사의 AI 모델로 보내집니다. 메모의 다른 내용은 보내지 않으며, 보낸 글이나 번역이 저희 서버에 남지도 않습니다. 「메모 지우기」로 언제든지 삭제할 수 있습니다.',
       },
       {
         heading: '광고',
@@ -75,7 +75,7 @@ const CONTENT: Record<
       },
       {
         heading: '薬局で見せるメモ',
-        body: '「薬局で見せるメモ」に入力した内容（アレルギー、副作用歴、治療中の病気、使用中の薬など）は、この端末のブラウザ内にのみ保存されます。当方のサーバーや第三者には送信されません。「メモを消す」でいつでも削除できます。',
+        body: '「薬局で見せるメモ」に入力した内容（アレルギー、副作用歴、治療中の病気、使用中の薬など）は、この端末のブラウザ内にのみ保存されます。ただし、自由に書いた欄の文章だけは、「日本語に翻訳する」を押したときに限り、翻訳のため当方のサーバーを経由してAnthropic社のAIモデルに送られます。メモのほかの内容は送られず、送った文章や翻訳が当方のサーバーに残ることもありません。「メモを消す」でいつでも削除できます。',
       },
       {
         heading: '広告',
@@ -113,7 +113,7 @@ const CONTENT: Record<
       },
       {
         heading: 'Pharmacy Memo',
-        body: 'What you enter in the "Memo to show at the pharmacy" (allergies, side effects, illnesses, current medicines, etc.) is saved only in this device\'s browser. It is never sent to our server or any third party. You can delete it at any time with "Delete memo".',
+        body: 'What you enter in the "Memo to show at the pharmacy" (allergies, side effects, illnesses, current medicines, etc.) is saved only in this device’s browser. The one exception is the text you type yourself in the free-text fields: only when you tap "Translate into Japanese" is that text sent through our server to Anthropic’s AI model to be translated. Nothing else in the memo is sent, and neither the text nor its translation is kept on our server. You can delete the memo at any time with "Delete memo".',
       },
       {
         heading: 'Advertising',
@@ -151,7 +151,7 @@ const CONTENT: Record<
       },
       {
         heading: 'Ghi Chú Cho Nhà Thuốc',
-        body: 'Nội dung bạn nhập vào "Ghi chú đưa cho nhà thuốc xem" (dị ứng, tác dụng phụ, bệnh đang điều trị, thuốc đang dùng…) chỉ được lưu trong trình duyệt của thiết bị này. Nội dung này không được gửi đến máy chủ của chúng tôi hay bên thứ ba. Bạn có thể xóa bất cứ lúc nào bằng "Xóa ghi chú".',
+        body: 'Nội dung bạn nhập vào "Ghi chú đưa cho nhà thuốc xem" (dị ứng, tác dụng phụ, bệnh đang điều trị, thuốc đang dùng…) chỉ được lưu trong trình duyệt của thiết bị này. Riêng phần chữ bạn tự viết trong các ô nhập tự do: chỉ khi bạn bấm "Dịch sang tiếng Nhật", phần chữ đó mới được gửi qua máy chủ của chúng tôi đến mô hình AI của Anthropic để dịch. Các nội dung khác của ghi chú không được gửi, và phần chữ đã gửi cùng bản dịch không được lưu trên máy chủ của chúng tôi. Bạn có thể xóa bất cứ lúc nào bằng "Xóa ghi chú".',
       },
       {
         heading: 'Quảng Cáo',
@@ -189,7 +189,7 @@ const CONTENT: Record<
       },
       {
         heading: '给药店看的备忘',
-        body: '您在「给药店看的备忘」中填写的内容（过敏、副作用、正在治疗的疾病、正在使用的药等）只保存在本设备的浏览器中，不会发送到我们的服务器或任何第三方。您可以随时通过「删除备忘」删除。',
+        body: '您在「给药店看的备忘」中填写的内容（过敏、副作用、正在治疗的疾病、正在使用的药等）只保存在本设备的浏览器中。唯一的例外是您在自由填写栏中写的文字：仅在您点击「翻译成日语」时，这些文字才会经由我们的服务器发送给 Anthropic 公司的 AI 模型进行翻译。备忘的其他内容不会发送，发送的文字及其译文也不会保存在我们的服务器上。您可以随时通过「删除备忘」删除。',
       },
       {
         heading: '广告',
@@ -224,7 +224,7 @@ const CONTENT: Record<
       },
       {
         heading: 'Catatan untuk Apotek',
-        body: 'Isi "Catatan untuk ditunjukkan di apotek" (alergi, efek samping, penyakit yang sedang diobati, obat yang sedang dipakai, dll.) hanya disimpan di browser perangkat ini. Isi tersebut tidak pernah dikirim ke server kami atau pihak ketiga. Anda dapat menghapusnya kapan saja dengan "Hapus catatan".',
+        body: 'Isi "Catatan untuk ditunjukkan di apotek" (alergi, efek samping, penyakit yang sedang diobati, obat yang sedang dipakai, dll.) hanya disimpan di browser perangkat ini. Satu-satunya pengecualian adalah teks yang Anda ketik sendiri di kolom isian bebas: hanya saat Anda mengetuk "Terjemahkan ke bahasa Jepang", teks itu dikirim melalui server kami ke model AI Anthropic untuk diterjemahkan. Isi catatan lainnya tidak dikirim, dan teks beserta terjemahannya tidak disimpan di server kami. Anda bisa menghapusnya kapan saja dengan "Hapus catatan".',
       },
       {
         heading: 'Iklan',
@@ -262,7 +262,7 @@ const CONTENT: Record<
       },
       {
         heading: 'Memo para sa Botika',
-        body: 'Ang isinulat mo sa "Memo na ipapakita sa botika" (allergy, side effect, mga sakit na ginagamot, mga gamot na ginagamit, atbp.) ay naka-save lang sa browser ng device na ito. Hindi ito ipinapadala sa aming server o sa sinumang third party. Maaari mo itong burahin anumang oras gamit ang "Burahin ang memo".',
+        body: 'Ang isinulat mo sa "Memo na ipapakita sa botika" (allergy, side effect, mga sakit na ginagamot, mga gamot na ginagamit, atbp.) ay naka-save lang sa browser ng device na ito. Ang tanging eksepsiyon ay ang tekstong ikaw mismo ang sumulat sa mga malayang field: kapag pinindot mo lang ang "Isalin sa Japanese", ipinapadala ang tekstong iyon sa pamamagitan ng aming server sa AI model ng Anthropic para maisalin. Hindi ipinapadala ang iba pang laman ng memo, at hindi itinatago sa aming server ang teksto at ang salin nito. Maaari mo itong burahin anumang oras gamit ang "Burahin ang memo".',
       },
       {
         heading: 'Advertising',
@@ -300,7 +300,7 @@ const CONTENT: Record<
       },
       {
         heading: 'บันทึกสำหรับร้านยา',
-        body: 'ข้อมูลที่คุณกรอกใน "บันทึกสำหรับแสดงที่ร้านยา" (การแพ้ ผลข้างเคียง โรคที่กำลังรักษา ยาที่ใช้อยู่ ฯลฯ) จะถูกเก็บไว้ในเบราว์เซอร์ของอุปกรณ์นี้เท่านั้น และจะไม่ถูกส่งไปยังเซิร์ฟเวอร์ของเราหรือบุคคลที่สาม คุณสามารถลบได้ตลอดเวลาด้วย "ลบบันทึก"',
+        body: 'ข้อมูลที่คุณกรอกใน "บันทึกสำหรับแสดงที่ร้านยา" (การแพ้ ผลข้างเคียง โรคที่กำลังรักษา ยาที่ใช้อยู่ ฯลฯ) จะถูกเก็บไว้ในเบราว์เซอร์ของอุปกรณ์นี้เท่านั้น ยกเว้นข้อความที่คุณพิมพ์เองในช่องกรอกอิสระ ซึ่งจะถูกส่งผ่านเซิร์ฟเวอร์ของเราไปยังโมเดล AI ของบริษัท Anthropic เพื่อแปล เฉพาะเมื่อคุณแตะ "แปลเป็นภาษาญี่ปุ่น" เท่านั้น ข้อมูลอื่นในบันทึกจะไม่ถูกส่ง และข้อความกับคำแปลจะไม่ถูกเก็บไว้ในเซิร์ฟเวอร์ของเรา คุณสามารถลบได้ทุกเมื่อด้วย "ลบบันทึก"',
       },
       {
         heading: 'โฆษณา',
@@ -338,7 +338,7 @@ const CONTENT: Record<
       },
       {
         heading: 'ဆေးဆိုင်ပြရန် မှတ်စု',
-        body: '"ဆေးဆိုင်တွင် ပြရန် မှတ်စု" တွင် ဖြည့်ထားသော အကြောင်းအရာများ (ဓာတ်မတည့်မှု၊ ဘေးထွက်ဆိုးကျိုး၊ ကုသနေသော ရောဂါ၊ သုံးနေသော ဆေး စသည်) ကို ဤစက်၏ ဘရောက်ဇာထဲတွင်သာ သိမ်းဆည်းပါသည်။ ကျွန်ုပ်တို့၏ ဆာဗာ သို့မဟုတ် တတိယပုဂ္ဂိုလ်ထံ မပို့ပါ။ "မှတ်စု ဖျက်ရန်" ဖြင့် အချိန်မရွေး ဖျက်နိုင်ပါသည်။',
+        body: '"ဆေးဆိုင်တွင် ပြရန် မှတ်စု" တွင် ဖြည့်ထားသော အကြောင်းအရာများ (ဓာတ်မတည့်မှု၊ ဘေးထွက်ဆိုးကျိုး၊ ကုသနေသော ရောဂါ၊ သုံးနေသော ဆေး စသည်) ကို ဤစက်၏ ဘရောက်ဇာထဲတွင်သာ သိမ်းဆည်းပါသည်။ ခြွင်းချက်မှာ လွတ်လပ်စွာ ရေးသော အကွက်များတွင် သင်ကိုယ်တိုင် ရေးသော စာသားဖြစ်ပြီး "ဂျပန်ဘာသာသို့ ပြန်ရန်" ကို နှိပ်သည့်အခါမှသာ ထိုစာသားကို ဘာသာပြန်ရန် ကျွန်ုပ်တို့၏ ဆာဗာမှတစ်ဆင့် Anthropic ကုမ္ပဏီ၏ AI မော်ဒယ်သို့ ပို့ပါသည်။ မှတ်စု၏ အခြားအကြောင်းအရာများကို မပို့ပါ၊ စာသားနှင့် ဘာသာပြန်ချက်ကိုလည်း ကျွန်ုပ်တို့၏ ဆာဗာတွင် မသိမ်းဆည်းပါ။ "မှတ်စု ဖျက်ရန်" ဖြင့် အချိန်မရွေး ဖျက်နိုင်ပါသည်။',
       },
       {
         heading: 'ကြော်ငြာများ',
@@ -376,7 +376,7 @@ const CONTENT: Record<
       },
       {
         heading: 'फार्मेसीलाई देखाउने नोट',
-        body: '"फार्मेसीमा देखाउने नोट" मा लेखिएका कुरा (एलर्जी, साइड इफेक्ट, उपचार गराइरहेको रोग, प्रयोग गरिरहेको औषधि आदि) यही उपकरणको ब्राउजरमा मात्र सुरक्षित हुन्छन्। हाम्रो सर्भर वा कुनै तेस्रो पक्षलाई पठाइँदैन। "नोट मेटाउनुहोस्" थिचेर जुनसुकै बेला मेटाउन सकिन्छ।',
+        body: '"फार्मेसीमा देखाउने नोट" मा लेखिएका कुरा (एलर्जी, साइड इफेक्ट, उपचार गराइरहेको रोग, प्रयोग गरिरहेको औषधि आदि) यही उपकरणको ब्राउजरमा मात्र सुरक्षित हुन्छन्। अपवाद भनेको आफैँ लेख्ने खाली ठाउँमा तपाईंले लेखेको पाठ मात्र हो: "जापानीमा अनुवाद गर्नुहोस्" थिच्दा मात्र, त्यो पाठ अनुवादका लागि हाम्रो सर्भर हुँदै Anthropic कम्पनीको AI मोडेलमा पठाइन्छ। नोटका अन्य कुरा पठाइँदैनन्, र पाठ तथा त्यसको अनुवाद हाम्रो सर्भरमा राखिँदैन। "नोट मेटाउनुहोस्" थिचेर जुनसुकै बेला मेटाउन सकिन्छ।',
       },
       {
         heading: 'विज्ञापन',
@@ -414,7 +414,7 @@ const CONTENT: Record<
       },
       {
         heading: 'Nota para a Farmácia',
-        body: 'O que você preenche na "Nota para mostrar na farmácia" (alergias, efeitos colaterais, doenças em tratamento, remédios em uso etc.) fica salvo apenas no navegador deste aparelho. Nunca é enviado ao nosso servidor nem a terceiros. Você pode apagá-la a qualquer momento em "Apagar nota".',
+        body: 'O que você preenche na "Nota para mostrar na farmácia" (alergias, efeitos colaterais, doenças em tratamento, remédios em uso etc.) fica salvo apenas no navegador deste aparelho. A única exceção é o texto que você mesmo escreve nos campos livres: somente quando você toca em "Traduzir para japonês", esse texto é enviado por meio do nosso servidor ao modelo de IA da Anthropic para ser traduzido. O restante da nota não é enviado, e o texto e a tradução não ficam guardados no nosso servidor. Você pode apagá-la a qualquer momento em "Apagar nota".',
       },
       {
         heading: 'Publicidade',

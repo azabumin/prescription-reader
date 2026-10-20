@@ -2,6 +2,7 @@ import { handleCancelSubscription, handleResumeSubscription } from './account';
 import { canAnalyze, resolveSessionUser } from './auth';
 import { handleLogin, handleLogout, handleMe, handleRequestPasswordReset, handleResetPassword, handleSignup } from './authRoutes';
 import { jsonResponse } from './http';
+import { handleTranslateMemo } from './memoTranslate';
 import { handleCheckoutStart, handleZeusWebhook } from './payments';
 
 declare global {
@@ -240,6 +241,9 @@ export default {
         ? handleCancelSubscription(env, corsHeaders, sessionUser.id)
         : handleResumeSubscription(env, corsHeaders, sessionUser.id);
     }
+
+    // No login: the pharmacy memo works without an account. Rate-limited separately inside the handler.
+    if (route === 'POST /translate-memo') return handleTranslateMemo(request, env, corsHeaders, MODEL);
 
     if (route !== 'POST /analyze') {
       return jsonResponse({ error: 'not_found' }, 404, corsHeaders);
