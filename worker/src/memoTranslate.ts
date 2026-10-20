@@ -4,7 +4,9 @@ import { jsonResponse } from './http';
 // fixed options the app translates itself; only these short texts typed by the patient come here, and only when
 // the patient taps "translate". Nothing is stored -- the texts go to Claude and the translation goes straight back.
 
-const MEMO_FIELDS = ['adrDrug', 'conditionsOther', 'medsOther', 'medsOtherIngredient', 'avoidOther', 'notes'] as const;
+const MEMO_FIELDS = [
+  'adrDrug', 'allergyOther', 'conditionsOther', 'medsOther', 'medsOtherIngredient', 'otcText', 'avoidOther', 'notes',
+] as const;
 type MemoField = (typeof MEMO_FIELDS)[number];
 
 // A wrong or partial translation here reaches a pharmacist, so this uses the most accurate model rather than the
@@ -44,6 +46,8 @@ const TRANSLATION_SCHEMA = {
 
 const FIELD_HINTS: Record<MemoField, string> = {
   adrDrug: 'the medicine or ingredient that once caused the patient a side effect',
+  allergyOther: 'other things the patient is allergic to',
+  otcText: 'over-the-counter medicines, supplements or herbal medicines the patient takes',
   conditionsOther: 'other illnesses the patient is being treated for',
   medsOther: 'other medicines the patient uses (often brought from their home country)',
   medsOtherIngredient: 'ingredient names of those other medicines',

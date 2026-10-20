@@ -27,8 +27,15 @@ import {
   AVOID_OPTIONS,
   CARD_UI,
   CONDITION_OPTIONS,
+  CONSTITUTION_OPTIONS,
+  DIET_OPTIONS,
+  FORM_OPTIONS,
+  GENERIC_OPTIONS,
+  INTAKE_OPTIONS,
   JA_CARD,
   LANG_NAME_JA,
+  LIFESTYLE_OPTIONS,
+  NOTEBOOK_OPTIONS,
   optionLabel,
   PREGNANCY_OPTIONS,
   type CardOption,
@@ -191,12 +198,39 @@ export default function PharmacyCardScreen() {
     setNotice(ui.cleared);
   }
 
-  function chips(list: CardOption[], picked: string[], key: 'allergy' | 'adr' | 'conditions' | 'pregnancy' | 'avoid') {
+  type ChipKey = 'allergy' | 'adr' | 'conditions' | 'pregnancy' | 'avoid' | 'lifestyle' | 'intake' | 'constitution' | 'diet' | 'forms';
+  function chips(list: CardOption[], picked: string[], key: ChipKey) {
     return (
       <View style={styles.chipRow}>
         {list.map((o) => (
           <Chip key={o.code} label={o.label[lang]} selected={picked.includes(o.code)} onPress={() => update({ [key]: toggled(picked, o.code) })} />
         ))}
+      </View>
+    );
+  }
+
+  // one answer from a list; tapping the chosen answer again clears it
+  function radioChips(list: CardOption[], value: string | null, onChange: (v: string | null) => void) {
+    return (
+      <View style={styles.chipRow} accessibilityRole="radiogroup">
+        {list.map((o) => (
+          <Chip radio key={o.code} label={o.label[lang]} selected={value === o.code} onPress={() => onChange(value === o.code ? null : o.code)} />
+        ))}
+      </View>
+    );
+  }
+
+  function numberInput(value: string, onChange: (v: string) => void, label: string, pattern: RegExp, max: number) {
+    return (
+      <View style={styles.weightRow}>
+        <Text style={styles.helper}>{label}</Text>
+        <TextInput
+          style={[styles.input, styles.inputWeight]}
+          value={value}
+          onChangeText={(v) => onChange(v.replace(pattern, '').slice(0, max))}
+          keyboardType="numbers-and-punctuation"
+          accessibilityLabel={label}
+        />
       </View>
     );
   }
@@ -285,9 +319,51 @@ export default function PharmacyCardScreen() {
       </View>
 
       <View style={styles.section}>
+        <Text style={styles.question}>{ui.notebook}</Text>
+        {radioChips(NOTEBOOK_OPTIONS, card.notebook, (v) => update({ notebook: v }))}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.question}>{ui.body}</Text>
+        {numberInput(card.heightCm, (v) => update({ heightCm: v }), ui.height, /[^0-9.]/g, 5)}
+        {numberInput(card.weight, (v) => update({ weight: v }), ui.weight, /[^0-9.]/g, 5)}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.question}>{ui.generic}</Text>
+        {radioChips(GENERIC_OPTIONS, card.generic, (v) => update({ generic: v }))}
+        <Text style={styles.helper}>{ui.genericNote}</Text>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.question}>{ui.conditions}</Text>
+        {chips(CONDITION_OPTIONS, card.conditions, 'conditions')}
+        <TextInput
+          style={styles.input}
+          value={card.conditionsOther}
+          onChangeText={(v) => update({ conditionsOther: v })}
+          placeholder={ui.conditionsOther}
+          placeholderTextColor={COLORS.textMuted}
+          accessibilityLabel={ui.conditionsOther}
+        />
+      </View>
+
+      <View style={styles.section}>
         <Text style={styles.question}>{ui.allergy}</Text>
         {yesNo(card.allergyYes, (v) => update({ allergyYes: v }))}
-        {card.allergyYes && chips(ALLERGY_OPTIONS, card.allergy, 'allergy')}
+        {card.allergyYes && (
+          <>
+            {chips(ALLERGY_OPTIONS, card.allergy, 'allergy')}
+            <TextInput
+              style={styles.input}
+              value={card.allergyOther}
+              onChangeText={(v) => update({ allergyOther: v })}
+              placeholder={ui.allergyOther}
+              placeholderTextColor={COLORS.textMuted}
+              accessibilityLabel={ui.allergyOther}
+            />
+          </>
+        )}
       </View>
 
       <View style={styles.section}>
@@ -306,24 +382,6 @@ export default function PharmacyCardScreen() {
             />
           </>
         )}
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.question}>{ui.conditions}</Text>
-        {chips(CONDITION_OPTIONS, card.conditions, 'conditions')}
-        <TextInput
-          style={styles.input}
-          value={card.conditionsOther}
-          onChangeText={(v) => update({ conditionsOther: v })}
-          placeholder={ui.conditionsOther}
-          placeholderTextColor={COLORS.textMuted}
-          accessibilityLabel={ui.conditionsOther}
-        />
-        <Text style={[styles.question, styles.subQuestion]}>{ui.pregnancy}</Text>
-        {chips(PREGNANCY_OPTIONS, card.pregnancy, 'pregnancy')}
-        {card.pregnancy.includes('pregnant') && digitsInput(card.pregnancyWeek, (v) => update({ pregnancyWeek: v }), ui.pregnancyWeek)}
-        {card.pregnancy.includes('breastfeeding') &&
-          digitsInput(card.nursingChildAge, (v) => update({ nursingChildAge: v }), ui.nursingChildAge)}
       </View>
 
       <View style={styles.section}>
@@ -377,6 +435,53 @@ export default function PharmacyCardScreen() {
           placeholderTextColor={COLORS.textMuted}
           accessibilityLabel={ui.medsOtherIngredient}
         />
+        <Text style={[styles.question, styles.subQuestion]}>{ui.otherRx}</Text>
+        {yesNo(card.otherRx, (v) => update({ otherRx: v }))}
+        {card.otherRx && (
+          <Chip label={ui.otherRxNotebook} selected={card.otherRxNotebook} onPress={() => update({ otherRxNotebook: !card.otherRxNotebook })} />
+        )}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.question}>{ui.otc}</Text>
+        {yesNo(card.otcYes, (v) => update({ otcYes: v }))}
+        {card.otcYes && (
+          <TextInput
+            style={styles.input}
+            value={card.otcText}
+            onChangeText={(v) => update({ otcText: v })}
+            placeholder={ui.otcText}
+            placeholderTextColor={COLORS.textMuted}
+            accessibilityLabel={ui.otc}
+          />
+        )}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.question}>{ui.pregnancy}</Text>
+        {chips(PREGNANCY_OPTIONS, card.pregnancy, 'pregnancy')}
+        {card.pregnancy.includes('pregnant') && digitsInput(card.pregnancyWeek, (v) => update({ pregnancyWeek: v }), ui.pregnancyWeek)}
+        {card.pregnancy.includes('pregnant') &&
+          numberInput(card.pregnancyDue, (v) => update({ pregnancyDue: v }), ui.pregnancyDue, /[^0-9/]/g, 5)}
+        {card.pregnancy.includes('breastfeeding') &&
+          digitsInput(card.nursingChildAge, (v) => update({ nursingChildAge: v }), ui.nursingChildAge)}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.question}>{ui.lifestyle}</Text>
+        {chips(LIFESTYLE_OPTIONS, card.lifestyle, 'lifestyle')}
+        {card.lifestyle.includes('smoking') && digitsInput(card.smokingPerDay, (v) => update({ smokingPerDay: v }), ui.smokingPerDay)}
+        <Text style={[styles.question, styles.subQuestion]}>{ui.intake}</Text>
+        {chips(INTAKE_OPTIONS, card.intake, 'intake')}
+        <Text style={[styles.question, styles.subQuestion]}>{ui.constitution}</Text>
+        {chips(CONSTITUTION_OPTIONS, card.constitution, 'constitution')}
+        <Text style={[styles.question, styles.subQuestion]}>{ui.diet}</Text>
+        {chips(DIET_OPTIONS, card.diet, 'diet')}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.question}>{ui.forms}</Text>
+        {chips(FORM_OPTIONS, card.forms, 'forms')}
       </View>
 
       <View style={styles.section}>
@@ -394,18 +499,6 @@ export default function PharmacyCardScreen() {
 
       <View style={styles.section}>
         <Chip label={ui.child} selected={card.child} onPress={() => update({ child: !card.child })} />
-        {card.child && (
-          <View style={styles.weightRow}>
-            <Text style={styles.helper}>{ui.weight}</Text>
-            <TextInput
-              style={[styles.input, styles.inputWeight]}
-              value={card.weight}
-              onChangeText={(v) => update({ weight: v.replace(/[^0-9.]/g, '').slice(0, 5) })}
-              keyboardType="decimal-pad"
-              accessibilityLabel={ui.weight}
-            />
-          </View>
-        )}
       </View>
 
       <View style={styles.section}>
@@ -497,25 +590,32 @@ function JapaneseCard({ card }: { card: PharmacyCard }) {
     yes === null ? JA_CARD.unanswered : !yes ? JA_CARD.none : codes.length ? ja(list, codes) : JA_CARD.yesUnspecified;
   const rows: { label: string; value: string; extra?: ReactNode; strong?: boolean }[] = [];
 
+  const list = (opts: CardOption[], codes: string[], label: string, special?: (code: string) => string | null) => {
+    if (!codes.length) return;
+    rows.push({ label, value: bulletList(codes.map((c) => special?.(c) ?? optionLabel(opts, c, 'ja'))) });
+  };
   if (card.jpLevel) rows.push({ label: JA_CARD.jp, value: JA_CARD.jpLevel[card.jpLevel] });
-  rows.push({ label: JA_CARD.allergy, value: yesNoValue(card.allergyYes, ALLERGY_OPTIONS, card.allergy), strong: !!card.allergyYes });
+  if (card.notebook) rows.push({ label: JA_CARD.notebook, value: optionLabel(NOTEBOOK_OPTIONS, card.notebook, 'ja') });
+  const body = [card.heightCm.trim() && JA_CARD.height(card.heightCm.trim()), card.weight.trim() && JA_CARD.weight(card.weight.trim())].filter(Boolean);
+  if (body.length) rows.push({ label: JA_CARD.body, value: body.join('　') });
+  if (card.generic) rows.push({ label: JA_CARD.generic, value: optionLabel(GENERIC_OPTIONS, card.generic, 'ja') });
+  rows.push({
+    label: JA_CARD.conditions,
+    value: card.conditions.length ? ja(CONDITION_OPTIONS, card.conditions) : card.conditionsOther.trim() ? '' : JA_CARD.noneEntered,
+    extra: original('conditionsOther'),
+  });
+  rows.push({
+    label: JA_CARD.allergy,
+    value: card.allergyYes && !card.allergy.length && card.allergyOther.trim() ? '' : yesNoValue(card.allergyYes, ALLERGY_OPTIONS, card.allergy),
+    extra: card.allergyYes ? original('allergyOther') : null,
+    strong: !!card.allergyYes,
+  });
   rows.push({
     label: JA_CARD.adr,
     value: yesNoValue(card.adrYes, ADR_OPTIONS, card.adr),
     extra: card.adrYes ? original('adrDrug') : null,
     strong: !!card.adrYes,
   });
-  rows.push({
-    label: JA_CARD.conditions,
-    value: card.conditions.length ? ja(CONDITION_OPTIONS, card.conditions) : card.conditionsOther.trim() ? '' : JA_CARD.noneEntered,
-    extra: original('conditionsOther'),
-  });
-  if (card.pregnancy.length) {
-    const preg = card.pregnancy.map((c) =>
-      c === 'pregnant' ? JA_CARD.pregnant(card.pregnancyWeek) : c === 'breastfeeding' ? JA_CARD.nursing(card.nursingChildAge) : optionLabel(PREGNANCY_OPTIONS, c, 'ja')
-    );
-    rows.push({ label: JA_CARD.pregnancy, value: bulletList(preg), strong: true });
-  }
   // Japanese names read as-is; the rest are grouped under the language they are written in. Memos saved before
   // medsLang existed fall back to: kana in the name = Japanese, otherwise the memo's language.
   const medLang = (name: string): Lang => card.medsLang[name] ?? (/[\u3040-\u30ff]/.test(name) ? 'ja' : card.lang);
@@ -538,9 +638,28 @@ function JapaneseCard({ card }: { card: PharmacyCard }) {
       </>
     ),
   });
+  if (card.otherRx !== null)
+    rows.push({ label: JA_CARD.otherRx, value: card.otherRx ? JA_CARD.otherRxYes + (card.otherRxNotebook ? JA_CARD.inNotebook : '') : JA_CARD.otherRxNo });
+  if (card.otcYes !== null)
+    rows.push({ label: JA_CARD.otc, value: card.otcYes ? JA_CARD.yes : JA_CARD.none, extra: card.otcYes ? original('otcText') : null });
+  if (card.pregnancy.length) {
+    const preg = card.pregnancy.map((c) =>
+      c === 'pregnant'
+        ? JA_CARD.pregnant(card.pregnancyWeek) + (card.pregnancyDue ? `　${JA_CARD.due(card.pregnancyDue)}` : '')
+        : c === 'breastfeeding'
+          ? JA_CARD.nursing(card.nursingChildAge)
+          : optionLabel(PREGNANCY_OPTIONS, c, 'ja')
+    );
+    rows.push({ label: JA_CARD.pregnancy, value: bulletList(preg), strong: true });
+  }
+  list(LIFESTYLE_OPTIONS, card.lifestyle, JA_CARD.lifestyle, (c) => (c === 'smoking' && card.smokingPerDay ? JA_CARD.smoking(card.smokingPerDay) : null));
+  list(INTAKE_OPTIONS, card.intake, JA_CARD.intake);
+  list(CONSTITUTION_OPTIONS, card.constitution, JA_CARD.constitution);
+  list(DIET_OPTIONS, card.diet, JA_CARD.diet);
+  list(FORM_OPTIONS, card.forms, JA_CARD.forms);
   if (card.avoid.length || card.avoidOther.trim())
     rows.push({ label: JA_CARD.avoid, value: card.avoid.length ? ja(AVOID_OPTIONS, card.avoid) : '', extra: original('avoidOther') });
-  if (card.child) rows.push({ label: JA_CARD.child, value: card.weight ? JA_CARD.childWeight(card.weight) : JA_CARD.childNoWeight, strong: true });
+  if (card.child) rows.push({ label: JA_CARD.child, value: JA_CARD.childYes, strong: true });
   if (card.notes.trim()) rows.push({ label: JA_CARD.notes, value: '', extra: original('notes') });
 
   let updated = '';
@@ -697,6 +816,7 @@ const styles = StyleSheet.create({
   },
   weightRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'center',
     gap: SPACING.sm,
   },
