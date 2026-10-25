@@ -17,7 +17,7 @@ import { jsonResponse } from './http';
 const MIN_PASSWORD_LENGTH = 8;
 const AUTH_DAILY_ATTEMPT_LIMIT = 20;
 
-function normalizeEmail(email: unknown): string | null {
+export function normalizeEmail(email: unknown): string | null {
   if (typeof email !== 'string') return null;
   const trimmed = email.trim().toLowerCase();
   return trimmed.length > 0 ? trimmed : null;
@@ -25,7 +25,7 @@ function normalizeEmail(email: unknown): string | null {
 
 // Separate KV prefix from the AI-cost rate limiter in index.ts (that one guards /analyze
 // spend) -- this one guards against credential-stuffing/brute-force on login and signup-spam.
-async function checkAndBumpAuthAttempts(env: Env, ip: string): Promise<boolean> {
+export async function checkAndBumpAuthAttempts(env: Env, ip: string): Promise<boolean> {
   const today = new Date().toISOString().slice(0, 10);
   const key = `auth-attempt:${ip}:${today}`;
   const countRaw = await env.RATE_LIMIT_KV.get(key);
