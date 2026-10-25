@@ -5,6 +5,7 @@ import { jsonResponse } from './http';
 import { handleTranslateMemo } from './memoTranslate';
 import { handlePharmacyLogin, handlePharmacyLogout, handlePharmacySetup } from './intake/pharmacyAuth';
 import { handleIntakeStatus, handlePharmacyLookup, handleSendIntake } from './intake/patientRoutes';
+import { routePharmacyIntakes } from './intake/pharmacyRoutes';
 import { handleCheckoutStart, handleZeusWebhook } from './payments';
 
 declare global {
@@ -253,6 +254,8 @@ export default {
     if (route === 'POST /pharmacy/setup') return handlePharmacySetup(request, env, corsHeaders);
     if (route === 'POST /pharmacy/login') return handlePharmacyLogin(request, env, corsHeaders);
     if (route === 'POST /pharmacy/logout') return handlePharmacyLogout(request, env, corsHeaders);
+    const pharmacyResponse = await routePharmacyIntakes(request, env, corsHeaders);
+    if (pharmacyResponse) return pharmacyResponse;
 
     // No login: the pharmacy memo works without an account. Rate-limited separately inside the handler.
     if (route === 'POST /translate-memo') return handleTranslateMemo(request, env, corsHeaders);
