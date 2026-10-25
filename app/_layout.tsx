@@ -19,6 +19,9 @@ export default function RootLayout() {
           <Stack.Screen name="index" />
           <Stack.Screen name="history" />
           <Stack.Screen name="pharmacy-card" />
+          <Stack.Screen name="send" />
+          <Stack.Screen name="sent" />
+          <Stack.Screen name="pharmacy" />
           <Stack.Screen name="privacy" />
           <Stack.Screen name="terms" />
           <Stack.Screen name="tokushoho" />

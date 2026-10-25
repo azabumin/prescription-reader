@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Link, useRouter } from 'expo-router';
+import { Link, useFocusEffect, useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 
@@ -30,9 +30,11 @@ import {
 import { buildMedicationCalendar, hasSchedulableDoses } from '../lib/calendar';
 import { downloadTextFile } from '../lib/download';
 import { saveHistoryEntry } from '../lib/history';
+import { listSent } from '../lib/intakeStore';
 import { detectDefaultLang, STRINGS } from '../lib/i18n';
 import { loadLangPref, saveLangPref } from '../lib/langPref';
 import { CARD_UI } from '../lib/pharmacyCardStrings';
+import { SEND_STRINGS } from '../lib/sendStrings';
 import { isSpeechSupported, speak, stopSpeech } from '../lib/speech';
 import { buildSpokenSummary } from '../lib/speechText';
 import { LANGUAGES, TIME_SLOTS } from '../types';
@@ -45,6 +47,13 @@ function slotLabelKey(slot: TimeSlot): string {
 export default function HomeScreen() {
   const router = useRouter();
   const [lang, setLang] = useState<Lang>(detectDefaultLang());
+  // prescriptions sent to a pharmacy from this device (app/send.tsx) -- show the way to their replies
+  const [hasSent, setHasSent] = useState(false);
+  useFocusEffect(
+    useCallback(() => {
+      listSent().then((l) => setHasSent(l.length > 0));
+    }, [])
+  );
   const [pickerOpen, setPickerOpen] = useState(false);
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
@@ -441,6 +450,14 @@ export default function HomeScreen() {
         <Link href="/pharmacy-card" style={styles.footerLink}>
           {CARD_UI[lang].linkLabel}
         </Link>
+        {hasSent && (
+          <>
+            <Text style={styles.footerDot}>·</Text>
+            <Link href="/sent" style={styles.footerLink}>
+              {SEND_STRINGS[lang].homeLink}
+            </Link>
+          </>
+        )}
         <Text style={styles.footerDot}>·</Text>
         <Link href="/about" style={styles.footerLink}>
           {t.footerAbout}

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { Link, useFocusEffect } from 'expo-router';
+import { Link, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 
 import { JapaneseCard } from '../components/JapaneseCard';
 import { COLORS, FONT, RADIUS, SPACING } from '../constants/theme';
@@ -41,6 +41,7 @@ import {
   PREGNANCY_OPTIONS,
   type CardOption,
 } from '../lib/pharmacyCardStrings';
+import { SEND_STRINGS } from '../lib/sendStrings';
 import { LANGUAGES } from '../types';
 import type { Lang } from '../types';
 
@@ -69,6 +70,10 @@ function toggled(list: string[], code: string): string[] {
 }
 
 export default function PharmacyCardScreen() {
+  // opened from the "send to this pharmacy" screen: offer the way back there (the memo saves as it's edited)
+  const params = useLocalSearchParams<{ returnTo?: string; ph?: string }>();
+  const backToSendCode = params.returnTo === 'send' && typeof params.ph === 'string' ? params.ph : '';
+  const router = useRouter();
   const [lang, setLang] = useState<Lang>(detectDefaultLang());
   const [card, setCard] = useState<PharmacyCard | null>(null);
   const [mode, setMode] = useState<'edit' | 'show'>('edit');
@@ -286,6 +291,16 @@ export default function PharmacyCardScreen() {
         ← {tApp.appTitle}
       </Link>
       <Text style={styles.title}>{ui.title}</Text>
+      {!!backToSendCode && (
+        <TouchableOpacity
+          accessibilityRole="button"
+          style={styles.smallButton}
+          // back() when we came from the send screen, so it isn't stacked twice; replace() after a reload
+          onPress={() => (router.canGoBack() ? router.back() : router.replace({ pathname: '/send', params: { ph: backToSendCode } }))}
+        >
+          <Text style={styles.smallButtonText}>← {SEND_STRINGS[lang].sendLinkFromMemo}</Text>
+        </TouchableOpacity>
+      )}
       <Text style={styles.intro}>{ui.intro}</Text>
       <Text style={styles.localNote}>{ui.localNote}</Text>
 

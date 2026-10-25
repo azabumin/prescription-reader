@@ -40,6 +40,10 @@ const CONTENT: Record<
         body: '「약국에서 보여 주는 메모」에 입력한 내용(알레르기, 부작용 이력, 치료 중인 병, 사용 중인 약 등)은 이 기기의 브라우저에만 저장됩니다. 다만 자유롭게 쓴 칸의 글만은 「일본어로 번역」을 눌렀을 때에 한해 번역을 위해 저희 서버를 거쳐 Anthropic사의 AI 모델로 보내집니다. 메모의 다른 내용은 보내지 않으며, 보낸 글이나 번역이 저희 서버에 남지도 않습니다. 「메모 지우기」로 언제든지 삭제할 수 있습니다.',
       },
       {
+        heading: '처방전을 약국에 보내는 기능',
+        body: '약국의 QR 코드에서 「처방전을 약국에 보내기」를 사용하면, 처방전 사진, 초진 설문 답변, 받으러 갈 시각(입력한 경우 메일 주소)이 선택한 약국에 전달되도록 저희 서버에 임시로 저장됩니다. 회원가입은 필요 없습니다. 처방전 읽기와 자유롭게 쓴 칸의 일본어 번역에는 Anthropic사(미국)의 AI 모델을 사용합니다. 저장된 내용은 약국이 접수를 「완료」로 처리하면 삭제되며, 완료되지 않아도 보낸 지 7일 뒤 자동으로 삭제됩니다. 메일 주소는 약국에서 답장이 왔다는 것을 알리는 데만 쓰며, 메일에 약 이름 등은 쓰지 않습니다. 서비스 개선을 위해 접수부터 답장까지의 시간 등을 기록하지만, 개인을 특정할 수 있는 정보는 포함하지 않습니다.',
+      },
+      {
         heading: '광고',
         body: '이 사이트는 Google AdSense를 통해 광고를 표시할 수 있습니다. Google은 쿠키를 사용해 관심사 기반 광고를 보여줄 수 있으며, Google 광고 설정(adssettings.google.com)에서 개인 맞춤 광고를 끌 수 있습니다.',
       },
@@ -76,6 +80,10 @@ const CONTENT: Record<
       {
         heading: '薬局で見せるメモ',
         body: '「薬局で見せるメモ」に入力した内容（アレルギー、副作用歴、治療中の病気、使用中の薬など）は、この端末のブラウザ内にのみ保存されます。ただし、自由に書いた欄の文章だけは、「日本語に翻訳する」を押したときに限り、翻訳のため当方のサーバーを経由してAnthropic社のAIモデルに送られます。メモのほかの内容は送られず、送った文章や翻訳が当方のサーバーに残ることもありません。「メモを消す」でいつでも削除できます。',
+      },
+      {
+        heading: '処方箋を薬局に送る機能',
+        body: '薬局のQRコードから「処方箋を薬局に送る」を使うと、処方箋の写真、初回アンケートの答え、受け取りの希望時刻（と、入力した場合はメールアドレス）が、選んだ薬局に届くよう当方のサーバーに一時的に保存されます。会員登録は不要です。処方箋の読み取りと、自由に書いた欄の日本語への翻訳には、Anthropic社（米国）のAIモデルを使います。保存した内容は、薬局が受付を「完了」にした時点で削除され、完了されなくても送信から7日で自動的に削除されます。メールアドレスは薬局から返信があったことをお知らせするためだけに使い、メールに薬の名前などは書きません。サービス改善のため、受付から返信までの時間などの記録を残しますが、個人を特定できる情報は含みません。',
       },
       {
         heading: '広告',
@@ -116,6 +124,10 @@ const CONTENT: Record<
         body: 'What you enter in the "Memo to show at the pharmacy" (allergies, side effects, illnesses, current medicines, etc.) is saved only in this device’s browser. The one exception is the text you type yourself in the free-text fields: only when you tap "Translate into Japanese" is that text sent through our server to Anthropic’s AI model to be translated. Nothing else in the memo is sent, and neither the text nor its translation is kept on our server. You can delete the memo at any time with "Delete memo".',
       },
       {
+        heading: 'Sending a Prescription to a Pharmacy',
+        body: 'When you use "Send your prescription to a pharmacy" from a pharmacy\'s QR code, the prescription photo, your questionnaire answers, the pickup time you chose (and your email address, if you enter one) are stored temporarily on our server so that they reach the pharmacy you chose. No account is needed. Anthropic\'s AI models (in the United States) are used to read the prescription and to translate what you wrote freely into Japanese. The stored content is deleted when the pharmacy marks the request as complete, and automatically 7 days after sending if it is not. Your email address is used only to tell you that the pharmacy has replied; the email does not include medicine names or other details. To improve the service we keep records such as the time from sending to the pharmacy\'s reply, without information that identifies you.',
+      },
+      {
         heading: 'Advertising',
         body: "This site may display ads through Google AdSense. Google may use cookies to show interest-based ads; you can turn off personalized ads at Google's Ad Settings (adssettings.google.com).",
       },
@@ -152,6 +164,10 @@ const CONTENT: Record<
       {
         heading: 'Ghi Chú Cho Nhà Thuốc',
         body: 'Nội dung bạn nhập vào "Ghi chú đưa cho nhà thuốc xem" (dị ứng, tác dụng phụ, bệnh đang điều trị, thuốc đang dùng…) chỉ được lưu trong trình duyệt của thiết bị này. Riêng phần chữ bạn tự viết trong các ô nhập tự do: chỉ khi bạn bấm "Dịch sang tiếng Nhật", phần chữ đó mới được gửi qua máy chủ của chúng tôi đến mô hình AI của Anthropic để dịch. Các nội dung khác của ghi chú không được gửi, và phần chữ đã gửi cùng bản dịch không được lưu trên máy chủ của chúng tôi. Bạn có thể xóa bất cứ lúc nào bằng "Xóa ghi chú".',
+      },
+      {
+        heading: 'Gửi Đơn Thuốc Đến Nhà Thuốc',
+        body: 'Khi bạn dùng "Gửi đơn thuốc đến nhà thuốc" từ mã QR của nhà thuốc, ảnh đơn thuốc, câu trả lời phiếu hỏi, thời gian muốn nhận thuốc (và địa chỉ email nếu bạn nhập) được lưu tạm thời trên máy chủ của chúng tôi để gửi đến nhà thuốc bạn chọn. Không cần đăng ký tài khoản. Chúng tôi dùng mô hình AI của Anthropic (Hoa Kỳ) để đọc đơn thuốc và dịch phần bạn tự viết sang tiếng Nhật. Nội dung đã lưu sẽ bị xóa khi nhà thuốc đánh dấu "hoàn tất", và tự động bị xóa sau 7 ngày kể từ khi gửi nếu chưa hoàn tất. Địa chỉ email chỉ dùng để báo cho bạn biết nhà thuốc đã trả lời; email không ghi tên thuốc hay thông tin khác. Để cải thiện dịch vụ, chúng tôi lưu các thông tin như thời gian từ lúc gửi đến lúc nhà thuốc trả lời, không bao gồm thông tin xác định cá nhân.',
       },
       {
         heading: 'Quảng Cáo',
@@ -192,6 +208,10 @@ const CONTENT: Record<
         body: '您在「给药店看的备忘」中填写的内容（过敏、副作用、正在治疗的疾病、正在使用的药等）只保存在本设备的浏览器中。唯一的例外是您在自由填写栏中写的文字：仅在您点击「翻译成日语」时，这些文字才会经由我们的服务器发送给 Anthropic 公司的 AI 模型进行翻译。备忘的其他内容不会发送，发送的文字及其译文也不会保存在我们的服务器上。您可以随时通过「删除备忘」删除。',
       },
       {
+        heading: '把处方发送给药店',
+        body: '通过药店的二维码使用“把处方发送给药店”时，处方照片、初诊问卷的回答、希望取药的时间（以及您填写的邮箱地址）会暂时保存在我们的服务器上，以便送达您选择的药店。无需注册账户。读取处方以及把您自由填写的内容翻译成日语时，会使用Anthropic公司（美国）的AI模型。保存的内容会在药店将受理标记为“完成”时删除；即使未完成，也会在发送7天后自动删除。邮箱地址仅用于通知您药店已回复，邮件中不写药名等内容。为改进服务，我们会保留从发送到药店回复所用时间等记录，但不包含可识别个人身份的信息。',
+      },
+      {
         heading: '广告',
         body: '本网站可能通过Google AdSense展示广告。Google可能使用Cookie显示基于兴趣的广告;您可以在Google广告设置(adssettings.google.com)中关闭个性化广告。',
       },
@@ -225,6 +245,10 @@ const CONTENT: Record<
       {
         heading: 'Catatan untuk Apotek',
         body: 'Isi "Catatan untuk ditunjukkan di apotek" (alergi, efek samping, penyakit yang sedang diobati, obat yang sedang dipakai, dll.) hanya disimpan di browser perangkat ini. Satu-satunya pengecualian adalah teks yang Anda ketik sendiri di kolom isian bebas: hanya saat Anda mengetuk "Terjemahkan ke bahasa Jepang", teks itu dikirim melalui server kami ke model AI Anthropic untuk diterjemahkan. Isi catatan lainnya tidak dikirim, dan teks beserta terjemahannya tidak disimpan di server kami. Anda bisa menghapusnya kapan saja dengan "Hapus catatan".',
+      },
+      {
+        heading: 'Mengirim Resep ke Apotek',
+        body: 'Saat Anda memakai "Kirim resep ke apotek" dari kode QR apotek, foto resep, jawaban kuesioner, waktu pengambilan yang Anda pilih (dan alamat email jika Anda mengisinya) disimpan sementara di server kami agar sampai ke apotek yang Anda pilih. Tidak perlu membuat akun. Model AI Anthropic (Amerika Serikat) digunakan untuk membaca resep dan menerjemahkan isian bebas Anda ke bahasa Jepang. Isi yang disimpan dihapus saat apotek menandai permintaan sebagai "selesai", dan otomatis dihapus 7 hari setelah dikirim jika belum selesai. Alamat email hanya dipakai untuk memberi tahu bahwa apotek sudah membalas; email tidak mencantumkan nama obat atau detail lain. Untuk meningkatkan layanan, kami menyimpan catatan seperti waktu dari pengiriman sampai balasan apotek, tanpa informasi yang dapat mengidentifikasi Anda.',
       },
       {
         heading: 'Iklan',
@@ -265,6 +289,10 @@ const CONTENT: Record<
         body: 'Ang isinulat mo sa "Memo na ipapakita sa botika" (allergy, side effect, mga sakit na ginagamot, mga gamot na ginagamit, atbp.) ay naka-save lang sa browser ng device na ito. Ang tanging eksepsiyon ay ang tekstong ikaw mismo ang sumulat sa mga malayang field: kapag pinindot mo lang ang "Isalin sa Japanese", ipinapadala ang tekstong iyon sa pamamagitan ng aming server sa AI model ng Anthropic para maisalin. Hindi ipinapadala ang iba pang laman ng memo, at hindi itinatago sa aming server ang teksto at ang salin nito. Maaari mo itong burahin anumang oras gamit ang "Burahin ang memo".',
       },
       {
+        heading: 'Pagpapadala ng Reseta sa Botika',
+        body: 'Kapag ginamit mo ang "Ipadala ang reseta sa botika" mula sa QR code ng botika, pansamantalang iniimbak sa aming server ang litrato ng reseta, ang mga sagot sa questionnaire, ang oras na gusto mong kunin (at ang email address kung inilagay mo) para makarating sa botikang pinili mo. Hindi kailangan ng account. Gumagamit kami ng AI model ng Anthropic (Estados Unidos) para basahin ang reseta at isalin sa Japanese ang malaya mong isinulat. Binubura ang iniimbak na nilalaman kapag minarkahan ng botika na "tapos" ang kahilingan, at kusang binubura 7 araw pagkatapos ipadala kung hindi natapos. Ginagamit lang ang email address para sabihin sa iyo na sumagot na ang botika; walang pangalan ng gamot o ibang detalye sa email. Para mapabuti ang serbisyo, nagtatala kami ng mga bagay tulad ng tagal mula sa pagpapadala hanggang sa sagot ng botika, nang walang impormasyong makakakilala sa iyo.',
+      },
+      {
         heading: 'Advertising',
         body: 'Maaaring magpakita ang site na ito ng mga ad sa pamamagitan ng Google AdSense. Maaaring gumamit ang Google ng cookies upang magpakita ng mga ad batay sa interes; maaari mong i-off ang mga personalized na ad sa Ad Settings ng Google (adssettings.google.com).',
       },
@@ -301,6 +329,10 @@ const CONTENT: Record<
       {
         heading: 'บันทึกสำหรับร้านยา',
         body: 'ข้อมูลที่คุณกรอกใน "บันทึกสำหรับแสดงที่ร้านยา" (การแพ้ ผลข้างเคียง โรคที่กำลังรักษา ยาที่ใช้อยู่ ฯลฯ) จะถูกเก็บไว้ในเบราว์เซอร์ของอุปกรณ์นี้เท่านั้น ยกเว้นข้อความที่คุณพิมพ์เองในช่องกรอกอิสระ ซึ่งจะถูกส่งผ่านเซิร์ฟเวอร์ของเราไปยังโมเดล AI ของบริษัท Anthropic เพื่อแปล เฉพาะเมื่อคุณแตะ "แปลเป็นภาษาญี่ปุ่น" เท่านั้น ข้อมูลอื่นในบันทึกจะไม่ถูกส่ง และข้อความกับคำแปลจะไม่ถูกเก็บไว้ในเซิร์ฟเวอร์ของเรา คุณสามารถลบได้ทุกเมื่อด้วย "ลบบันทึก"',
+      },
+      {
+        heading: 'การส่งใบสั่งยาไปที่ร้านยา',
+        body: 'เมื่อคุณใช้ "ส่งใบสั่งยาไปที่ร้านยา" จาก QR โค้ดของร้านยา รูปใบสั่งยา คำตอบแบบสอบถาม เวลาที่ต้องการรับยา (และอีเมลหากคุณกรอก) จะถูกเก็บไว้ชั่วคราวบนเซิร์ฟเวอร์ของเราเพื่อส่งถึงร้านยาที่คุณเลือก ไม่ต้องสมัครบัญชี เราใช้โมเดล AI ของบริษัท Anthropic (สหรัฐอเมริกา) ในการอ่านใบสั่งยาและแปลข้อความที่คุณเขียนเองเป็นภาษาญี่ปุ่น ข้อมูลที่เก็บไว้จะถูกลบเมื่อร้านยากด "เสร็จสิ้น" และจะถูกลบอัตโนมัติภายใน 7 วันหลังส่งหากยังไม่เสร็จสิ้น อีเมลใช้เพื่อแจ้งว่าร้านยาตอบกลับแล้วเท่านั้น และในอีเมลจะไม่มีชื่อยาหรือรายละเอียดอื่น เพื่อปรับปรุงบริการ เราเก็บบันทึก เช่น เวลาตั้งแต่ส่งจนร้านยาตอบกลับ โดยไม่มีข้อมูลที่ระบุตัวบุคคลได้',
       },
       {
         heading: 'โฆษณา',
@@ -341,6 +373,10 @@ const CONTENT: Record<
         body: '"ဆေးဆိုင်တွင် ပြရန် မှတ်စု" တွင် ဖြည့်ထားသော အကြောင်းအရာများ (ဓာတ်မတည့်မှု၊ ဘေးထွက်ဆိုးကျိုး၊ ကုသနေသော ရောဂါ၊ သုံးနေသော ဆေး စသည်) ကို ဤစက်၏ ဘရောက်ဇာထဲတွင်သာ သိမ်းဆည်းပါသည်။ ခြွင်းချက်မှာ လွတ်လပ်စွာ ရေးသော အကွက်များတွင် သင်ကိုယ်တိုင် ရေးသော စာသားဖြစ်ပြီး "ဂျပန်ဘာသာသို့ ပြန်ရန်" ကို နှိပ်သည့်အခါမှသာ ထိုစာသားကို ဘာသာပြန်ရန် ကျွန်ုပ်တို့၏ ဆာဗာမှတစ်ဆင့် Anthropic ကုမ္ပဏီ၏ AI မော်ဒယ်သို့ ပို့ပါသည်။ မှတ်စု၏ အခြားအကြောင်းအရာများကို မပို့ပါ၊ စာသားနှင့် ဘာသာပြန်ချက်ကိုလည်း ကျွန်ုပ်တို့၏ ဆာဗာတွင် မသိမ်းဆည်းပါ။ "မှတ်စု ဖျက်ရန်" ဖြင့် အချိန်မရွေး ဖျက်နိုင်ပါသည်။',
       },
       {
+        heading: 'ဆေးညွှန်းကို ဆေးဆိုင်သို့ ပို့ခြင်း',
+        body: 'ဆေးဆိုင်၏ QR ကုဒ်မှ "ဆေးညွှန်းကို ဆေးဆိုင်သို့ ပို့ရန်" ကို အသုံးပြုသောအခါ ဆေးညွှန်း ဓာတ်ပုံ၊ မေးခွန်းလွှာ အဖြေများ၊ ဆေးလာယူလိုသည့် အချိန် (နှင့် ထည့်သွင်းပါက အီးမေးလ်လိပ်စာ) ကို သင်ရွေးသော ဆေးဆိုင်သို့ ရောက်စေရန် ကျွန်ုပ်တို့၏ ဆာဗာတွင် ယာယီ သိမ်းဆည်းပါသည်။ အကောင့်ဖွင့်ရန် မလိုပါ။ ဆေးညွှန်းဖတ်ရန်နှင့် သင်ကိုယ်တိုင်ရေးသော အပိုင်းကို ဂျပန်ဘာသာသို့ ပြန်ရန် Anthropic (အမေရိကန်) ၏ AI မော်ဒယ်ကို အသုံးပြုပါသည်။ သိမ်းဆည်းထားသော အကြောင်းအရာကို ဆေးဆိုင်က "ပြီးဆုံး" ဟု မှတ်သားသောအခါ ဖျက်ပြီး မပြီးဆုံးသေးလျှင်လည်း ပို့ပြီး ၇ ရက်အကြာတွင် အလိုအလျောက် ဖျက်ပါသည်။ အီးမေးလ်လိပ်စာကို ဆေးဆိုင်က အကြောင်းပြန်ကြောင်း အသိပေးရန်အတွက်သာ အသုံးပြုပြီး အီးမေးလ်တွင် ဆေးအမည် စသည်တို့ကို မရေးပါ။ ဝန်ဆောင်မှု တိုးတက်စေရန် ပို့ချိန်မှ ဆေးဆိုင် အကြောင်းပြန်ချိန်အထိ ကြာချိန် စသည့် မှတ်တမ်းများကို သိမ်းထားသော်လည်း ကိုယ်ရေးကို ခွဲခြားသိနိုင်သည့် အချက်အလက် မပါဝင်ပါ။',
+      },
+      {
         heading: 'ကြော်ငြာများ',
         body: 'ဤဆိုက်သည် Google AdSense မှတစ်ဆင့် ကြော်ငြာများ ပြသနိုင်ပါသည်။ Google သည် စိတ်ဝင်စားမှုအခြေခံ ကြော်ငြာများ ပြသရန် ကွတ်ကီးများ အသုံးပြုနိုင်ပါသည်၊ Google ၏ ကြော်ငြာ ဆက်တင်များ (adssettings.google.com) တွင် ပုဂ္ဂိုလ်ရေးသီးသန့် ကြော်ငြာများကို ပိတ်နိုင်ပါသည်။',
       },
@@ -379,6 +415,10 @@ const CONTENT: Record<
         body: '"फार्मेसीमा देखाउने नोट" मा लेखिएका कुरा (एलर्जी, साइड इफेक्ट, उपचार गराइरहेको रोग, प्रयोग गरिरहेको औषधि आदि) यही उपकरणको ब्राउजरमा मात्र सुरक्षित हुन्छन्। अपवाद भनेको आफैँ लेख्ने खाली ठाउँमा तपाईंले लेखेको पाठ मात्र हो: "जापानीमा अनुवाद गर्नुहोस्" थिच्दा मात्र, त्यो पाठ अनुवादका लागि हाम्रो सर्भर हुँदै Anthropic कम्पनीको AI मोडेलमा पठाइन्छ। नोटका अन्य कुरा पठाइँदैनन्, र पाठ तथा त्यसको अनुवाद हाम्रो सर्भरमा राखिँदैन। "नोट मेटाउनुहोस्" थिचेर जुनसुकै बेला मेटाउन सकिन्छ।',
       },
       {
+        heading: 'प्रेस्क्रिप्सन फार्मेसीमा पठाउने सुविधा',
+        body: 'फार्मेसीको QR कोडबाट "प्रेस्क्रिप्सन फार्मेसीमा पठाउनुहोस्" प्रयोग गर्दा, प्रेस्क्रिप्सनको फोटो, प्रश्नावलीका जवाफ, औषधि लिन आउन चाहेको समय (र राख्नुभएमा इमेल ठेगाना) तपाईंले छानेको फार्मेसीमा पुग्न हाम्रो सर्भरमा अस्थायी रूपमा राखिन्छ। खाता बनाउन आवश्यक छैन। प्रेस्क्रिप्सन पढ्न र तपाईंले आफैं लेखेको भाग जापानीमा अनुवाद गर्न Anthropic (संयुक्त राज्य अमेरिका) को AI मोडेल प्रयोग गरिन्छ। राखिएको सामग्री फार्मेसीले "पूरा" गरेपछि मेटिन्छ, र पूरा नगरे पनि पठाएको ७ दिनपछि स्वतः मेटिन्छ। इमेल ठेगाना फार्मेसीले जवाफ दिएको जानकारी दिन मात्र प्रयोग गरिन्छ; इमेलमा औषधिको नाम आदि लेखिँदैन। सेवा सुधार गर्न, पठाएदेखि फार्मेसीको जवाफसम्मको समय जस्ता रेकर्ड राखिन्छ, तर व्यक्ति पहिचान हुने जानकारी समावेश हुँदैन।',
+      },
+      {
         heading: 'विज्ञापन',
         body: 'यो साइटले Google AdSense मार्फत विज्ञापनहरू देखाउन सक्छ। Google ले रुचिमा आधारित विज्ञापनहरू देखाउन कुकीहरू प्रयोग गर्न सक्छ; तपाईं Google को विज्ञापन सेटिङहरू (adssettings.google.com) मा व्यक्तिगत विज्ञापनहरू बन्द गर्न सक्नुहुन्छ।',
       },
@@ -415,6 +455,10 @@ const CONTENT: Record<
       {
         heading: 'Nota para a Farmácia',
         body: 'O que você preenche na "Nota para mostrar na farmácia" (alergias, efeitos colaterais, doenças em tratamento, remédios em uso etc.) fica salvo apenas no navegador deste aparelho. A única exceção é o texto que você mesmo escreve nos campos livres: somente quando você toca em "Traduzir para japonês", esse texto é enviado por meio do nosso servidor ao modelo de IA da Anthropic para ser traduzido. O restante da nota não é enviado, e o texto e a tradução não ficam guardados no nosso servidor. Você pode apagá-la a qualquer momento em "Apagar nota".',
+      },
+      {
+        heading: 'Enviar a Receita para a Farmácia',
+        body: 'Ao usar "Enviar a receita para a farmácia" pelo código QR da farmácia, a foto da receita, as respostas do questionário, o horário de retirada escolhido (e o seu e-mail, se você informar) ficam guardados temporariamente no nosso servidor para chegarem à farmácia que você escolheu. Não é preciso criar conta. Usamos modelos de IA da Anthropic (Estados Unidos) para ler a receita e traduzir para o japonês o que você escreveu livremente. O conteúdo guardado é apagado quando a farmácia marca o pedido como "concluído" e, se não for concluído, é apagado automaticamente 7 dias após o envio. O e-mail é usado apenas para avisar que a farmácia respondeu; o e-mail não inclui nomes de remédios nem outros detalhes. Para melhorar o serviço, guardamos registros como o tempo entre o envio e a resposta da farmácia, sem informações que identifiquem você.',
       },
       {
         heading: 'Publicidade',
