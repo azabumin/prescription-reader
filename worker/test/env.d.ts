@@ -1,10 +1,11 @@
 import type { D1Migration } from 'cloudflare:test';
 
-// `env` from 'cloudflare:workers' is typed as Cloudflare.Env; the app's own globals (secrets declared in
-// src/index.ts) live on the global Env, so the test-only binding is added to both.
+// `env` from 'cloudflare:workers' is typed as Cloudflare.Env; the app's secrets are declared on the global Env
+// (src/index.ts), so Cloudflare.Env is widened to it and both get the test-only migrations binding.
 declare global {
+  type AppEnv = Env;
   namespace Cloudflare {
-    interface Env {
+    interface Env extends AppEnv {
       TEST_MIGRATIONS: D1Migration[];
     }
   }

@@ -58,3 +58,27 @@ export function sendBody(pharmacyCode: string, overrides: Record<string, unknown
     ...overrides,
   };
 }
+
+// Inserts an intake row (plus one photo) directly, bypassing the send endpoint.
+export async function insertIntake(pharmacyId: number, opts: { card?: unknown; lang?: string; createdAt?: Date; status?: string } = {}) {
+  const id = Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, '0')).join('');
+  const created = opts.createdAt ?? new Date();
+  await env.DB.batch([
+    env.DB.prepare(
+      `INSERT INTO intakes (id, pharmacy_id, client_request_id, patient_token_hash, lang, pickup, card_json, status, created_at, expires_at)
+       VALUES (?, ?, ?, ?, ?, 'today17', ?, ?, ?, ?)`,
+    ).bind(
+      id,
+      pharmacyId,
+      crypto.randomUUID(),
+      await sha256Hex(`token-${id}`),
+      opts.lang ?? 'vi',
+      JSON.stringify(opts.card ?? { lang: 'vi', notes: '', textLang: {}, translations: {} }),
+      opts.status ?? 'new',
+      created.toISOString(),
+      new Date(created.getTime() + 7 * 86400000).toISOString(),
+    ),
+    env.DB.prepare("INSERT INTO intake_images (intake_id, idx, media_type, data_b64) VALUES (?, 0, 'image/jpeg', 'aGVsbG8=')").bind(id),
+  ]);
+  return { id, patientToken: `token-${id}` };
+}

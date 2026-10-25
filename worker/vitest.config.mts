@@ -9,6 +9,8 @@ export default defineConfig(async () => {
       cloudflareTest({
         wrangler: { configPath: './wrangler.jsonc' },
         miniflare: {
+          // No real network from tests: Anthropic/Resend calls made in waitUntil get a canned failure.
+          outboundService: () => new Response('{"error":"network disabled in tests"}', { status: 503 }),
           // test-only values; real secrets are set with `wrangler secret put`
           bindings: {
             TEST_MIGRATIONS: migrations,

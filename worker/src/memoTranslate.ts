@@ -7,7 +7,7 @@ import { jsonResponse } from './http';
 const MEMO_FIELDS = [
   'adrDrug', 'allergyOther', 'conditionsOther', 'medsOther', 'medsOtherIngredient', 'otcText', 'avoidOther', 'notes',
 ] as const;
-type MemoField = (typeof MEMO_FIELDS)[number];
+export type MemoField = (typeof MEMO_FIELDS)[number];
 
 // A wrong or partial translation here reaches a pharmacist, so this uses the most accurate model rather than the
 // cheaper one /analyze uses; at low effort a few-field translation still returns in a few seconds.
@@ -55,7 +55,15 @@ const FIELD_HINTS: Record<MemoField, string> = {
   notes: 'anything else the patient wants the pharmacist to know',
 };
 
-type FieldIn = { key: MemoField; text: string; lang?: string };
+export type FieldIn = { key: MemoField; text: string; lang?: string };
+
+// Same translation as the /translate-memo endpoint, for callers inside the Worker (the pharmacy intake fills in
+// Japanese for free text the patient didn't translate). No rate limit here -- the caller has its own.
+export async function translateFields(env: Env, fields: FieldIn[]): Promise<Partial<Record<MemoField, string>>> {
+  if (fields.length === 0) return {};
+  const translations = await callClaude(fields, env.ANTHROPIC_API_KEY);
+  return Object.fromEntries(translations.map((t) => [t.key, t.ja])) as Partial<Record<MemoField, string>>;
+}
 
 function buildPrompt(fields: FieldIn[]): string {
   const data = fields.map((f) => ({
