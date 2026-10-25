@@ -25,7 +25,12 @@ export async function insertPharmacy(opts: { setupCode?: string; setupExpiresAt?
 }
 
 export function call(method: string, path: string, body?: unknown, headers: Record<string, string> = {}): Promise<Response> {
-  const init: RequestInit = { method, headers: { 'Content-Type': 'application/json', Origin: 'https://rxhelper.jp', ...headers } };
+  // A fresh client IP per call unless the test pins one, so per-IP rate limits don't leak between tests.
+  const ip = `198.51.100.${Math.floor(Math.random() * 250) + 1}-${Math.random().toString(36).slice(2, 8)}`;
+  const init: RequestInit = {
+    method,
+    headers: { 'Content-Type': 'application/json', Origin: 'https://rxhelper.jp', 'CF-Connecting-IP': ip, ...headers },
+  };
   if (body !== undefined) init.body = JSON.stringify(body);
   return exports.default.fetch(new Request(`https://api.test${path}`, init));
 }
@@ -37,4 +42,19 @@ export async function loggedInPharmacy() {
   const res = await call('POST', '/pharmacy/login', { email: ph.email, password: 'correct-horse-1' });
   const { token } = (await res.json()) as { token: string };
   return { ...ph, token };
+}
+
+export const TINY_JPEG = { base64: 'aGVsbG8gd29ybGQ=', mediaType: 'image/jpeg' as const };
+
+export function sendBody(pharmacyCode: string, overrides: Record<string, unknown> = {}) {
+  return {
+    pharmacyCode,
+    clientRequestId: crypto.randomUUID(),
+    lang: 'vi',
+    pickup: 'today17',
+    card: { lang: 'vi', notes: '', textLang: {}, translations: {} },
+    images: [TINY_JPEG],
+    consent: true,
+    ...overrides,
+  };
 }

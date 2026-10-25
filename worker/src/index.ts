@@ -4,6 +4,7 @@ import { handleLogin, handleLogout, handleMe, handleRequestPasswordReset, handle
 import { jsonResponse } from './http';
 import { handleTranslateMemo } from './memoTranslate';
 import { handlePharmacyLogin, handlePharmacyLogout, handlePharmacySetup } from './intake/pharmacyAuth';
+import { handleIntakeStatus, handlePharmacyLookup, handleSendIntake } from './intake/patientRoutes';
 import { handleCheckoutStart, handleZeusWebhook } from './payments';
 
 declare global {
@@ -210,7 +211,7 @@ ${targetLanguageName}, including every field. Do not mix in other languages.`;
 }
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const origin = request.headers.get('Origin') ?? '';
     const corsHeaders = buildCorsHeaders(origin, env);
 
@@ -242,6 +243,12 @@ export default {
         ? handleCancelSubscription(env, corsHeaders, sessionUser.id)
         : handleResumeSubscription(env, corsHeaders, sessionUser.id);
     }
+
+    // Pharmacy intake, patient side (no account; the device keeps a per-send token).
+    if (route === 'GET /p/pharmacy') return handlePharmacyLookup(url, env, corsHeaders);
+    if (route === 'POST /intakes') return handleSendIntake(request, env, ctx, corsHeaders);
+    const intakeMatch = request.method === 'GET' ? url.pathname.match(/^\/intakes\/([^/]+)$/) : null;
+    if (intakeMatch) return handleIntakeStatus(intakeMatch[1], request, env, corsHeaders);
 
     if (route === 'POST /pharmacy/setup') return handlePharmacySetup(request, env, corsHeaders);
     if (route === 'POST /pharmacy/login') return handlePharmacyLogin(request, env, corsHeaders);
@@ -326,7 +333,7 @@ export default {
 function buildCorsHeaders(origin: string, env: Env): Record<string, string> {
   const headers: Record<string, string> = {
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Intake-Token',
   };
   const allowedOrigins = env.ALLOWED_ORIGINS.split(',').map((o) => o.trim());
   if (allowedOrigins.includes(origin) || origin.startsWith('http://localhost:')) {
