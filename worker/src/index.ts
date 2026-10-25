@@ -6,6 +6,7 @@ import { handleTranslateMemo } from './memoTranslate';
 import { handlePharmacyLogin, handlePharmacyLogout, handlePharmacySetup } from './intake/pharmacyAuth';
 import { handleIntakeStatus, handlePharmacyLookup, handleSendIntake } from './intake/patientRoutes';
 import { routePharmacyIntakes } from './intake/pharmacyRoutes';
+import { purgeExpired } from './intake/cleanup';
 import { handleCheckoutStart, handleZeusWebhook } from './payments';
 
 declare global {
@@ -212,6 +213,11 @@ ${targetLanguageName}, including every field. Do not mix in other languages.`;
 }
 
 export default {
+  // Hourly (wrangler.jsonc triggers.crons): delete pharmacy intakes past their 7 days.
+  async scheduled(_controller: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
+    ctx.waitUntil(purgeExpired(env.DB, new Date()).then((n) => console.log('intake_purge', n)));
+  },
+
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const origin = request.headers.get('Origin') ?? '';
     const corsHeaders = buildCorsHeaders(origin, env);

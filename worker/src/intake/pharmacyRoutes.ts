@@ -180,6 +180,25 @@ async function postMessage({ request, env, corsHeaders, pharmacy }: PharmacyRout
   return jsonResponse({ ok: true }, 201, corsHeaders);
 }
 
+// 完了: the pharmacy is finished with this patient, so the personal data goes now. The row (status only) stays until
+// expires_at so the patient's screen can still say the intake is complete.
+async function markDone({ env, corsHeaders, pharmacy }: PharmacyRouteContext, intakeId: string): Promise<Response> {
+  const row = await loadOwnIntake(env, pharmacy, intakeId);
+  if (!row) return gone(corsHeaders);
+  if (row.status !== 'done') {
+    await env.DB.batch([
+      env.DB.prepare('DELETE FROM intake_images WHERE intake_id = ?').bind(row.id),
+      env.DB.prepare('DELETE FROM intake_messages WHERE intake_id = ?').bind(row.id),
+      env.DB.prepare("UPDATE intakes SET status = 'done', card_json = NULL, drugs_json = NULL, notify_email = NULL, done_at = ? WHERE id = ?").bind(
+        new Date().toISOString(),
+        row.id,
+      ),
+    ]);
+    await logEvent(env.DB, pharmacy.id, row.id, 'done', { lang: row.lang });
+  }
+  return jsonResponse({ ok: true }, 200, corsHeaders);
+}
+
 function listTemplates({ corsHeaders }: PharmacyRouteContext): Response {
   return jsonResponse({ items: REPLY_TEMPLATES.map((t) => ({ key: t.key, textJa: t.text.ja })) }, 200, corsHeaders);
 }
@@ -217,7 +236,7 @@ export async function routePharmacyIntakes(request: Request, env: Env, corsHeade
   if (m && request.method === 'GET') return intakeDetail(c, m[1]);
   m = path.match(/^\/pharmacy\/intakes\/([^/]+)\/images\/(\d+)$/);
   if (m && request.method === 'GET') return intakeImage(c, m[1], Number(m[2]));
-  m = path.match(/^\/pharmacy\/intakes\/([^/]+)\/(reply|messages)$/);
-  if (m && request.method === 'POST') return m[2] === 'reply' ? reply(c, m[1]) : postMessage(c, m[1]);
+  m = path.match(/^\/pharmacy\/intakes\/([^/]+)\/(reply|messages|done)$/);
+  if (m && request.method === 'POST') return m[2] === 'reply' ? reply(c, m[1]) : m[2] === 'messages' ? postMessage(c, m[1]) : markDone(c, m[1]);
   return jsonResponse({ error: 'not_found' }, 404, corsHeaders);
 }

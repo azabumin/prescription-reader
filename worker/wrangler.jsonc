@@ -6,6 +6,10 @@
   "observability": {
     "enabled": true
   },
+  // hourly: delete pharmacy intakes 7 days after they were sent (src/intake/cleanup.ts)
+  "triggers": {
+    "crons": ["0 * * * *"]
+  },
   // Origins allowed to call this API, comma-separated. Keep the old GitHub Pages origin
   // during the custom-domain transition, then drop it once rxhelper.jp is confirmed working.
   "vars": {
