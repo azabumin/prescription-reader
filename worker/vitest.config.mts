@@ -17,6 +17,7 @@ export default defineConfig(async () => {
             PASSWORD_PEPPER: 'test-pepper',
             ANTHROPIC_API_KEY: 'test',
             ALLOWED_ORIGINS: 'https://rxhelper.jp',
+            RESEND_API_KEY: 'test-resend',
           },
         },
       }),

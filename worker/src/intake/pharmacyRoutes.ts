@@ -1,12 +1,17 @@
 // Pharmacy side of the intake: inbox, detail, photos. Every route needs a pharmacy session, and a pharmacy only
 // ever sees its own intakes (another pharmacy's intake looks exactly like a deleted one).
 import { jsonResponse } from '../http';
+import { translateToPatient } from './ai';
 import type { PharmacyCard } from './cardType';
 import { logEvent } from './events';
+import { sendStatusEmail } from './notify';
 import { resolvePharmacySession, type PharmacySession } from './pharmacyAuth';
-import type { ExtractedDrug, IntakeStatus, PickupCode } from './types';
+import { LATER_TIMES, REPLY_TEMPLATES } from './templates';
+import { LANGS, type ExtractedDrug, type IntakeStatus, type Lang, type PickupCode } from './types';
 
 const INBOX_LIMIT = 100;
+const MAX_MESSAGE_CHARS = 500;
+const PREVIEW_DAILY_LIMIT = 200;
 
 type IntakeRow = {
   id: string;
@@ -112,19 +117,107 @@ async function intakeImage({ env, corsHeaders, pharmacy }: PharmacyRouteContext,
   });
 }
 
-// Returns a response for any /pharmacy/intakes... route, or null when the path isn't one of them.
+async function readBody(request: Request): Promise<Record<string, unknown> | null> {
+  try {
+    const b = await request.json();
+    return b && typeof b === 'object' && !Array.isArray(b) ? (b as Record<string, unknown>) : null;
+  } catch {
+    return null;
+  }
+}
+
+async function notifyPatient(env: Env, row: IntakeRow): Promise<void> {
+  if (row.notify_email) await sendStatusEmail(env, row.notify_email, row.lang as Lang, row.id);
+}
+
+async function reply({ request, env, corsHeaders, pharmacy }: PharmacyRouteContext, intakeId: string): Promise<Response> {
+  const row = await loadOwnIntake(env, pharmacy, intakeId);
+  if (!row) return gone(corsHeaders);
+  if (row.status === 'done') return jsonResponse({ error: 'done' }, 409, corsHeaders);
+  const body = await readBody(request);
+  const status = body?.status;
+  if (status !== 'ready' && status !== 'inquiry' && status !== 'later') return jsonResponse({ error: 'invalid' }, 400, corsHeaders);
+  const laterTime = status === 'later' ? body?.laterTime : null;
+  if (status === 'later' && !LATER_TIMES.includes(laterTime as (typeof LATER_TIMES)[number])) return jsonResponse({ error: 'invalid' }, 400, corsHeaders);
+
+  const now = new Date().toISOString();
+  await env.DB.prepare('UPDATE intakes SET status = ?, later_time = ?, replied_at = COALESCE(replied_at, ?) WHERE id = ?')
+    .bind(status, laterTime ?? null, now, row.id)
+    .run();
+  if (!row.replied_at) await logEvent(env.DB, pharmacy.id, row.id, 'replied', { lang: row.lang });
+  await notifyPatient(env, row);
+  return jsonResponse({ ok: true }, 200, corsHeaders);
+}
+
+async function postMessage({ request, env, corsHeaders, pharmacy }: PharmacyRouteContext, intakeId: string): Promise<Response> {
+  const row = await loadOwnIntake(env, pharmacy, intakeId);
+  if (!row) return gone(corsHeaders);
+  if (row.status === 'done') return jsonResponse({ error: 'done' }, 409, corsHeaders);
+  const body = await readBody(request);
+  let textJa: string;
+  let textPatient: string;
+  let templateKey: string | null = null;
+  if (body?.kind === 'template') {
+    const t = REPLY_TEMPLATES.find((x) => x.key === body.templateKey);
+    if (!t) return jsonResponse({ error: 'invalid' }, 400, corsHeaders);
+    templateKey = t.key;
+    textJa = t.text.ja;
+    textPatient = t.text[row.lang as Lang] ?? t.text.ja;
+  } else if (body?.kind === 'free') {
+    // the pharmacist has seen and confirmed this translation (translate-preview); store it as confirmed
+    textJa = typeof body.textJa === 'string' ? body.textJa.trim() : '';
+    textPatient = typeof body.textPatient === 'string' ? body.textPatient.trim() : '';
+    if (!textJa || !textPatient || textJa.length > MAX_MESSAGE_CHARS || textPatient.length > MAX_MESSAGE_CHARS * 3) {
+      return jsonResponse({ error: 'invalid' }, 400, corsHeaders);
+    }
+  } else {
+    return jsonResponse({ error: 'invalid' }, 400, corsHeaders);
+  }
+  await env.DB.prepare('INSERT INTO intake_messages (intake_id, kind, template_key, text_ja, text_patient, created_at) VALUES (?, ?, ?, ?, ?, ?)')
+    .bind(row.id, body.kind, templateKey, textJa, textPatient, new Date().toISOString())
+    .run();
+  await notifyPatient(env, row);
+  return jsonResponse({ ok: true }, 201, corsHeaders);
+}
+
+function listTemplates({ corsHeaders }: PharmacyRouteContext): Response {
+  return jsonResponse({ items: REPLY_TEMPLATES.map((t) => ({ key: t.key, textJa: t.text.ja })) }, 200, corsHeaders);
+}
+
+async function translatePreview({ request, env, corsHeaders, pharmacy }: PharmacyRouteContext): Promise<Response> {
+  const body = await readBody(request);
+  const textJa = typeof body?.textJa === 'string' ? body.textJa.trim() : '';
+  const lang = body?.lang as Lang;
+  if (!textJa || textJa.length > MAX_MESSAGE_CHARS || !LANGS.includes(lang)) return jsonResponse({ error: 'invalid' }, 400, corsHeaders);
+  const key = `preview-ph:${pharmacy.id}:${new Date().toISOString().slice(0, 10)}`;
+  const count = parseInt((await env.RATE_LIMIT_KV.get(key)) ?? '0', 10);
+  if (count >= PREVIEW_DAILY_LIMIT) return jsonResponse({ error: 'rate_limited' }, 429, corsHeaders);
+  await env.RATE_LIMIT_KV.put(key, String(count + 1), { expirationTtl: 60 * 60 * 26 });
+  try {
+    return jsonResponse({ textPatient: await translateToPatient(env, textJa, lang) }, 200, corsHeaders);
+  } catch (err) {
+    console.error('translate_preview_failed', err);
+    return jsonResponse({ error: 'translation_failed' }, 502, corsHeaders);
+  }
+}
+
+// Returns a response for any authenticated /pharmacy/... route, or null when the path isn't one of them.
 export async function routePharmacyIntakes(request: Request, env: Env, corsHeaders: Record<string, string>): Promise<Response | null> {
   const url = new URL(request.url);
   const path = url.pathname;
-  if (!path.startsWith('/pharmacy/intakes')) return null;
+  if (!path.startsWith('/pharmacy/intakes') && path !== '/pharmacy/templates' && path !== '/pharmacy/translate-preview') return null;
   const pharmacy = await resolvePharmacySession(request, env.DB);
   if (!pharmacy) return jsonResponse({ error: 'unauthorized' }, 401, corsHeaders);
   const c: PharmacyRouteContext = { request, env, corsHeaders, pharmacy };
 
   if (request.method === 'GET' && path === '/pharmacy/intakes') return listIntakes(c);
+  if (request.method === 'GET' && path === '/pharmacy/templates') return listTemplates(c);
+  if (request.method === 'POST' && path === '/pharmacy/translate-preview') return translatePreview(c);
   let m = path.match(/^\/pharmacy\/intakes\/([^/]+)$/);
   if (m && request.method === 'GET') return intakeDetail(c, m[1]);
   m = path.match(/^\/pharmacy\/intakes\/([^/]+)\/images\/(\d+)$/);
   if (m && request.method === 'GET') return intakeImage(c, m[1], Number(m[2]));
+  m = path.match(/^\/pharmacy\/intakes\/([^/]+)\/(reply|messages)$/);
+  if (m && request.method === 'POST') return m[2] === 'reply' ? reply(c, m[1]) : postMessage(c, m[1]);
   return jsonResponse({ error: 'not_found' }, 404, corsHeaders);
 }
