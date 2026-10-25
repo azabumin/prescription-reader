@@ -23,7 +23,8 @@
   "devDependencies": {
     "@types/react": "~19.2.2",
     "gh-pages": "^6.3.0",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "vitest": "^4.1.12"
   },
   "scripts": {
     "start": "expo start",
@@ -31,7 +32,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "predeploy": "expo export -p web",
-    "deploy": "gh-pages --nojekyll -d dist"
+    "deploy": "gh-pages --nojekyll -d dist",
+    "test": "vitest run"
   },
   "private": true
 }
