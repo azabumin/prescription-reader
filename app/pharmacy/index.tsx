@@ -93,7 +93,7 @@ export default function PharmacyInboxScreen() {
             key={it.id}
             accessibilityRole="button"
             style={[ph.card, !it.opened && { borderLeftWidth: 6, borderLeftColor: COLORS.primary }, it.status === 'done' && { opacity: 0.6 }]}
-            onPress={() => router.push({ pathname: '/pharmacy/[id]', params: { id: it.id } })}
+            onPress={() => router.push({ pathname: '/pharmacy/intake', params: { id: it.id } })}
           >
             <View style={[ph.row, { justifyContent: 'space-between' }]}>
               <Text style={ph.h2}>

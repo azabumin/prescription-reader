@@ -23,7 +23,7 @@ import {
 } from '../lib/pharmacyCardStrings';
 import type { Lang } from '../types';
 
-// Shared by the patient's memo screen (app/pharmacy-card.tsx) and the pharmacy inbox (app/pharmacy/[id].tsx).
+// Shared by the patient's memo screen (app/pharmacy-card.tsx) and the pharmacy inbox (app/pharmacy/intake.tsx).
 // The part the pharmacist reads: always Japanese, large type, answers as a label/value list.
 export function JapaneseCard({ card }: { card: PharmacyCard }) {
   // one item per line with a leading bullet, so several answers are easy to scan at the counter

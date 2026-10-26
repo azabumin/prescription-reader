@@ -27,7 +27,7 @@ const LATER_TIMES = ['17:00', '18:00', '19:00', '20:00'];
 const VERDICT_COLOR = { ok: COLORS.primary, short: '#B7791F', none: COLORS.danger, unknown: COLORS.textMuted } as const;
 
 export default function PharmacyIntakeScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id } = useLocalSearchParams<{ id: string }>(); // /pharmacy/intake?id=… (static hosting has no dynamic routes)
   const router = useRouter();
   const { width } = useWindowDimensions();
   const wide = width >= 900;
