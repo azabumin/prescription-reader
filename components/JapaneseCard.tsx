@@ -7,6 +7,7 @@ import {
   ADR_OPTIONS,
   ALLERGY_OPTIONS,
   AVOID_OPTIONS,
+  cardLead,
   CONDITION_OPTIONS,
   CONSTITUTION_OPTIONS,
   DIET_OPTIONS,
@@ -25,7 +26,7 @@ import type { Lang } from '../types';
 
 // Shared by the patient's memo screen (app/pharmacy-card.tsx) and the pharmacy inbox (app/pharmacy/intake.tsx).
 // The part the pharmacist reads: always Japanese, large type, answers as a label/value list.
-export function JapaneseCard({ card }: { card: PharmacyCard }) {
+export function JapaneseCard({ card, sent = false }: { card: PharmacyCard; sent?: boolean }) {
   // one item per line with a leading bullet, so several answers are easy to scan at the counter
   const bulletList = (names: string[]) => names.map((n) => `・${n}`).join('\n');
   const ja = (list: CardOption[], codes: string[]) => bulletList(codes.map((c) => optionLabel(list, c, 'ja')));
@@ -157,7 +158,7 @@ export function JapaneseCard({ card }: { card: PharmacyCard }) {
   return (
     <View style={styles.card}>
       <Text style={styles.cardHeading}>{JA_CARD.heading}</Text>
-      <Text style={styles.cardLead}>{card.lang === 'ja' ? JA_CARD.leadJa : JA_CARD.lead(langJa)}</Text>
+      <Text style={styles.cardLead}>{cardLead(card.lang, langJa, sent)}</Text>
       {rows.map((r) => (
         <View key={r.label} style={styles.cardRow}>
           <Text style={styles.cardLabel}>{r.label}</Text>

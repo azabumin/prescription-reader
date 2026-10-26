@@ -143,6 +143,9 @@ export const JA_CARD = {
   heading: '薬局の方へ',
   lead: (langJa: string) => `この方の言語は${langJa}です。以下は、ご本人が処方箋ヘルパーで入力した内容を日本語で表示しています。`,
   leadJa: '以下は、ご本人が処方箋ヘルパーで入力した内容です。',
+  // the pharmacy inbox shows answers the patient sent, not a screen held up at the counter
+  leadSent: (langJa: string) => `この方の言語は${langJa}です。以下は、ご本人が処方箋ヘルパーで入力し、送信した内容を日本語で表示しています。`,
+  leadSentJa: '以下は、ご本人が処方箋ヘルパーで入力し、送信した内容です。',
   jp: '日本語',
   jpLevel: { none: 'ほとんど話せません', little: '少し話せます', ok: '話せます' },
   allergy: 'アレルギー',
@@ -388,3 +391,8 @@ export const CARD_UI: Record<Lang, Record<UiKey, string>> = {
     otcText: 'Nomes (se souber)', pregnancyDue: 'Data prevista do parto (ex.: 3/15 = 15 de março)', lifestyle: 'Seu dia a dia', smokingPerDay: 'Cigarros por dia', intake: 'Alimentos e bebidas que consome com frequência', constitution: 'Seu corpo', diet: 'Hábitos alimentares', forms: 'Formas de remédio difíceis de tomar',
   },
 };
+
+export function cardLead(lang: Lang, langJa: string, sent: boolean): string {
+  if (lang === 'ja') return sent ? JA_CARD.leadSentJa : JA_CARD.leadJa;
+  return sent ? JA_CARD.leadSent(langJa) : JA_CARD.lead(langJa);
+}

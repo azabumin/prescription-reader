@@ -243,7 +243,7 @@ export default function PharmacyIntakeScreen() {
 
       <View style={ph.card}>
         <Text style={ph.h2}>初回アンケートの答え（日本語）</Text>
-        {detail.card ? <JapaneseCard card={detail.card} /> : <Text style={ph.small}>完了済みのため、回答は削除されています。</Text>}
+        {detail.card ? <JapaneseCard card={detail.card} sent /> : <Text style={ph.small}>完了済みのため、回答は削除されています。</Text>}
       </View>
 
       {!isDone && (
