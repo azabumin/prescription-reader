@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>ER図・テーブル定義（薬局連携MVP）</title>
+<!-- 元データ：worker/migrations/0006_pharmacy_intake.sql。テーブルを変えたら、この図と定義表も直す。 -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js"></script>
+<style>
+  @page { size: A4; margin: 12mm 12mm 12mm 12mm; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: "Meiryo", "Yu Gothic", sans-serif; color: #1E2624; font-size: 9.5pt; line-height: 1.6; margin: 0; background: #fff; }
+  h1 { font-size: 17pt; color: #1D4C44; margin: 0 0 2mm; padding-bottom: 2mm; border-bottom: 2.5px solid #2C6E63; }
+  h2 { font-size: 12.5pt; color: #1D4C44; margin: 6mm 0 2.5mm; padding-left: 3mm; border-left: 4px solid #2C6E63; break-after: avoid; }
+  h3 { font-size: 10.5pt; color: #1D4C44; margin: 4mm 0 1.5mm; break-after: avoid; }
+  p { margin: 0 0 2mm; }
+  .meta { color: #4A5B58; font-size: 9pt; }
+  .page-break { break-before: page; }
+  .diagram { text-align: center; margin-top: 3mm; }
+  .diagram svg { max-width: 100%; max-height: 200mm; height: auto; }
+  .legend { display: flex; gap: 1mm 8mm; flex-wrap: wrap; font-size: 8.8pt; color: #33423F; margin-top: 2mm; }
+  .legend span { white-space: nowrap; }
+  table { border-collapse: collapse; width: 100%; margin: 0 0 3mm; font-size: 8.6pt; }
+  th, td { border: 1px solid #C9D6D3; padding: 1.2mm 2mm; vertical-align: top; text-align: left; }
+  th { background: #EEF5F3; color: #1D4C44; white-space: nowrap; }
+  td:first-child { width: 34mm; }
+  td.c { text-align: center; white-space: nowrap; }
+  td.mono { font-family: Consolas, "Meiryo", monospace; white-space: nowrap; }
+  .tbl { break-inside: avoid; }
+  .pi { color: #A4462A; font-weight: bold; }
+  .note { background: #FFF6E5; border-radius: 2mm; padding: 2mm 3mm; font-size: 8.8pt; }
+</style>
+</head>
+<body>
+
+<h1>ER図・テーブル定義（薬局連携MVP）</h1>
+<p class="meta">処方箋ヘルパー × 薬局受付・在庫チェック　／　運営：株式会社Priamos　／　2026年10月26日<br>Cloudflare D1（SQLite）　／　元データ：worker/migrations/0006_pharmacy_intake.sql</p>
+
+<h2>ER図（IE記法）</h2>
+<div class="diagram">
+<pre class="mermaid">
+erDiagram
+  pharmacies ||--o{ pharmacy_sessions : "ログイン"
+  pharmacies ||--o{ intakes : "受け付ける"
+  intakes ||--o{ intake_images : "写真 最大2枚"
+  intakes ||--o{ intake_messages : "薬局からのメッセージ"
+  pharmacies ||--o{ intake_events : "時刻の記録"
+  intakes |o..o{ intake_events : "ハッシュで対応 FKなし"
+
+  pharmacies["pharmacies 薬局"] {
+    INTEGER id PK "薬局ID"
+    TEXT code UK "薬局コード"
+    TEXT name "薬局名"
+    TEXT login_email UK "ログイン用メール"
+    TEXT password_hash "パスワードのハッシュ"
+    TEXT password_salt "ソルト"
+    TEXT setup_code_hash "初回設定コードのハッシュ"
+    TEXT setup_expires_at "初回設定の期限"
+    TEXT created_at "作成日時"
+    TEXT disabled_at "停止日時"
+  }
+  pharmacy_sessions["pharmacy_sessions 薬局ログインセッション"] {
+    TEXT token PK "セッショントークン"
+    INTEGER pharmacy_id FK "薬局ID"
+    TEXT created_at "作成日時"
+    TEXT expires_at "有効期限"
+  }
+  intakes["intakes 受付"] {
+    TEXT id PK "受付ID"
+    INTEGER pharmacy_id FK "薬局ID"
+    TEXT client_request_id "送信リクエストID"
+    TEXT patient_token_hash "患者トークンのハッシュ"
+    TEXT lang "患者の言語"
+    TEXT pickup "受け取り希望"
+    TEXT card_json "初回アンケート"
+    TEXT drugs_json "AIが読み取った薬"
+    TEXT drugs_status "読み取り状態"
+    TEXT notify_email "お知らせメール"
+    TEXT status "受付の状態"
+    TEXT later_time "お渡し可能時刻"
+    TEXT created_at "送信日時"
+    TEXT opened_at "初回表示日時"
+    TEXT replied_at "初回返信日時"
+    TEXT done_at "完了日時"
+    TEXT expires_at "削除予定日時"
+  }
+  intake_images["intake_images 処方箋の写真"] {
+    TEXT intake_id PK,FK "受付ID"
+    INTEGER idx PK "写真の番号"
+    TEXT media_type "画像の形式"
+    TEXT data_b64 "画像データ"
+  }
+  intake_messages["intake_messages 薬局からのメッセージ"] {
+    INTEGER id PK "メッセージID"
+    TEXT intake_id FK "受付ID"
+    TEXT kind "種類"
+    TEXT template_key "定型文のキー"
+    TEXT text_ja "日本語の本文"
+    TEXT text_patient "患者の言語の本文"
+    TEXT created_at "送信日時"
+  }
+  intake_events["intake_events 時刻の記録"] {
+    INTEGER id PK "記録ID"
+    INTEGER pharmacy_id "薬局ID"
+    TEXT intake_ref "受付の参照"
+    TEXT event "出来事"
+    TEXT lang "患者の言語"
+    INTEGER drug_count "薬の数"
+    TEXT at "日時"
+  }
+</pre>
+</div>
+<div class="legend">
+  <span>┼──○＜　1対0以上（親1件に子が0件以上）</span>
+  <span>実線：外部キーあり（親を消すと子も消える ON DELETE CASCADE）</span>
+  <span>点線：外部キーなし（intake_events は受付IDのハッシュだけを持ち、受付が消えても残る）</span>
+  <span>PK：主キー　FK：外部キー　UK：一意</span>
+</div>
+
+<div class="page-break"></div>
+<h2>テーブル定義</h2>
+<p><span class="pi">■</span> は要配慮個人情報を含む項目。薬局が「完了」を押した時点で消す（NULL にする／行を削除）。日時はすべて ISO 8601（UTC）の文字列。</p>
+
+<div class="tbl">
+<h3>pharmacies（薬局）</h3>
+<table>
+<tr><th>論理名</th><th>物理名</th><th>型</th><th>NULL</th><th>キー</th><th>説明</th></tr>
+<tr><td>薬局ID</td><td class="mono">id</td><td class="c">INTEGER</td><td class="c">×</td><td class="c">PK</td><td>自動採番</td></tr>
+<tr><td>薬局コード</td><td class="mono">code</td><td class="c">TEXT</td><td class="c">×</td><td class="c">UK</td><td>患者用QRのURLに入る公開の識別子（https://rxhelper.jp/send?ph=＜コード＞）</td></tr>
+<tr><td>薬局名</td><td class="mono">name</td><td class="c">TEXT</td><td class="c">×</td><td class="c"></td><td>患者の送信画面に「送り先」として表示</td></tr>
+<tr><td>ログイン用メール</td><td class="mono">login_email</td><td class="c">TEXT</td><td class="c">×</td><td class="c">UK</td><td>薬局画面のログインID</td></tr>
+<tr><td>パスワードのハッシュ</td><td class="mono">password_hash</td><td class="c">TEXT</td><td class="c">○</td><td class="c"></td><td>初回設定まで NULL。運営は元のパスワードを知らない</td></tr>
+<tr><td>ソルト</td><td class="mono">password_salt</td><td class="c">TEXT</td><td class="c">○</td><td class="c"></td><td>パスワードのハッシュ用</td></tr>
+<tr><td>初回設定コードのハッシュ</td><td class="mono">setup_code_hash</td><td class="c">TEXT</td><td class="c">○</td><td class="c"></td><td>運営が発行する1回限りのコード（SHA-256）。使ったら NULL</td></tr>
+<tr><td>初回設定の期限</td><td class="mono">setup_expires_at</td><td class="c">TEXT</td><td class="c">○</td><td class="c"></td><td>発行から14日</td></tr>
+<tr><td>作成日時</td><td class="mono">created_at</td><td class="c">TEXT</td><td class="c">×</td><td class="c"></td><td></td></tr>
+<tr><td>停止日時</td><td class="mono">disabled_at</td><td class="c">TEXT</td><td class="c">○</td><td class="c"></td><td>値があると、ログイン・患者からの送信ができない</td></tr>
+</table>
+</div>
+
+<div class="tbl">
+<h3>pharmacy_sessions（薬局ログインセッション）</h3>
+<table>
+<tr><th>論理名</th><th>物理名</th><th>型</th><th>NULL</th><th>キー</th><th>説明</th></tr>
+<tr><td>セッショントークン</td><td class="mono">token</td><td class="c">TEXT</td><td class="c">×</td><td class="c">PK</td><td>ログイン時に発行。薬局のブラウザ（localStorage）に保存</td></tr>
+<tr><td>薬局ID</td><td class="mono">pharmacy_id</td><td class="c">INTEGER</td><td class="c">×</td><td class="c">FK</td><td>pharmacies.id（ON DELETE CASCADE）</td></tr>
+<tr><td>作成日時</td><td class="mono">created_at</td><td class="c">TEXT</td><td class="c">×</td><td class="c"></td><td></td></tr>
+<tr><td>有効期限</td><td class="mono">expires_at</td><td class="c">TEXT</td><td class="c">×</td><td class="c"></td><td>ログインから30日</td></tr>
+</table>
+</div>
+
+<div class="tbl">
+<h3>intakes（受付）</h3>
+<table>
+<tr><th>論理名</th><th>物理名</th><th>型</th><th>NULL</th><th>キー</th><th>説明</th></tr>
+<tr><td>受付ID</td><td class="mono">id</td><td class="c">TEXT</td><td class="c">×</td><td class="c">PK</td><td>推測できない32桁の16進数</td></tr>
+<tr><td>薬局ID</td><td class="mono">pharmacy_id</td><td class="c">INTEGER</td><td class="c">×</td><td class="c">FK</td><td>pharmacies.id（ON DELETE CASCADE）</td></tr>
+<tr><td>送信リクエストID</td><td class="mono">client_request_id</td><td class="c">TEXT</td><td class="c">×</td><td class="c">UK※</td><td>患者の端末が作る。送り直しても同じ受付を返す（※薬局ID＋この値で一意）</td></tr>
+<tr><td>患者トークンのハッシュ</td><td class="mono">patient_token_hash</td><td class="c">TEXT</td><td class="c">×</td><td class="c"></td><td>端末に保存する受付番号（トークン）の SHA-256。会員登録の代わり</td></tr>
+<tr><td>患者の言語</td><td class="mono">lang</td><td class="c">TEXT</td><td class="c">×</td><td class="c"></td><td>ja / ko / en / vi / zh / id / tl / th / my / ne / pt</td></tr>
+<tr><td>受け取り希望</td><td class="mono">pickup</td><td class="c">TEXT</td><td class="c">×</td><td class="c"></td><td>today15（本日15時ごろ）／ today17 ／ today19 ／ tomorrow（明日以降）</td></tr>
+<tr><td><span class="pi">■</span> 初回アンケート</td><td class="mono">card_json</td><td class="c">TEXT</td><td class="c">○</td><td class="c"></td><td>アンケートの答え（JSON。自由記述の日本語訳を含む）。完了で NULL</td></tr>
+<tr><td><span class="pi">■</span> AIが読み取った薬</td><td class="mono">drugs_json</td><td class="c">TEXT</td><td class="c">○</td><td class="c"></td><td>薬品名・用量・日数など（JSON）。参考情報。完了で NULL</td></tr>
+<tr><td>読み取り状態</td><td class="mono">drugs_status</td><td class="c">TEXT</td><td class="c">×</td><td class="c"></td><td>pending（読み取り中・既定値）／ done ／ failed</td></tr>
+<tr><td><span class="pi">■</span> お知らせメール</td><td class="mono">notify_email</td><td class="c">TEXT</td><td class="c">○</td><td class="c"></td><td>任意。状態が変わったときに知らせる（中身は書かない）。完了で NULL</td></tr>
+<tr><td>受付の状態</td><td class="mono">status</td><td class="c">TEXT</td><td class="c">×</td><td class="c"></td><td>new（未返信・既定値）／ ready（準備できました）／ inquiry（疑義照会中）／ later（○時以降にご用意）／ done（完了）</td></tr>
+<tr><td>お渡し可能時刻</td><td class="mono">later_time</td><td class="c">TEXT</td><td class="c">○</td><td class="c"></td><td>status = later のとき。17:00 ／ 18:00 ／ 19:00 ／ 20:00</td></tr>
+<tr><td>送信日時</td><td class="mono">created_at</td><td class="c">TEXT</td><td class="c">×</td><td class="c"></td><td></td></tr>
+<tr><td>初回表示日時</td><td class="mono">opened_at</td><td class="c">TEXT</td><td class="c">○</td><td class="c"></td><td>薬局が初めて詳細を開いた日時（受信箱の「未読」表示に使う）</td></tr>
+<tr><td>初回返信日時</td><td class="mono">replied_at</td><td class="c">TEXT</td><td class="c">○</td><td class="c"></td><td>最初に返信した日時（2回目以降は変えない）</td></tr>
+<tr><td>完了日時</td><td class="mono">done_at</td><td class="c">TEXT</td><td class="c">○</td><td class="c"></td><td></td></tr>
+<tr><td>削除予定日時</td><td class="mono">expires_at</td><td class="c">TEXT</td><td class="c">×</td><td class="c"></td><td>送信から7日。この日時を過ぎると定期実行（1時間ごと）で行ごと削除</td></tr>
+</table>
+</div>
+
+<div class="tbl">
+<h3>intake_images（処方箋の写真）</h3>
+<table>
+<tr><th>論理名</th><th>物理名</th><th>型</th><th>NULL</th><th>キー</th><th>説明</th></tr>
+<tr><td>受付ID</td><td class="mono">intake_id</td><td class="c">TEXT</td><td class="c">×</td><td class="c">PK, FK</td><td>intakes.id（ON DELETE CASCADE）</td></tr>
+<tr><td>写真の番号</td><td class="mono">idx</td><td class="c">INTEGER</td><td class="c">×</td><td class="c">PK</td><td>0 から。1件の受付につき最大2枚</td></tr>
+<tr><td>画像の形式</td><td class="mono">media_type</td><td class="c">TEXT</td><td class="c">×</td><td class="c"></td><td>image/jpeg など</td></tr>
+<tr><td><span class="pi">■</span> 画像データ</td><td class="mono">data_b64</td><td class="c">TEXT</td><td class="c">×</td><td class="c"></td><td>Base64。端末で長辺1568pxの JPEG に縮小して送る。完了で行を削除</td></tr>
+</table>
+</div>
+
+<div class="tbl">
+<h3>intake_messages（薬局からのメッセージ）</h3>
+<table>
+<tr><th>論理名</th><th>物理名</th><th>型</th><th>NULL</th><th>キー</th><th>説明</th></tr>
+<tr><td>メッセージID</td><td class="mono">id</td><td class="c">INTEGER</td><td class="c">×</td><td class="c">PK</td><td>自動採番</td></tr>
+<tr><td>受付ID</td><td class="mono">intake_id</td><td class="c">TEXT</td><td class="c">×</td><td class="c">FK</td><td>intakes.id（ON DELETE CASCADE）</td></tr>
+<tr><td>種類</td><td class="mono">kind</td><td class="c">TEXT</td><td class="c">×</td><td class="c"></td><td>template（定型文）／ free（自由入力をAIで翻訳）</td></tr>
+<tr><td>定型文のキー</td><td class="mono">template_key</td><td class="c">TEXT</td><td class="c">○</td><td class="c"></td><td>t1〜t5（11言語に翻訳済みの定型文）</td></tr>
+<tr><td><span class="pi">■</span> 日本語の本文</td><td class="mono">text_ja</td><td class="c">TEXT</td><td class="c">×</td><td class="c"></td><td>患者の画面に「日本語の原文」として表示</td></tr>
+<tr><td><span class="pi">■</span> 患者の言語の本文</td><td class="mono">text_patient</td><td class="c">TEXT</td><td class="c">×</td><td class="c"></td><td>完了で行を削除</td></tr>
+<tr><td>送信日時</td><td class="mono">created_at</td><td class="c">TEXT</td><td class="c">×</td><td class="c"></td><td></td></tr>
+</table>
+</div>
+
+<div class="tbl">
+<h3>intake_events（時刻の記録・検証研究用）</h3>
+<table>
+<tr><th>論理名</th><th>物理名</th><th>型</th><th>NULL</th><th>キー</th><th>説明</th></tr>
+<tr><td>記録ID</td><td class="mono">id</td><td class="c">INTEGER</td><td class="c">×</td><td class="c">PK</td><td>自動採番</td></tr>
+<tr><td>薬局ID</td><td class="mono">pharmacy_id</td><td class="c">INTEGER</td><td class="c">×</td><td class="c"></td><td>外部キー制約なし（集計用）</td></tr>
+<tr><td>受付の参照</td><td class="mono">intake_ref</td><td class="c">TEXT</td><td class="c">×</td><td class="c"></td><td>受付IDから作った SHA-256 の先頭16桁。受付が消えたあとは誰の受付か戻せない</td></tr>
+<tr><td>出来事</td><td class="mono">event</td><td class="c">TEXT</td><td class="c">×</td><td class="c"></td><td>received（届いた）／ opened（開いた）／ replied（返信した）／ done（完了）／ expired（完了されずに7日で削除）</td></tr>
+<tr><td>患者の言語</td><td class="mono">lang</td><td class="c">TEXT</td><td class="c">○</td><td class="c"></td><td></td></tr>
+<tr><td>薬の数</td><td class="mono">drug_count</td><td class="c">INTEGER</td><td class="c">○</td><td class="c"></td><td>※現在の実装では未記録（今後対応）</td></tr>
+<tr><td>日時</td><td class="mono">at</td><td class="c">TEXT</td><td class="c">×</td><td class="c"></td><td></td></tr>
+</table>
+</div>
+
+<div class="tbl">
+<h3>インデックス</h3>
+<table>
+<tr><th>名前</th><th>テーブル</th><th>列</th><th>用途</th></tr>
+<tr><td class="mono">idx_pharmacy_sessions_pharmacy_id</td><td class="mono">pharmacy_sessions</td><td class="mono">pharmacy_id</td><td>薬局ごとのセッション</td></tr>
+<tr><td class="mono">idx_intakes_pharmacy_created</td><td class="mono">intakes</td><td class="mono">pharmacy_id, created_at</td><td>受信箱（届いた順）</td></tr>
+<tr><td class="mono">idx_intakes_expires</td><td class="mono">intakes</td><td class="mono">expires_at</td><td>7日経過の削除</td></tr>
+<tr><td class="mono">idx_intake_events_pharmacy_at</td><td class="mono">intake_events</td><td class="mono">pharmacy_id, at</td><td>検証研究の集計</td></tr>
+</table>
+</div>
+
+<div class="tbl">
+<h2>データの消え方</h2>
+<table>
+<tr><th>きっかけ</th><th>消えるもの</th><th>残るもの</th></tr>
+<tr><td>薬局が「完了」を押す</td><td>写真（intake_images）・メッセージ（intake_messages）を削除。card_json・drugs_json・notify_email を NULL</td><td>受付の行（状態・時刻だけ）は送信から7日まで。患者の画面には「受付は完了しました」</td></tr>
+<tr><td>送信から7日（1時間ごとの定期実行）</td><td>受付の行ごと削除（写真・メッセージも一緒に消える）</td><td>intake_events（個人を特定しない時刻の記録）</td></tr>
+<tr><td>薬局を削除</td><td>その薬局のセッション・受付・写真・メッセージ</td><td>intake_events</td></tr>
+</table>
+</div>
+
+<div class="tbl">
+<h2>データベースの外にあるデータ</h2>
+<table>
+<tr><th>データ</th><th>置き場所</th><th>説明</th></tr>
+<tr><td>在庫CSV</td><td>薬局のブラウザ（localStorage：rxhelper.pharmacyStock.v1）</td><td>サーバーには送らない。「このブラウザから消す」で削除</td></tr>
+<tr><td>薬局のログイン情報</td><td>薬局のブラウザ（localStorage：rxhelper.pharmacySession.v1）</td><td>セッショントークンと薬局名</td></tr>
+<tr><td>送った受付の一覧</td><td>患者の端末（rxhelper.sentIntakes.v1）</td><td>受付IDと受付番号（トークン）。8日で端末から消す</td></tr>
+<tr><td>回数制限のカウント</td><td>Cloudflare KV（RATE_LIMIT_KV）</td><td>送信：IPごと1日10件・薬局ごと1日200件。訳文の確認：薬局ごと1日200回。薬局のログイン・初回設定：IPごと1日20回（会員ログインと共通）。日ごとのキーで、自動的に消える</td></tr>
+<tr><td>照合用の公的データ</td><td>Webサイトの静的ファイル（/pharmacy/realdata.json）</td><td>厚労省の薬価基準・供給状況（内用薬 10,189品目）。個人情報なし</td></tr>
+</table>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'base',
+    themeVariables: {
+      fontFamily: 'Meiryo, "Yu Gothic", sans-serif',
+      primaryColor: '#EEF5F3', primaryBorderColor: '#2C6E63', primaryTextColor: '#1E2624',
+      lineColor: '#2C6E63', tertiaryColor: '#FFFFFF',
+    },
+    er: { useMaxWidth: true },
+  });
+  mermaid.run().then(() => { document.body.dataset.rendered = 'true'; });
+</script>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>画面遷移図（薬局連携MVP）</title>
+<!-- 元データ：app/send.tsx, app/sent.tsx, app/pharmacy-card.tsx, app/index.tsx, app/pharmacy/*.tsx。画面や遷移を変えたら、この図と一覧も直す。 -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js"></script>
+<style>
+  @page { size: A4 landscape; margin: 11mm 12mm; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: "Meiryo", "Yu Gothic", sans-serif; color: #1E2624; font-size: 9.5pt; line-height: 1.6; margin: 0; background: #fff; }
+  h1 { font-size: 17pt; color: #1D4C44; margin: 0 0 1.5mm; padding-bottom: 2mm; border-bottom: 2.5px solid #2C6E63; }
+  h2 { font-size: 12.5pt; color: #1D4C44; margin: 5mm 0 2.5mm; padding-left: 3mm; border-left: 4px solid #2C6E63; break-after: avoid; }
+  p { margin: 0 0 2mm; }
+  .meta { color: #4A5B58; font-size: 9pt; }
+  .page-break { break-before: page; }
+  .diagram { text-align: center; margin-top: 2mm; }
+  .diagram svg { max-width: 100%; max-height: 120mm; height: auto; }
+  .diagram.tall svg { max-height: 148mm; }
+  .diagram.state svg { max-height: 85mm; }
+  .legend { display: flex; gap: 1mm 8mm; flex-wrap: wrap; font-size: 8.8pt; color: #33423F; margin-top: 1mm; }
+  .legend span { white-space: nowrap; }
+  table { border-collapse: collapse; width: 100%; margin: 0 0 3mm; font-size: 8.8pt; }
+  th, td { border: 1px solid #C9D6D3; padding: 1.3mm 2mm; vertical-align: top; text-align: left; }
+  th { background: #EEF5F3; color: #1D4C44; white-space: nowrap; }
+  td.c { text-align: center; white-space: nowrap; }
+  td.mono { font-family: Consolas, "Meiryo", monospace; white-space: nowrap; }
+  tr { break-inside: avoid; }
+  table.list { font-size: 8.2pt; table-layout: fixed; }
+  table.list td { padding: 1mm 1.8mm; line-height: 1.45; }
+  table.list td.mono { white-space: normal; word-break: break-all; }
+  .diagram.patient svg { max-height: 50mm; }
+  .two { display: flex; gap: 6mm; align-items: flex-start; }
+  .two > div { flex: 1; }
+</style>
+</head>
+<body>
+
+<h1>画面遷移図（薬局連携MVP）</h1>
+<p class="meta">処方箋ヘルパー × 薬局受付・在庫チェック　／　運営：株式会社Priamos　／　2026年10月26日　／　元データ：app/ 以下の画面（Expo Router）</p>
+
+<h2>患者さん側（スマートフォン・会員登録なし）</h2>
+<div class="diagram patient">
+<pre class="mermaid">
+flowchart LR
+  QR(["窓口のQRコード"]):::entry
+  MAIL(["お知らせメールのリンク"]):::entry
+  P01["P-01 処方箋を薬局に送る<br/>/send?ph=薬局コード"]
+  P02["P-02 薬局で見せるメモ<br/>（初回アンケート）<br/>/pharmacy-card"]:::existing
+  P03["P-03 送った処方箋<br/>/sent"]
+  P00["P-00 トップ<br/>/"]:::existing
+
+  QR --> P01
+  P01 -->|"回答する・直す"| P02
+  P02 -->|"処方箋を送る画面に戻る"| P01
+  P01 -->|"薬局に送る（成功）"| P03
+  MAIL --> P03
+  P01 -->|"← rxhelper.jp"| P00
+  P03 -->|"← rxhelper.jp"| P00
+  P00 -->|"送った処方箋を見る<br/>（送ったことがあるとき）"| P03
+  P00 -->|"薬局で見せるメモ"| P02
+
+  classDef entry fill:#FFF6E5,stroke:#C98A1B,color:#5A3E08;
+  classDef existing fill:#F3F4F4,stroke:#9AA5A3,color:#33423F;
+</pre>
+</div>
+
+<div class="legend">
+  <span>実線の矢印：画面の移動</span>
+  <span>点線の矢印：未ログイン・期限切れで自動移動</span>
+  <span>灰色：既存の画面</span>
+  <span>オレンジ：外からの入口</span>
+  <span>点線枠：ブラウザの印刷</span>
+</div>
+
+<h2>画面一覧</h2>
+<table class="list">
+<colgroup><col style="width:11mm"><col style="width:38mm"><col style="width:60mm"><col style="width:18mm"><col></colgroup>
+<tr><th>ID</th><th>画面名</th><th>URL</th><th>使う人</th><th>主な内容・操作</th></tr>
+<tr><td class="c">P-00</td><td>トップ（既存）</td><td class="mono">/</td><td>患者さん</td><td>処方箋の説明（既存）。送ったことがある端末では「送った処方箋を見る」が出る</td></tr>
+<tr><td class="c">P-01</td><td>処方箋を薬局に送る</td><td class="mono">/send?ph=＜薬局コード＞</td><td>患者さん</td><td>送り先の薬局名、言語（11言語）、初回アンケートの状態、写真（最大2枚）、受け取りの希望時刻、お知らせメール（任意）、3つの同意、送信。アンケート未記入なら一度だけ確認</td></tr>
+<tr><td class="c">P-02</td><td>薬局で見せるメモ（既存）</td><td class="mono">/pharmacy-card?returnTo=send&amp;ph=…</td><td>患者さん</td><td>初回アンケートの回答・修正（自由記述はAIで日本語に翻訳）。P-01から開くと「処方箋を送る画面に戻る」が出る</td></tr>
+<tr><td class="c">P-03</td><td>送った処方箋</td><td class="mono">/sent（?i=＜受付ID＞）</td><td>患者さん</td><td>受付ごとの状態、薬局からのメッセージ（患者さんの言語＋日本語の原文）、持ち物の案内。30秒ごとに更新。削除済みは「削除されました」と「一覧から消す」</td></tr>
+<tr><td class="c">S-01</td><td>初回設定</td><td class="mono">/pharmacy/setup?code=…&amp;s=…</td><td>薬局</td><td>パスワードを決める（8文字以上・確認入力）。リンクは1回限り・14日間有効</td></tr>
+<tr><td class="c">S-02</td><td>ログイン</td><td class="mono">/pharmacy/login</td><td>薬局</td><td>メールアドレスとパスワード。セッションは30日</td></tr>
+<tr><td class="c">S-03</td><td>受信箱</td><td class="mono">/pharmacy</td><td>薬局</td><td>届いた受付の一覧（時刻・言語・未読・状態・受け取り希望・AI読み取り）。30秒ごとに更新し新着をお知らせ。在庫CSVの読み込み（列の選択・見出し行）。ログアウト</td></tr>
+<tr><td class="c">S-04</td><td>受付詳細</td><td class="mono">/pharmacy/intake?id=＜受付ID＞</td><td>薬局</td><td>写真（タップで拡大）、AIが読んだ薬と在庫の照合（在庫あり・不足・在庫なし・照合データなし・限定出荷）、問診票（日本語）と印刷、返信、定型メッセージ、自由入力（訳を確認して送る）、履歴、完了（確認のあと削除）</td></tr>
+</table>
+
+
+
+<div class="page-break"></div>
+<div class="two">
+<div>
+<h2>薬局側（受付用のパソコン・タブレット）</h2>
+<div class="diagram tall">
+<pre class="mermaid">
+flowchart TB
+  LINK(["運営から届く設定リンク"]):::entry
+  S01["S-01 初回設定<br/>/pharmacy/setup"]
+  S02["S-02 ログイン<br/>/pharmacy/login"]
+  S03["S-03 受信箱<br/>/pharmacy"]
+  S04["S-04 受付詳細<br/>/pharmacy/intake?id=受付ID"]
+  PRINT(["ブラウザの印刷画面"]):::dialog
+
+  LINK --> S01
+  S01 -->|"設定する（成功）"| S02
+  S02 -->|"ログイン（成功）"| S03
+  S03 -->|"受付をタップ"| S04
+  S04 -->|"← 受信箱<br/>削除して完了<br/>受信箱に戻る（削除済み）"| S03
+  S04 -->|"問診票（日本語）を印刷"| PRINT
+  S03 -->|"ログアウト"| S02
+  S03 -.->|"未ログイン・期限切れ"| S02
+  S04 -.->|"期限切れ"| S02
+
+  classDef entry fill:#FFF6E5,stroke:#C98A1B,color:#5A3E08;
+  classDef dialog fill:#FFFFFF,stroke:#9AA5A3,stroke-dasharray:4 3,color:#33423F;
+</pre>
+</div>
+</div>
+<div>
+<h2>患者さんと薬局のあいだのデータの流れ</h2>
+<div class="diagram tall">
+<pre class="mermaid">
+flowchart TB
+  P01["P-01 処方箋を薬局に送る<br/>（患者さん）"] ==>|"写真・アンケート・受け取り希望"| S03["S-03 受信箱（薬局）<br/>30秒ごとに更新"]
+  S03 --> S04["S-04 受付詳細（薬局）"]
+  S04 ==>|"返信・メッセージ"| P03["P-03 送った処方箋（患者さん）<br/>30秒ごとに更新"]
+  S04 ==>|"メール希望者のみ<br/>中身は書かない"| MAIL(["お知らせメール"]):::entry
+  MAIL --> P03
+  classDef entry fill:#FFF6E5,stroke:#C98A1B,color:#5A3E08;
+</pre>
+</div>
+<p class="meta">太い矢印は画面の移動ではなく、データが相手側に届くことを表す。届いた内容は、薬局が「完了」を押した時点で削除され、完了されなくても送信から7日で削除される。</p>
+</div>
+</div>
+
+<div class="page-break"></div>
+<h2>受付の状態の移り変わり</h2>
+<div class="diagram state">
+<pre class="mermaid">
+stateDiagram-v2
+  direction LR
+  [*] --> new : 患者さんが送る
+  new --> ready : 返信
+  new --> inquiry : 返信
+  new --> later : 返信（時刻を選ぶ）
+  ready --> inquiry
+  inquiry --> ready
+  inquiry --> later
+  later --> ready
+  new --> done : 完了
+  ready --> done : 完了
+  inquiry --> done : 完了
+  later --> done : 完了
+  done --> [*] : 送信から7日で削除
+  new --> [*] : 完了されずに7日で削除
+</pre>
+</div>
+<h2>状態ごとの表示</h2>
+<table>
+<tr><th>状態</th><th>薬局の画面</th><th>患者さんの画面（日本語の場合）</th></tr>
+<tr><td class="mono">new</td><td>未返信</td><td>薬局が確認しています。</td></tr>
+<tr><td class="mono">ready</td><td>準備できました</td><td>薬の準備ができました。</td></tr>
+<tr><td class="mono">inquiry</td><td>疑義照会中</td><td>薬局が病院に確認しています。少し時間がかかります。</td></tr>
+<tr><td class="mono">later</td><td>○時以降にご用意</td><td>○時から受け取れます。（17時〜20時）</td></tr>
+<tr><td class="mono">done</td><td>完了</td><td>受付は完了しました。</td></tr>
+<tr><td>（削除後）</td><td>この受付は削除されました</td><td>この受付は削除されました（7日経過または完了）。</td></tr>
+</table>
+<p class="meta">返信・メッセージのたびに、メールを希望した患者さんにだけ「薬局から返信がありました」とリンクを送る（中身は書かない）。完了した受付には返信できない。返信済みの受付も、完了までは状態を変えられる（図は主な流れのみ）。</p>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'base',
+    themeVariables: {
+      fontFamily: 'Meiryo, "Yu Gothic", sans-serif',
+      primaryColor: '#EEF5F3', primaryBorderColor: '#2C6E63', primaryTextColor: '#1E2624',
+      lineColor: '#2C6E63', clusterBkg: '#FAFCFB', clusterBorder: '#9DB8B2', edgeLabelBackground: '#FFFFFF',
+    },
+    fontSize: 15,
+    flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis', nodeSpacing: 30, rankSpacing: 45 },
+  });
+  mermaid.run().then(() => { document.body.dataset.rendered = 'true'; });
+</script>
+</body>
+</html>
