@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>患者さんが入力した内容の届き方（薬剤師様向けご説明）</title>
+<!-- 画面の画像は img/ のローカル検証用データ（架空のベトナム語の患者さん）で撮影。実在の患者情報は含まない。 -->
+<style>
+  @page { size: A4; margin: 14mm 14mm 14mm 14mm; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: "Meiryo", "Yu Gothic", sans-serif; color: #1E2624; font-size: 10pt; line-height: 1.7; margin: 0; background: #fff; }
+  h1 { font-size: 18pt; line-height: 1.4; color: #1D4C44; margin: 0 0 2mm; padding-bottom: 2.5mm; border-bottom: 2.5px solid #2C6E63; }
+  h2 { font-size: 13pt; color: #1D4C44; margin: 7mm 0 3mm; padding-left: 3mm; border-left: 4.5px solid #2C6E63; break-after: avoid; }
+  p { margin: 0 0 2.5mm; }
+  .meta { color: #4A5B58; font-size: 9pt; margin-bottom: 4mm; }
+  .answer { background: #EEF5F3; border-radius: 3mm; padding: 4mm 5mm; font-size: 11pt; line-height: 1.75; }
+  .answer b { color: #1D4C44; }
+  table { border-collapse: collapse; width: 100%; font-size: 9.3pt; margin: 0 0 3mm; }
+  th, td { border: 1px solid #C9D6D3; padding: 2mm 2.5mm; vertical-align: top; text-align: left; }
+  th { background: #EEF5F3; color: #1D4C44; }
+  thead th { text-align: center; }
+  td.k { background: #F7FAF9; color: #33423F; font-weight: bold; white-space: nowrap; width: 26mm; }
+  tr { break-inside: avoid; }
+  .yes { color: #1D4C44; font-weight: bold; }
+  .no { color: #8A4B2E; font-weight: bold; }
+  .page-break { break-before: page; }
+  .shots { display: flex; gap: 6mm; align-items: flex-start; justify-content: center; }
+  .shot { text-align: center; }
+  .shot img { border: 1px solid #C9D6D3; border-radius: 3mm; display: block; margin: 0 auto 2mm; }
+  .shot .cap { font-size: 8.8pt; color: #33423F; line-height: 1.5; text-align: left; }
+  .shot .cap b { color: #1D4C44; }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 0 0 3mm; }
+  .steps li { position: relative; padding-left: 9mm; margin-bottom: 2mm; }
+  .steps li::before { counter-increment: s; content: counter(s); position: absolute; left: 0; top: 0.3mm; width: 6.2mm; height: 6.2mm; border-radius: 50%; background: #2C6E63; color: #fff; font-size: 9pt; font-weight: bold; text-align: center; line-height: 6.2mm; }
+  ul { margin: 0 0 3mm; padding-left: 5.5mm; }
+  li { margin-bottom: 1.2mm; }
+  .note { font-size: 8.8pt; color: #4A5B58; }
+  .box { border: 1px solid #C9D6D3; border-radius: 3mm; padding: 3mm 4mm; }
+  .tight h2 { margin-top: 5mm; }
+  .tight li { font-size: 9.5pt; margin-bottom: 0.8mm; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<h1>患者さんが処方箋ヘルパーで入力した内容は、<br>薬局に送信されますか？</h1>
+<p class="meta">処方箋ヘルパー × 薬局受付・在庫チェック　薬剤師様向けご説明　／　株式会社Priamos　／　2026年10月</p>
+
+<div class="answer">
+  <b>薬局のQRコードから送った場合は、送信されます。</b>処方箋の写真と一緒に、初回アンケートの答え（チェックした項目と、自由記述の日本語訳）が薬局に届き、受付用のパソコンで「問診票（日本語）」として確認・印刷できます。<br>
+  <b>QRコードを使わない場合は、送信されません。</b>これまでどおり、患者さんがスマートフォンの画面を窓口でお見せする形です。
+</div>
+
+<h2>2つの使い方の違い</h2>
+<table>
+<thead><tr><th></th><th>A. 薬局のQRコードから送る（新しい使い方）</th><th>B. 「薬局で見せるメモ」を見せる（これまでの使い方）</th></tr></thead>
+<tr><td class="k">始め方</td><td>窓口に置いたQRコードを、患者さんがスマートフォンで読み取る</td><td>患者さんがアプリのトップから「薬局で見せるメモ」を開く</td></tr>
+<tr><td class="k">薬局に届くもの</td><td><span class="yes">送信される：</span>処方箋の写真、初回アンケートの答え、受け取りの希望時刻</td><td><span class="no">送信されない：</span>データは患者さんのスマートフォンの中だけ</td></tr>
+<tr><td class="k">薬局での見え方</td><td>受付用のパソコン・タブレットの「受信箱」に届く（30秒ごとに自動更新）。問診票（日本語）を表示・印刷できる</td><td>窓口で、患者さんのスマートフォンの画面を見る</td></tr>
+<tr><td class="k">タイミング</td><td>来局前。受け取りの希望時刻までに、在庫の確認や準備ができる</td><td>来局したとき</td></tr>
+<tr><td class="k">薬局からの連絡</td><td>「準備できました」「疑義照会中」「○時以降にご用意」や定型・自由入力のメッセージを、患者さんの言語で送れる</td><td>なし（口頭）</td></tr>
+<tr><td class="k">データの削除</td><td>薬局が「完了」を押した時点で削除。押さなくても送信から7日で自動削除</td><td>患者さんがメモを消すまで、スマートフォンに残る</td></tr>
+</table>
+
+<h2>A の流れ（QRコードから送る場合）</h2>
+<ol class="steps">
+  <li>患者さんが窓口のQRコードを読み取り、初回アンケートに答えて（母語で可）、処方箋を撮影し、受け取りの希望時刻を選んで「薬局に送る」を押します。会員登録はいりません。</li>
+  <li>薬局の受付用のパソコンの「受信箱」に届きます。レセコンのパソコンには何も入れません。</li>
+  <li>受付を開くと、処方箋の写真、AIが読み取った薬の一覧（参考）と在庫の照合、問診票（日本語）が表示されます。問診票は印刷できます。</li>
+  <li>返信やメッセージを送ると、患者さんのスマートフォンに、患者さんの言語と日本語の原文で表示されます。</li>
+  <li>お渡しが終わったら「完了」を押します。写真・答え・メッセージはその時点で削除されます。</li>
+</ol>
+
+<div class="page-break"></div>
+<h2>画面の例（架空のベトナム語の患者さん）</h2>
+<div class="shots">
+  <div class="shot" style="width:62mm">
+    <img src="img/send_screen.png" style="width:58mm">
+    <div class="cap"><b>① 患者さんの送信画面（A）</b><br>送り先の薬局名、アンケートの回答状況、写真、受け取りの希望時刻、送る前の3つの同意。</div>
+  </div>
+  <div class="shot" style="width:104mm">
+    <img src="img/pharmacy_card.png" style="width:100mm">
+    <div class="cap"><b>② 薬局の画面に届いた問診票（A）</b><br>ベトナム語で書かれた自由記述は、AIによる日本語訳と原文を並べて表示します。冒頭に「ご本人が処方箋ヘルパーで入力し、送信した内容」と明記しています。</div>
+  </div>
+</div>
+
+<div class="page-break"></div>
+<div class="tight">
+<h2>送信される内容・送信されない内容（A の場合）</h2>
+<table>
+<tr><th style="width:50%">送信される</th><th>送信されない</th></tr>
+<tr><td>
+  <ul>
+    <li>処方箋の写真（最大2枚。スマートフォンで縮小してから送信）</li>
+    <li>初回アンケートの答え：日本語の会話、お薬手帳、身長・体重、ジェネリック、治療中の病気、アレルギー、副作用歴、使用中の薬、他院の薬、市販薬など、チェックした項目すべて</li>
+    <li>自由記述の原文と、AIによる日本語訳</li>
+    <li>受け取りの希望時刻、患者さんの言語</li>
+    <li>お知らせ用のメールアドレス（任意）。返信のお知らせだけに使い、<b>薬局の画面には表示されません</b>。メールには薬の名前などを書きません</li>
+  </ul>
+</td><td>
+  <ul>
+    <li>アンケートに氏名・住所・生年月日などの入力欄はありません（これらは処方箋の写真に写っている範囲だけです）</li>
+    <li>処方箋ヘルパーで過去に撮影した記録そのもの（使用中の薬として患者さんが選んだ薬の名前だけが、答えに含まれます）</li>
+    <li>送信したあとに患者さんがメモを直した内容（送信した時点の内容が届きます）</li>
+    <li>薬局の在庫CSV（薬局のブラウザの中だけで読み込み、サーバーには送りません）</li>
+  </ul>
+</td></tr>
+</table>
+
+<h2>患者さんの同意と、薬局での表示</h2>
+<ul>
+  <li>送信の前に、患者さんは次の3点に同意します：選んだ薬局に処方箋の写真とアンケートの答えを送ること／処方箋の読み取りと自由記述の翻訳にAI（海外のサーバー）を使うこと／薬局が確認したあと自動で消えること（確認されなくても7日で消えること）。</li>
+  <li>薬局の画面の問診票には「以下は、ご本人が処方箋ヘルパーで入力し、送信した内容です。」と表示し、末尾に「ご本人の申告です。内容の確認とご判断は、薬剤師の方にお願いいたします。」と記載しています。</li>
+  <li>AIの翻訳には必ず原文を並べ、「誤りがある可能性があるため、必要に応じて原文やご本人にご確認ください」と注記しています。</li>
+</ul>
+
+<h2>保存と削除</h2>
+<ul>
+  <li>届いた内容は、薬局が「完了」を押した時点で削除します（写真・答え・メッセージ・メールアドレス）。完了されなくても、送信から7日で自動的に削除します。</li>
+  <li>残すのは、届いた・開いた・返信した・完了した時刻などの記録だけで、個人を特定できる情報は含みません（検証研究の集計に使います）。</li>
+  <li>保存先は運営が利用するクラウドサービス（Cloudflare社、米国）、AIは Anthropic社（米国）のモデルです。</li>
+</ul>
+
+<h2 style="margin-top:4mm">B（これまでの使い方）の画面</h2>
+<table class="bsec" style="border:0">
+<tr>
+  <td style="border:0; width:27mm; padding:0 4mm 0 0"><img src="img/memo_show.png" style="width:22mm; border:1px solid #C9D6D3; border-radius:3mm; display:block"></td>
+  <td style="border:0; padding:0">
+    <div class="box">
+    <p>QRコードを使わずに、アプリの「薬局で見せるメモ」を開いた場合は、この画面を窓口でお見せいただく形です。<b>どこにも送信されません。</b></p>
+    <p>表示される内容（問診票の形式）は A と同じなので、患者さんにとっては、来局前に送るか、来局してから見せるかの違いになります。</p>
+    <p class="note">お気づきの点や、実際の窓口の流れに合わない点がありましたら、お知らせいただけますと幸いです。</p>
+    </div>
+  </td>
+</tr>
+</table>
+</div>
+
+</body>
+</html>
