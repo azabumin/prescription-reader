@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 
 import { COLORS, FONT, RADIUS, SPACING } from '../constants/theme';
 import { currentTranslation, type FreeTextField, type PharmacyCard } from '../lib/pharmacyCard';
@@ -23,6 +23,14 @@ import {
   type CardOption,
 } from '../lib/pharmacyCardStrings';
 import type { Lang } from '../types';
+
+// The patient's own words carry their language as a lang attribute (web), so the pharmacy screens can switch them off
+// the Meiryo-first stack: Meiryo has the plain Latin letters but not precomposed Vietnamese, and the browser then draws
+// the tone marks detached. react-native-web passes `lang` through; RN's types don't list it, hence the {} return type.
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+function webLang(lang: Lang): {} {
+  return Platform.OS === 'web' ? { lang } : {};
+}
 
 // Shared by the patient's memo screen (app/pharmacy-card.tsx) and the pharmacy inbox (app/pharmacy/intake.tsx).
 // The part the pharmacist reads: always Japanese, large type, answers as a label/value list.
@@ -58,7 +66,7 @@ export function JapaneseCard({ card, sent = false }: { card: PharmacyCard; sent?
           </Text>
           <Text style={styles.cardTranslatedText}>{ja}</Text>
           <Text style={styles.cardOriginalSmall}>
-            {JA_CARD.originalShort(LANG_NAME_JA[fieldLang])}：{text}
+            {JA_CARD.originalShort(LANG_NAME_JA[fieldLang])}：<Text {...webLang(fieldLang)}>{text}</Text>
           </Text>
         </View>
       );
@@ -66,7 +74,7 @@ export function JapaneseCard({ card, sent = false }: { card: PharmacyCard; sent?
     return (
       <Text key={field} style={styles.cardOriginal}>
         {lead}
-        {JA_CARD.original(LANG_NAME_JA[fieldLang])}：{text}
+        {JA_CARD.original(LANG_NAME_JA[fieldLang])}：<Text {...webLang(fieldLang)}>{text}</Text>
       </Text>
     );
   };

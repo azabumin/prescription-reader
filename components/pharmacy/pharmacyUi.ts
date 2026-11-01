@@ -5,13 +5,15 @@ import { COLORS, FONT, RADIUS, SPACING } from '../../constants/theme';
 
 let cssInjected = false;
 
-// Meiryo first for Japanese text, and a print stylesheet that hides the controls (buttons, inputs) so the
+// Meiryo first for Japanese text (a patient's own words, tagged with their lang, use a Latin-first stack -- see
+// components/JapaneseCard.tsx), and a print stylesheet that hides the controls (buttons, inputs) so the
 // 問診票 prints as a clean sheet. RN components opt out of print with dataSet={{ noprint: 'true' }}.
 export function injectPharmacyCss(): void {
   if (Platform.OS !== 'web' || cssInjected || typeof document === 'undefined') return;
   const style = document.createElement('style');
   style.textContent = `
     [data-pharmacy-root] * { font-family: Meiryo, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif; }
+    [data-pharmacy-root] [lang]:not([lang="ja"]) { font-family: "Segoe UI", "Helvetica Neue", Arial, "Noto Sans", sans-serif; }
     @media print {
       [data-noprint="true"] { display: none !important; }
       body { background: #FFFFFF !important; }

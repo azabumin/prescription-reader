@@ -3,12 +3,16 @@ import { ActivityIndicator, Image, Platform, ScrollView, Text, TextInput, Toucha
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { JapaneseCard } from '../../components/JapaneseCard';
+import { DrugStockList } from '../../components/pharmacy/DrugStockList';
 import { formatJaTime, ph, STATUS_JA, webData } from '../../components/pharmacy/pharmacyUi';
 import { COLORS } from '../../constants/theme';
+import { normalizeCard } from '../../lib/cardShape';
+import { emptyCard } from '../../lib/pharmacyCard';
 import {
   getIntake,
   getIntakeImageUrl,
   listTemplates,
+  loadSession,
   markDone,
   PharmacyApiError,
   PharmacyAuthError,
@@ -18,13 +22,12 @@ import {
   type IntakeDetail,
 } from '../../lib/pharmacyApi';
 import { LANG_NAME_JA } from '../../lib/pharmacyCardStrings';
+import { hasStockCheck } from '../../lib/pharmacyPlan';
 import { SEND_STRINGS } from '../../lib/sendStrings';
-import { matchDrug, needQuantity, VERDICT_LABELS, type DrugMatch } from '../../lib/stock/match';
-import { loadRealIndex, SUPPLY_LABELS, type RealIndex } from '../../lib/stock/realdata';
+import { loadRealIndex, type RealIndex } from '../../lib/stock/realdata';
 import { loadStock } from '../../lib/stock/stockStore';
 
 const LATER_TIMES = ['17:00', '18:00', '19:00', '20:00'];
-const VERDICT_COLOR = { ok: COLORS.primary, short: '#B7791F', none: COLORS.danger, unknown: COLORS.textMuted } as const;
 
 export default function PharmacyIntakeScreen() {
   const { id } = useLocalSearchParams<{ id: string }>(); // /pharmacy/intake?id=… (static hosting has no dynamic routes)
@@ -47,10 +50,13 @@ export default function PharmacyIntakeScreen() {
   const [confirmDone, setConfirmDone] = useState(false);
   const polls = useRef(0);
   const stock = loadStock();
+  // the console refreshes the plan (GET /pharmacy/me); an older session without one behaves as before (AB)
+  const showDrugs = hasStockCheck(loadSession()?.pharmacy.plan ?? 'AB');
 
   const handle = useCallback(
     (e: unknown, fallback: string) => {
       if (e instanceof PharmacyAuthError) router.replace('/pharmacy/login');
+      else if (e instanceof PharmacyApiError && e.code === 'plan') router.replace('/pharmacy');
       else if (e instanceof PharmacyApiError && e.code === 'gone') setGone(true);
       else setError(fallback);
     },
@@ -80,11 +86,13 @@ export default function PharmacyIntakeScreen() {
       }
     });
     listTemplates().then(setTemplates).catch(() => {});
-    loadRealIndex()
-      .then(setIndex)
-      .catch(() => setError('照合用のデータを読み込めませんでした。在庫の照合は使えません。'));
+    if (showDrugs) {
+      loadRealIndex()
+        .then(setIndex)
+        .catch(() => setError('照合用のデータを読み込めませんでした。在庫の照合は使えません。'));
+    }
     return () => urls.forEach((u) => URL.revokeObjectURL(u));
-  }, [load, handle]);
+  }, [load, handle, showDrugs]);
 
   // the AI reads the photo right after the send; check back every few seconds until it's finished
   useEffect(() => {
@@ -155,10 +163,10 @@ export default function PharmacyIntakeScreen() {
   }
 
   const isDone = detail.status === 'done';
-  const matches: (DrugMatch | null)[] = (detail.drugs ?? []).map((d) => (index ? matchDrug(d, index, stock?.rows ?? null) : null));
+  const card = detail.card ? normalizeCard(detail.card, emptyCard(detail.lang)) : null;
 
   const photoColumn = (
-    <View style={[ph.card, wide && { flex: 1 }]}>
+    <View style={[ph.card, wide && (showDrugs ? { flex: 1 } : { flex: 1, maxWidth: 560 })]}>
       <Text style={ph.h2}>処方箋の写真</Text>
       {images.length === 0 && !isDone && <ActivityIndicator color={COLORS.primary} />}
       {isDone && <Text style={ph.small}>完了済みのため、写真は削除されています。</Text>}
@@ -177,41 +185,9 @@ export default function PharmacyIntakeScreen() {
       <Text style={ph.small}>AIが写真から読み取った参考情報です。判断は写真と処方箋の原本で確認してください。</Text>
       {detail.drugsStatus === 'pending' && <Text style={ph.body}>AIが読み取り中です…</Text>}
       {detail.drugsStatus === 'failed' && <Text style={ph.error}>読み取れませんでした。写真で確認してください。</Text>}
-      {!stock && detail.drugs && <Text style={ph.small}>在庫CSVを読み込むと、在庫数との照合も表示します（受信箱の画面から）。</Text>}
-      {(detail.drugs ?? []).map((d, i) => {
-        const m = matches[i];
-        const need = needQuantity(d);
-        return (
-          <View key={i} style={{ borderTopWidth: 1, borderTopColor: COLORS.border, paddingTop: 8, gap: 2 }}>
-            <View style={[ph.row, { justifyContent: 'space-between' }]}>
-              <Text style={[ph.body, { fontWeight: '700', flexShrink: 1 }]}>
-                {d.generic ? '【般】' : ''}
-                {d.name}
-              </Text>
-              {m && stock && <Text style={{ color: VERDICT_COLOR[m.verdict], fontWeight: '800' }}>{VERDICT_LABELS[m.verdict]}</Text>}
-            </View>
-            <Text style={ph.small}>{d.rawText}</Text>
-            <Text style={ph.small}>
-              必要量：{need === null ? '—' : `${need}${d.unit}`}
-              {m && m.stockQty !== null ? `　在庫：${m.stockQty}${d.unit}` : ''}
-              {m && m.stockNames.length > 0 ? `（${m.stockNames.join('、')}）` : ''}
-            </Text>
-            {m && m.supply.length > 0 && (
-              <Text style={ph.small}>
-                出荷状況：
-                {m.supply
-                  .filter((s) => s.status !== 0)
-                  .slice(0, 3)
-                  .map((s) => `${s.name} ${SUPPLY_LABELS[s.status]}`)
-                  .join('、') || 'すべて通常出荷'}
-                　／　通常出荷の製品 {m.normalAlternatives}／{m.groupSize}件
-              </Text>
-            )}
-            {m && m.groupSize === 0 && <Text style={ph.small}>照合用データにない薬です（外用薬・注射薬など）。目で確認してください。</Text>}
-          </View>
-        );
-      })}
-      {index && <Text style={ph.small}>照合用データ：厚労省 薬価基準（{index.asof.yakka}）・供給状況（{index.asof.supply}取得）</Text>}
+      {detail.drugsStatus === 'skipped' && <Text style={ph.small}>この受付では薬の読み取りをしていません（Bプランで受け付けた処方箋）。写真で確認してください。</Text>}
+      {!stock && detail.drugs && <Text style={ph.small}>在庫CSVを読み込むと、在庫数との照合も表示します（受付画面から）。</Text>}
+      {detail.drugs && <DrugStockList drugs={detail.drugs} index={index} stock={stock} />}
     </View>
   );
 
@@ -238,12 +214,12 @@ export default function PharmacyIntakeScreen() {
 
       <View style={wide ? { flexDirection: 'row', gap: 16, alignItems: 'flex-start' } : { gap: 16 }} {...webData({ noprint: 'true' })}>
         {photoColumn}
-        {drugColumn}
+        {showDrugs && drugColumn}
       </View>
 
       <View style={ph.card}>
         <Text style={ph.h2}>初回アンケートの答え（日本語）</Text>
-        {detail.card ? <JapaneseCard card={detail.card} sent /> : <Text style={ph.small}>完了済みのため、回答は削除されています。</Text>}
+        {card ? <JapaneseCard card={card} sent /> : <Text style={ph.small}>完了済みのため、回答は削除されています。</Text>}
       </View>
 
       {!isDone && (

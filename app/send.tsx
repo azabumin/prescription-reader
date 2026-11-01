@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Image, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Link, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
-import * as ImagePicker from 'expo-image-picker';
-import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 
 import { COLORS, FONT, RADIUS, SPACING } from '../constants/theme';
 import { detectDefaultLang } from '../lib/i18n';
@@ -10,7 +8,8 @@ import { getPharmacyName, IntakeError, PICKUP_CODES, sendIntake, type PickupCode
 import { addSent } from '../lib/intakeStore';
 import { loadLangPref, saveLangPref } from '../lib/langPref';
 import { loadCard, type PharmacyCard } from '../lib/pharmacyCard';
-import { answeredCount, longEdgeResize, newClientRequestId } from '../lib/sendLogic';
+import { pickPhoto, type PreparedPhoto } from '../lib/photoPrep';
+import { answeredCount, newClientRequestId } from '../lib/sendLogic';
 import { SEND_STRINGS } from '../lib/sendStrings';
 import { LANGUAGES, type Lang } from '../types';
 
@@ -19,19 +18,7 @@ import { LANGUAGES, type Lang } from '../types';
 // Japanese; the device keeps a token to read the pharmacy's replies on /sent.
 
 const MAX_PHOTOS = 2;
-const MAX_IMAGE_B64 = 1_500_000; // keep in sync with worker/src/intake/types.ts
-
-type Photo = { uri: string; base64: string };
-
-async function toJpegBase64(uri: string, width: number, height: number, compress: number): Promise<string> {
-  const ctx = ImageManipulator.manipulate(uri);
-  const size = longEdgeResize(width, height);
-  if (size) ctx.resize(size);
-  const rendered = await ctx.renderAsync();
-  const result = await rendered.saveAsync({ format: SaveFormat.JPEG, compress, base64: true });
-  if (!result.base64) throw new Error('no base64 output');
-  return result.base64;
-}
+type Photo = PreparedPhoto;
 
 export default function SendScreen() {
   const params = useLocalSearchParams<{ ph?: string }>();
@@ -83,27 +70,10 @@ export default function SendScreen() {
     setError('');
     if (photos.length >= MAX_PHOTOS) return;
     try {
-      // web: asking for camera permission first breaks the browser's user-activation chain (see app/index.tsx)
-      if (Platform.OS !== 'web' || source === 'library') {
-        const perm = source === 'camera' ? await ImagePicker.requestCameraPermissionsAsync() : await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (!perm.granted) {
-          setError(t.errPhoto);
-          return;
-        }
-      }
-      const picked =
-        source === 'camera'
-          ? await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 1 })
-          : await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 1 });
-      if (picked.canceled || !picked.assets?.length) return;
-      const a = picked.assets[0];
-      let base64 = await toJpegBase64(a.uri, a.width, a.height, 0.85);
-      if (base64.length > MAX_IMAGE_B64) base64 = await toJpegBase64(a.uri, a.width, a.height, 0.6);
-      if (base64.length > MAX_IMAGE_B64) {
-        setError(t.errImageTooLarge);
-        return;
-      }
-      setPhotos((prev) => [...prev, { uri: a.uri, base64 }].slice(0, MAX_PHOTOS));
+      const p = await pickPhoto(source);
+      if (p === 'denied') setError(t.errPhoto);
+      else if (p === 'too_large') setError(t.errImageTooLarge);
+      else if (p) setPhotos((prev) => [...prev, p].slice(0, MAX_PHOTOS));
     } catch (e) {
       console.warn('send_photo_failed', e);
       setError(t.errPhoto);

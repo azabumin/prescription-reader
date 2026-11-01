@@ -78,7 +78,7 @@ export function StockCsvPanel({ onChange }: { onChange?: (s: SavedStock | null) 
           {saved.fileName}（{saved.rows.length}品目・{formatJaTime(saved.loadedAt)} 読み込み）
         </Text>
       ) : (
-        <Text style={ph.body}>まだ読み込んでいません。読み込むと、届いた処方の薬と在庫をまとめて照合します。</Text>
+        <Text style={ph.body}>まだ読み込んでいません。読み込むと、処方の薬と在庫をまとめて照合します。</Text>
       )}
       <View style={ph.row}>
         <TouchableOpacity accessibilityRole="button" style={ph.secondary} onPress={pickFile}>

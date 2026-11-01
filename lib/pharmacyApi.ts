@@ -3,11 +3,17 @@
 import { WORKER_URL } from '../constants/config';
 import type { PharmacyCard } from './pharmacyCard';
 import type { IntakeStatus, PickupCode } from './intakeApi';
+import { parsePlan, type PharmacyPlan } from './pharmacyPlan';
 import type { Lang } from '../types';
 
 const SESSION_KEY = 'rxhelper.pharmacySession.v1';
 
-export type PharmacySession = { token: string; pharmacy: { name: string; code: string } };
+// plan is missing in sessions saved before plans existed; the console fills it in from getMe().
+export type PharmacyInfo = { name: string; code: string; plan?: PharmacyPlan };
+export type PharmacySession = { token: string; pharmacy: PharmacyInfo };
+
+// 'skipped' = a plan-B pharmacy, so the medicines were not read
+export type DrugsStatus = 'pending' | 'done' | 'failed' | 'skipped';
 
 export type ExtractedDrug = {
   name: string;
@@ -26,7 +32,7 @@ export type InboxItem = {
   lang: Lang;
   pickup: PickupCode;
   status: IntakeStatus;
-  drugsStatus: 'pending' | 'done' | 'failed';
+  drugsStatus: DrugsStatus;
   opened: boolean;
 };
 
@@ -37,7 +43,7 @@ export type IntakeDetail = {
   pickup: PickupCode;
   status: IntakeStatus;
   laterTime: string | null;
-  drugsStatus: 'pending' | 'done' | 'failed';
+  drugsStatus: DrugsStatus;
   drugs: ExtractedDrug[] | null;
   card: PharmacyCard | null;
   imageCount: number;
@@ -115,6 +121,21 @@ export async function loginPharmacy(email: string, password: string): Promise<Ph
   const s = (await res.json()) as PharmacySession;
   saveSession(s);
   return s;
+}
+
+// The current name and plan from the server (the operator may have changed the plan); saved into the session.
+export async function getMe(): Promise<PharmacyInfo & { plan: PharmacyPlan }> {
+  const me = (await (await request('/pharmacy/me')).json()) as { name: string; code: string; plan: unknown };
+  const info = { name: me.name, code: me.code, plan: parsePlan(me.plan) ?? 'AB' };
+  const s = loadSession();
+  if (s) saveSession({ ...s, pharmacy: info });
+  return info;
+}
+
+// Plan A walk-in check: the photos go to the AI and are not kept; the stock check against the CSV runs here.
+export async function checkWalkin(images: { base64: string; mediaType: 'image/jpeg' }[]): Promise<ExtractedDrug[]> {
+  const res = await request('/pharmacy/check', { method: 'POST', body: JSON.stringify({ images }) });
+  return ((await res.json()) as { drugs: ExtractedDrug[] }).drugs;
 }
 
 export async function logoutPharmacy(): Promise<void> {
