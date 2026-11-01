@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>処方箋ヘルパー　薬局向け画面のご利用ガイド（プランA・B・AB）</title>
+<!-- 画面の画像は img/plan_*.png。ローカル検証用の架空の薬局「さくら薬局（デモ）」と、テスト用の架空の処方箋・架空の患者さんで撮影。実在の患者情報は含まない。
+     窓口照合の読み取り結果は、同じ架空の処方箋を本番のAIで読み取った結果（2026-11-01）を表示している。
+     PDF は同じフォルダの 薬局プランA・B_ご利用ガイド_ja.pdf（Chrome で A4 印刷）。
+     デモ動画は 薬局プランA・B_デモ動画_ja.mp4（同じ架空データでローカル環境を操作して録画、字幕は日本語、音声なし）。 -->
+<style>
+  @page { size: A4; margin: 14mm 14mm 14mm 14mm; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: "Meiryo", "Yu Gothic", sans-serif; color: #1E2624; font-size: 10pt; line-height: 1.7; margin: 0; background: #fff; }
+  h1 { font-size: 18pt; line-height: 1.4; color: #1D4C44; margin: 0 0 2mm; padding-bottom: 2.5mm; border-bottom: 2.5px solid #2C6E63; }
+  h2 { font-size: 13pt; color: #1D4C44; margin: 7mm 0 3mm; padding-left: 3mm; border-left: 4.5px solid #2C6E63; break-after: avoid; }
+  h3 { font-size: 11pt; color: #1D4C44; margin: 4mm 0 1.5mm; break-after: avoid; }
+  p { margin: 0 0 2.5mm; }
+  .meta { color: #4A5B58; font-size: 9pt; margin-bottom: 4mm; }
+  .answer { background: #EEF5F3; border-radius: 3mm; padding: 4mm 5mm; font-size: 11pt; line-height: 1.75; }
+  .answer b { color: #1D4C44; }
+  table { border-collapse: collapse; width: 100%; font-size: 9.3pt; margin: 0 0 3mm; }
+  th, td { border: 1px solid #C9D6D3; padding: 2mm 2.5mm; vertical-align: top; text-align: left; }
+  th { background: #EEF5F3; color: #1D4C44; }
+  thead th { text-align: center; }
+  td.k { background: #F7FAF9; color: #33423F; font-weight: bold; white-space: nowrap; width: 30mm; }
+  tr { break-inside: avoid; }
+  .yes { color: #1D4C44; font-weight: bold; }
+  .no { color: #8A4B2E; font-weight: bold; }
+  .page-break { break-before: page; }
+  ul { margin: 0 0 3mm; padding-left: 5.5mm; }
+  li { margin-bottom: 1.2mm; }
+  .note { font-size: 8.8pt; color: #4A5B58; }
+  .box { border: 1px solid #C9D6D3; border-radius: 3mm; padding: 3mm 4mm; margin: 0 0 3mm; }
+  .box.warn { border: 1.5px solid #2C6E63; background: #F7FAF9; }
+  .box.warn .lead { font-size: 10.5pt; font-weight: bold; color: #1D4C44; margin-bottom: 1.5mm; }
+  .quote { display: block; background: #fff; border: 1px solid #C9D6D3; border-radius: 2mm; padding: 1.5mm 3mm; margin: 1mm 0 2mm; font-size: 9.5pt; }
+  .step { display: flex; gap: 3mm; align-items: flex-start; margin: 0 0 3.5mm; break-inside: avoid; }
+  .num { flex: 0 0 auto; width: 7mm; height: 7mm; border-radius: 50%; background: #2C6E63; color: #fff; font-size: 10pt; font-weight: bold; text-align: center; line-height: 7mm; margin-top: 0.4mm; }
+  .step .body { flex: 1; }
+  .step .t { font-weight: bold; color: #1D4C44; font-size: 10.5pt; }
+  .shot { display: block; border: 1px solid #C9D6D3; border-radius: 2.5mm; margin: 1.5mm 0 1mm; }
+  .side { display: flex; gap: 5mm; align-items: flex-start; }
+  .side > .txt { flex: 1; }
+  .tag { display: inline-block; font-size: 8.5pt; font-weight: bold; color: #fff; background: #2C6E63; border-radius: 1.5mm; padding: 0 2mm; margin-right: 1.5mm; }
+  .v-ok { color: #2C6E63; font-weight: bold; }
+  .v-short { color: #B7791F; font-weight: bold; }
+  .v-none { color: #B03A2E; font-weight: bold; }
+  .v-unk { color: #4A5B58; font-weight: bold; }
+  .qa dt { font-weight: bold; color: #1D4C44; margin-top: 2mm; }
+  .qa dd { margin: 0.5mm 0 0 4mm; }
+  .foot { margin-top: 5mm; padding-top: 2mm; border-top: 1px solid #C9D6D3; font-size: 8.5pt; color: #4A5B58; }
+</style>
+</head>
+<body>
+
+<h1>処方箋ヘルパー　薬局向け画面のご利用ガイド<br><span style="font-size:13pt">プランA（窓口の処方箋チェック）・プランB（初回問診の受信箱）・プランAB</span></h1>
+<p class="meta">処方箋ヘルパー × 薬局受付・在庫チェック　薬局の皆様向けご案内　／　株式会社Priamos　／　2026年11月</p>
+
+<div class="answer">
+  <b>薬局ごとに、使う機能に合わせてプランを選んでいただけます。</b>どのプランも、受付用のパソコンかタブレットで <b>https://rxhelper.jp/pharmacy</b> を開いてログインします。ログインすると、その薬局のプランに合った画面だけが表示されます。
+</div>
+
+<h2>3つのプラン</h2>
+<table>
+<thead><tr><th></th><th>プランA<br>窓口の処方箋チェック</th><th>プランB<br>初回問診の受信箱</th><th>プランAB<br>AとBの両方</th></tr></thead>
+<tr><td class="k">できること</td>
+  <td>窓口で受けた処方箋を撮影または取り込むと、AIが薬の名前を読み取り、出荷状況と在庫CSVとの照合を表示</td>
+  <td>外国籍の患者さんが窓口のQRコードから送った処方箋の写真と初回アンケートの答えを、日本語の問診票で受け取る</td>
+  <td>AとBの機能を1つの受付画面で</td></tr>
+<tr><td class="k">受付画面</td>
+  <td>「窓口の処方箋を照合する」ボタンと在庫CSV</td>
+  <td>受信箱（届いた処方箋の一覧）</td>
+  <td>ボタン・在庫CSV・受信箱</td></tr>
+<tr><td class="k">患者さんからの送信</td>
+  <td><span class="no">受け付けません</span>（QRコードはありません）</td>
+  <td><span class="yes">受け付けます</span></td>
+  <td><span class="yes">受け付けます</span></td></tr>
+<tr><td class="k">AIによる薬の読み取り</td>
+  <td>窓口の処方箋</td>
+  <td><span class="no">行いません</span>（写真と問診票を表示）</td>
+  <td>窓口の処方箋と、患者さんから届いた処方箋</td></tr>
+<tr><td class="k">在庫CSVとの照合</td>
+  <td><span class="yes">あり</span></td>
+  <td><span class="no">なし</span></td>
+  <td><span class="yes">あり</span></td></tr>
+</table>
+<p class="note">プランは運営で設定します。変更をご希望の場合はご連絡ください。変更は、次に受付画面を開いたときに反映されます（ログインし直す必要はありません）。</p>
+
+<h2>はじめに（どのプランも共通）</h2>
+<ul>
+  <li>レセコンとは別の、<b>受付用のパソコンかタブレット</b>のブラウザでお使いください。レセコンのパソコンには何も入れません。</li>
+  <li>初めての時は、運営からお渡しする「初回設定のリンク」（14日間有効・1回限り）を開き、薬局でパスワードを決めていただきます。運営はパスワードを知りません。</li>
+  <li>以後は <b>https://rxhelper.jp/pharmacy</b> で、メールアドレスとパスワードを入れて「ログイン」を押します。ログインはその端末で30日間保たれます。</li>
+  <li>受付画面の右上の「更新」で最新の状態にし、「ログアウト」で終了します。</li>
+</ul>
+
+<div class="page-break"></div>
+<h2>プランA　窓口の処方箋チェック</h2>
+<p>窓口で受けた処方箋（外来の紙の処方箋）について、在庫と出荷状況をその場で確認するための画面です。</p>
+
+<div class="side">
+  <div class="txt">
+    <div class="step"><div class="num">1</div><div class="body">
+      <div class="t">在庫CSVを読み込む（最初に1回）</div>
+      受付画面の「在庫CSV」で「在庫CSVを読み込む」を押し、在庫管理のシステムから書き出したCSV（UTF-8・Shift_JIS）を選びます。「薬品名の列」と「在庫数の列」が合っているか確かめて、「この内容で使う」を押します。
+      <p class="note" style="margin-top:1mm">CSVはこのブラウザの中だけで読み込み、インターネットには送りません。読み込んだCSVはこの端末に残ります。在庫が変わったら「読み込み直す」を押してください。</p>
+    </div></div>
+  </div>
+  <img class="shot" src="img/plan_a_csv.png" style="width:78mm">
+</div>
+
+<div class="step"><div class="num">2</div><div class="body">
+  <div class="t">「窓口の処方箋を照合する」を押す</div>
+  <img class="shot" src="img/plan_a_home.png" style="width:105mm">
+</div></div>
+
+<div class="side">
+  <div class="txt">
+    <div class="step"><div class="num">3</div><div class="body">
+      <div class="t">処方箋の画像を用意する（2枚まで）</div>
+      「<b>撮影する</b>」でタブレットのカメラで撮るか、「<b>画像を選ぶ</b>」でスキャナで取り込んだ画像（JPEG・PNG）を選びます。2ページの処方箋などは2枚まで追加できます。間違えたときは画像の下の「削除」を押します。
+      <p class="note" style="margin-top:1mm">PDFのファイルは選べません。スキャナの保存形式をJPEGかPNGにしてください。明るい場所で、処方箋の全体がまっすぐ写るように撮ると、読み取りやすくなります。</p>
+    </div></div>
+  </div>
+  <img class="shot" src="img/plan_a_photo.png" style="width:78mm">
+</div>
+
+<div class="step"><div class="num">4</div><div class="body">
+  <div class="t">確認のチェックを入れて「読み取る」を押す</div>
+  その端末で初めて使うときだけ、「上の内容を確認しました（この端末で初回のみ）」にチェックを入れます。「読み取る」を押すと、AIが薬の名前・用量・日数を読み取ります。読み取り中は「AIが読み取り中です…」と表示されます。
+  <img class="shot" src="img/plan_a_read.png" style="width:100mm">
+</div></div>
+
+<div class="box warn">
+  <div class="lead">処方箋の画像の取り扱い</div>
+  画面には次のように表示しています。
+  <span class="quote">画像は薬の読み取りにだけ使い、保存しません（米国のAIサービスに送信します）。読み取り結果は参考です。必ず処方箋の原本で確認してください。</span>
+  <ul style="margin-bottom:0">
+    <li>「読み取る」を押すと、処方箋の画像を、薬の読み取りのために<b>米国のAIサービス（Anthropic社）</b>に送信します。</li>
+    <li>処方箋ヘルパーのサーバーには、<b>画像も読み取り結果も保存しません</b>。残るのは利用回数の集計（日時と、読み取った薬の数。個人を特定できる情報は含みません）だけです。</li>
+    <li>窓口の処方箋の画像は、患者さんのスマートフォンではなく、薬局の端末からAIサービスに送信します。</li>
+  </ul>
+</div>
+
+<div class="step" style="break-inside:auto"><div class="num">5</div><div class="body">
+  <div class="t">結果を確認する</div>
+  読み取った薬ごとに、次の内容を表示します（画面の例は架空の処方箋です）。
+  <img class="shot" src="img/plan_a_result.png" style="width:132mm">
+  <table style="margin-top:2mm">
+    <tr><td class="k">薬の名前</td><td>AIが読み取った薬の名前（【般】は一般名処方）と、その下に処方箋の記載</td></tr>
+    <tr><td class="k">必要量・在庫</td><td>必要量は「1回量 × 1日の回数 × 日数」（頓服は「1回量 × 回数」）。在庫は在庫CSVの数で、同じ成分・同じ規格の製品は銘柄が違ってもまとめて数えます</td></tr>
+    <tr><td class="k">在庫の判定</td><td><span class="v-ok">在庫あり</span>　必要量以上　／　<span class="v-short">不足</span>　在庫はあるが必要量に足りない　／　<span class="v-none">在庫なし</span>　／　<span class="v-unk">照合データなし（目で確認）</span>　外用薬・注射薬など照合用データにない薬</td></tr>
+    <tr><td class="k">出荷状況</td><td>同じ成分・規格の製品のうち、限定出荷や供給停止になっている製品名と、通常出荷の製品の数（例：通常出荷の製品 14／17件）。厚生労働省の薬価基準と供給状況のデータを使い、データの日付を一番下に表示します</td></tr>
+  </table>
+  <p class="note">読み取り結果は参考情報です。薬の名前・用量・日数は、必ず処方箋の原本で確認してください。読み取れなかったときは「読み取れませんでした。もう一度撮影するか、処方箋の原本で確認してください。」と表示されます。</p>
+</div></div>
+
+<div class="step"><div class="num">6</div><div class="body">
+  <div class="t">「印刷」または「次の処方箋へ」</div>
+  「印刷」を押すと、ボタン類を除いた結果だけを印刷できます。「次の処方箋へ」を押すと、画像と結果が画面から消え、次の処方箋を受けられます。
+  <p class="note" style="margin:1mm 0 0">読み取りは1薬局あたり1日300回までです（上限に達すると「今日の読み取り回数の上限に達しました。」と表示）。在庫CSVを読み込んでいない端末では、出荷状況だけを表示し、在庫の判定は表示しません。</p>
+</div></div>
+
+
+<div class="page-break"></div>
+<h2>プランB　初回問診の受信箱</h2>
+<p>外国籍の患者さんが、窓口に置いたQRコードをスマートフォンで読み取り、初回アンケートに母語で答えて、処方箋の写真と一緒に送ります（会員登録はいりません）。薬局では、受付画面の受信箱で日本語の問診票として確認できます。</p>
+
+<h3>受信箱</h3>
+<div class="side">
+  <img class="shot" src="img/plan_b_inbox.png" style="width:95mm">
+  <div class="txt">
+    <ul>
+      <li>届いた順に並びます。30秒ごとに自動で更新します。</li>
+      <li>まだ開いていない受付は、左に色の帯と「●未読」が付きます。</li>
+      <li>受け取りの希望時刻、患者さんの言語、返信の状態（未返信・準備できました など）を表示します。</li>
+    </ul>
+  </div>
+</div>
+
+<h3>受付の詳細（問診票）</h3>
+<div class="side">
+  <div class="txt">
+    <ul>
+      <li>受付を押すと、<b>処方箋の写真</b>と、<b>初回アンケートの答え（日本語）</b>を表示します。</li>
+      <li>自由記述は、AIによる日本語訳と原文を並べて表示します。冒頭に「ご本人が処方箋ヘルパーで入力し、送信した内容」と明記しています。</li>
+      <li>「問診票（日本語）を印刷」で、問診票を紙にできます。</li>
+      <li><b>プランBでは、AIによる薬の読み取りと在庫の照合は行いません。</b>薬の内容は写真と原本でご確認ください。</li>
+      <li>「準備できました」「疑義照会中」「○時以降にご用意」や、定型文・自由入力のメッセージを、患者さんの言語に翻訳して送れます。</li>
+      <li>お渡しが終わったら「完了」を押します。写真・答え・メッセージはその時点で削除されます。押さなくても、送信から7日で自動的に削除されます。</li>
+    </ul>
+    <p class="note">画面の例は架空のベトナム語の患者さんです。</p>
+  </div>
+  <img class="shot" src="img/plan_b_card.png" style="width:72mm">
+</div>
+
+<div class="page-break"></div>
+<h2>プランAB　AとBの両方</h2>
+<div class="side">
+  <img class="shot" src="img/plan_ab_home.png" style="width:80mm">
+  <div class="txt">
+    <ul>
+      <li>1つの受付画面に、「<b>窓口の処方箋を照合する</b>」ボタン、<b>在庫CSV</b>、<b>患者さんから届いた処方箋（受信箱）</b>が並びます。</li>
+      <li>窓口の処方箋の使い方は、プランAと同じです。</li>
+      <li>受信箱の使い方は、プランBと同じです。</li>
+      <li>さらに、患者さんから届いた処方箋も、AIが写真から薬を読み取り、在庫CSVと照合して表示します。受信箱には「AI読み取り済み」などの状態が出ます。</li>
+    </ul>
+  </div>
+</div>
+<div class="side" style="margin-top:2mm">
+  <div class="txt">
+    <h3 style="margin-top:0">届いた処方箋の「処方の内容と在庫（参考）」</h3>
+    <p>受付の詳細画面で、写真の下に表示します。見方はプランAの結果と同じです。</p>
+    <p class="note">患者さんから届いた写真は、送信の前に患者さんが同意したうえで、薬の読み取りと自由記述の翻訳にAI（米国）を使っています。</p>
+  </div>
+  <img class="shot" src="img/plan_ab_drugs.png" style="width:68mm">
+</div>
+
+<h2>よくあるご質問</h2>
+<dl class="qa">
+  <dt>レセコンや在庫管理のシステムとつなぐ必要はありますか。</dt>
+  <dd>ありません。受付用のブラウザだけで使います。在庫は、システムから書き出したCSVを読み込みます。</dd>
+  <dt>別の端末でも使えますか。</dt>
+  <dd>使えます。その端末でログインし、在庫CSVを読み込んでください。在庫CSVと、窓口照合の初回の確認チェックは、端末ごとです。</dd>
+  <dt>プランを変えたいときは。</dt>
+  <dd>運営にご連絡ください。変更は、次に受付画面を開いたときに反映されます。</dd>
+</dl>
+
+<p class="foot">このガイドの画面は、すべて架空のデモデータ（架空の薬局「さくら薬局（デモ）」、テスト用の架空の処方箋、架空の患者さん）で撮影しています。実在の患者さんの情報は含みません。お気づきの点や、実際の窓口の流れに合わない点がありましたら、お知らせいただけますと幸いです。</p>
+
+</body>
+</html>
