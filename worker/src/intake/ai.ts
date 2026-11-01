@@ -39,8 +39,9 @@ const DRUGS_SCHEMA = {
   additionalProperties: false,
 } as const;
 
-const DRUGS_PROMPT = `This is a photo of a Japanese prescription (処方箋) or the copy of an electronic prescription (電子処方箋の控え)
-that a patient sent to a pharmacy before coming in. List every medicine on it for the pharmacy's stock check.
+const DRUGS_PROMPT = `This is a photo or scan of a Japanese prescription (処方箋) or the copy of an electronic prescription
+(電子処方箋の控え) that a pharmacy received, either sent by the patient before coming in or handed in at the counter.
+List every medicine on it for the pharmacy's stock check.
 
 Rules -- the pharmacist checks the photo, but a wrong value here misleads the stock check:
 1. One entry per medicine. Copy the name exactly as printed, including strength and maker in 「」 (e.g.

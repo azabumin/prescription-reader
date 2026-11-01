@@ -29,7 +29,10 @@ function randomHex(bytes: number): string {
 
 async function findPharmacy(db: D1Database, code: string): Promise<ActivePharmacy | null> {
   if (!code) return null;
-  return (await db.prepare('SELECT id, name FROM pharmacies WHERE code = ? AND disabled_at IS NULL').bind(code).first<ActivePharmacy>()) ?? null;
+  // a plan-A pharmacy only checks walk-in prescriptions: to a patient it looks like an unknown code
+  return (
+    (await db.prepare("SELECT id, name FROM pharmacies WHERE code = ? AND disabled_at IS NULL AND plan != 'A'").bind(code).first<ActivePharmacy>()) ?? null
+  );
 }
 
 export async function handlePharmacyLookup(url: URL, env: Env, corsHeaders: Record<string, string>): Promise<Response> {
@@ -38,11 +41,25 @@ export async function handlePharmacyLookup(url: URL, env: Env, corsHeaders: Reco
 }
 
 // Returns false when the counter for `key` already reached `limit` today; otherwise counts this request.
-async function bumpDaily(kv: KVNamespace, key: string, limit: number): Promise<boolean> {
+export async function bumpDaily(kv: KVNamespace, key: string, limit: number): Promise<boolean> {
   const count = parseInt((await kv.get(key)) ?? '0', 10);
   if (count >= limit) return false;
   await kv.put(key, String(count + 1), { expirationTtl: 60 * 60 * 26 });
   return true;
+}
+
+// 1..MAX_IMAGES prescription photos as base64. Shared with the walk-in check (walkinCheck.ts).
+export function parseImages(value: unknown): { base64: string; mediaType: string }[] | 'invalid' | 'image_too_large' {
+  if (!Array.isArray(value) || value.length < 1 || value.length > MAX_IMAGES) return 'invalid';
+  const images: { base64: string; mediaType: string }[] = [];
+  for (const img of value) {
+    if (!img || typeof img !== 'object') return 'invalid';
+    const { base64, mediaType } = img as Record<string, unknown>;
+    if (typeof base64 !== 'string' || !base64 || !IMAGE_MEDIA_TYPES.includes(mediaType as (typeof IMAGE_MEDIA_TYPES)[number])) return 'invalid';
+    if (base64.length > MAX_IMAGE_B64) return 'image_too_large';
+    images.push({ base64, mediaType: mediaType as string });
+  }
+  return images;
 }
 
 type SendInput = {
@@ -66,15 +83,8 @@ function parseSend(body: unknown): SendInput | 'invalid' | 'image_too_large' {
   if (!b.card || typeof b.card !== 'object' || Array.isArray(b.card)) return 'invalid';
   const cardJson = JSON.stringify(b.card);
   if (cardJson.length > MAX_CARD_JSON) return 'invalid';
-  if (!Array.isArray(b.images) || b.images.length < 1 || b.images.length > MAX_IMAGES) return 'invalid';
-  const images: { base64: string; mediaType: string }[] = [];
-  for (const img of b.images) {
-    if (!img || typeof img !== 'object') return 'invalid';
-    const { base64, mediaType } = img as Record<string, unknown>;
-    if (typeof base64 !== 'string' || !base64 || !IMAGE_MEDIA_TYPES.includes(mediaType as (typeof IMAGE_MEDIA_TYPES)[number])) return 'invalid';
-    if (base64.length > MAX_IMAGE_B64) return 'image_too_large';
-    images.push({ base64, mediaType: mediaType as string });
-  }
+  const images = parseImages(b.images);
+  if (typeof images === 'string') return images;
   let notifyEmail: string | null = null;
   if (b.notifyEmail !== undefined && b.notifyEmail !== null && b.notifyEmail !== '') {
     if (typeof b.notifyEmail !== 'string') return 'invalid';

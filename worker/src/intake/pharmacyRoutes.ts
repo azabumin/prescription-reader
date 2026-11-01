@@ -5,7 +5,7 @@ import { translateToPatient } from './ai';
 import type { PharmacyCard } from './cardType';
 import { logEvent } from './events';
 import { sendStatusEmail } from './notify';
-import { resolvePharmacySession, type PharmacySession } from './pharmacyAuth';
+import { hasIntake, resolvePharmacySession, type PharmacySession } from './pharmacyAuth';
 import { LATER_TIMES, REPLY_TEMPLATES } from './templates';
 import { LANGS, type ExtractedDrug, type IntakeStatus, type Lang, type PickupCode } from './types';
 
@@ -20,7 +20,7 @@ type IntakeRow = {
   pickup: PickupCode;
   card_json: string | null;
   drugs_json: string | null;
-  drugs_status: 'pending' | 'done' | 'failed';
+  drugs_status: 'pending' | 'done' | 'failed' | 'skipped';
   notify_email: string | null;
   status: IntakeStatus;
   later_time: string | null;
@@ -227,6 +227,7 @@ export async function routePharmacyIntakes(request: Request, env: Env, corsHeade
   if (!path.startsWith('/pharmacy/intakes') && path !== '/pharmacy/templates' && path !== '/pharmacy/translate-preview') return null;
   const pharmacy = await resolvePharmacySession(request, env.DB);
   if (!pharmacy) return jsonResponse({ error: 'unauthorized' }, 401, corsHeaders);
+  if (!hasIntake(pharmacy.plan)) return jsonResponse({ error: 'plan' }, 403, corsHeaders);
   const c: PharmacyRouteContext = { request, env, corsHeaders, pharmacy };
 
   if (request.method === 'GET' && path === '/pharmacy/intakes') return listIntakes(c);

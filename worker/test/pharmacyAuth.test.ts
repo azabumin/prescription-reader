@@ -32,9 +32,9 @@ describe('pharmacy setup and login', () => {
     await call('POST', '/pharmacy/setup', { code: ph.code, setupCode: ph.setupCode, password: 'correct-horse-1' });
     const res = await call('POST', '/pharmacy/login', { email: ph.email, password: 'correct-horse-1' });
     expect(res.status).toBe(200);
-    const body = (await res.json()) as { token: string; pharmacy: { name: string; code: string } };
+    const body = (await res.json()) as { token: string; pharmacy: { name: string; code: string; plan: string } };
     expect(body.token).toMatch(/^[0-9a-f]{64}$/);
-    expect(body.pharmacy).toEqual({ name: ph.name, code: ph.code });
+    expect(body.pharmacy).toEqual({ name: ph.name, code: ph.code, plan: 'AB' });
   });
 
   it('login fails for a disabled pharmacy', async () => {

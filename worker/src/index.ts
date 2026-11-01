@@ -3,9 +3,10 @@ import { canAnalyze, resolveSessionUser } from './auth';
 import { handleLogin, handleLogout, handleMe, handleRequestPasswordReset, handleResetPassword, handleSignup } from './authRoutes';
 import { jsonResponse } from './http';
 import { handleTranslateMemo } from './memoTranslate';
-import { handlePharmacyLogin, handlePharmacyLogout, handlePharmacySetup } from './intake/pharmacyAuth';
+import { handlePharmacyLogin, handlePharmacyLogout, handlePharmacyMe, handlePharmacySetup } from './intake/pharmacyAuth';
 import { handleIntakeStatus, handlePharmacyLookup, handleSendIntake } from './intake/patientRoutes';
 import { routePharmacyIntakes } from './intake/pharmacyRoutes';
+import { handleWalkinCheck } from './intake/walkinCheck';
 import { purgeExpired } from './intake/cleanup';
 import { handleCheckoutStart, handleZeusWebhook } from './payments';
 
@@ -260,6 +261,8 @@ export default {
     if (route === 'POST /pharmacy/setup') return handlePharmacySetup(request, env, corsHeaders);
     if (route === 'POST /pharmacy/login') return handlePharmacyLogin(request, env, corsHeaders);
     if (route === 'POST /pharmacy/logout') return handlePharmacyLogout(request, env, corsHeaders);
+    if (route === 'GET /pharmacy/me') return handlePharmacyMe(request, env, corsHeaders);
+    if (route === 'POST /pharmacy/check') return handleWalkinCheck(request, env, corsHeaders);
     const pharmacyResponse = await routePharmacyIntakes(request, env, corsHeaders);
     if (pharmacyResponse) return pharmacyResponse;
 
