@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>処方箋ヘルパー　プラン選択のための質問票</title>
+<!-- お試し先の薬局に、お試し導入のご案内と一緒に送る質問票（手書きでもメール返信でも答えられる形）。
+     答えから A / B / AB を決める目安は最後の「プランの選び方の目安」。
+     PDF は同じフォルダの プラン選択のための質問票_ja.pdf（Chrome で A4 印刷）。 -->
+<style>
+  @page { size: A4; margin: 13mm 15mm 12mm 15mm; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: "Meiryo", "Yu Gothic", sans-serif; color: #1E2624; font-size: 9.8pt; line-height: 1.6; margin: 0; background: #fff; }
+  h1 { font-size: 16pt; line-height: 1.4; color: #1D4C44; margin: 0 0 1.5mm; padding-bottom: 2mm; border-bottom: 2.5px solid #2C6E63; }
+  h2 { font-size: 11.5pt; color: #1D4C44; margin: 4.5mm 0 1.5mm; padding-left: 3mm; border-left: 4.5px solid #2C6E63; break-after: avoid; }
+  p { margin: 0 0 2mm; }
+  .meta { color: #4A5B58; font-size: 8.8pt; margin-bottom: 3mm; }
+  .q { margin: 0 0 2.6mm; break-inside: avoid; }
+  .q .t { font-weight: bold; }
+  .q .t .n { display: inline-block; min-width: 9mm; color: #1D4C44; }
+  .q .for { display: inline-block; font-size: 8pt; font-weight: bold; color: #fff; background: #2C6E63; border-radius: 1.5mm; padding: 0 1.8mm; margin-right: 1.5mm; }
+  .opts { margin: 0.8mm 0 0 9mm; }
+  .opts span { display: inline-block; margin: 0 5mm 0.6mm 0; }
+  .opts.col span { display: block; margin-right: 0; }
+  .line { display: inline-block; border-bottom: 1px solid #8FA5A0; min-width: 60mm; height: 5mm; vertical-align: bottom; }
+  .write { margin: 1mm 0 0 9mm; border: 1px solid #8FA5A0; border-radius: 2mm; height: 17mm; }
+  table { border-collapse: collapse; width: 100%; font-size: 9.3pt; margin: 0.8mm 0 2mm; }
+  th, td { border: 1px solid #C9D6D3; padding: 1.8mm 2.5mm; vertical-align: middle; text-align: left; }
+  th { background: #EEF5F3; color: #1D4C44; width: 52mm; }
+  td { height: 9mm; }
+  .box { border: 1.5px solid #2C6E63; background: #F7FAF9; border-radius: 3mm; padding: 3mm 4mm; margin: 4mm 0 2mm; break-inside: avoid; }
+  .box .lead { font-size: 10.5pt; font-weight: bold; color: #1D4C44; margin-bottom: 1mm; }
+  .box ul { margin: 0; padding-left: 5mm; }
+  .box li { margin-bottom: 0.8mm; }
+  .note { font-size: 8.6pt; color: #4A5B58; }
+  .page-break { break-before: page; }
+  .foot { margin-top: 3mm; padding-top: 2mm; border-top: 1px solid #C9D6D3; font-size: 8.8pt; color: #33423F; }
+</style>
+</head>
+<body>
+
+<h1>処方箋ヘルパー　プラン選択のための質問票</h1>
+<div class="meta">お試しのプラン（A・B・AB）を決めるための質問です　／　株式会社Priamos</div>
+
+<p>分かる範囲で、□に✓をつけてお答えください。ご記入後は写真やスキャンでお送りいただくか、メールに番号と答えを書いてご返信ください。お答えをもとに、運営から合うプランをご提案いたします。</p>
+
+<h2>1．業務の様子について</h2>
+
+<div class="q"><div class="t"><span class="n">Q1</span>日本語での問診が難しい外国籍の患者さんは、どのくらい来局されますか。</div>
+  <div class="opts"><span>□ ほとんどない</span><span>□ 月に数人</span><span>□ 週に数人</span><span>□ ほぼ毎日</span></div></div>
+
+<div class="q"><div class="t"><span class="n">Q2</span>そうした患者さんの初回の問診（アレルギー・服用中の薬など）で、困ることはありますか。</div>
+  <div class="opts"><span>□ よくある</span><span>□ ときどきある</span><span>□ ほとんどない</span></div></div>
+
+<div class="q"><div class="t"><span class="n">Q3</span>窓口で処方箋を受けたあと、在庫や出荷調整（限定出荷・供給停止など）の確認に手間がかかると感じますか。</div>
+  <div class="opts"><span>□ よく感じる</span><span>□ ときどき感じる</span><span>□ あまり感じない</span></div></div>
+
+<div class="q"><div class="t"><span class="n">Q4</span>1日に受ける処方箋は、おおよそ何枚ですか。</div>
+  <div class="opts">約　<span class="line" style="min-width:25mm"></span>　枚</div></div>
+
+<h2>2．試してみたい機能</h2>
+
+<div class="q"><div class="t"><span class="n">Q5</span>試してみたい機能に✓をつけてください（いくつでも）。</div>
+  <div class="opts col">
+    <span>□ 窓口で受けた処方箋をAIで読み取り、出荷状況と在庫を照合する（プランA）</span>
+    <span>□ 外国籍の患者さんから、来局前に処方箋の写真と初回問診の答えを日本語で受け取る（プランB）</span>
+    <span>□ まだ決めていない（運営からの提案を希望する）</span>
+  </div></div>
+
+<h2>3．端末と設備</h2>
+
+<div class="q"><div class="t"><span class="n">Q6</span>レセコンとは別に、インターネットにつながる受付用の端末を用意できますか。</div>
+  <div class="opts"><span>□ パソコン</span><span>□ タブレット</span><span>□ 両方</span><span>□ これから用意する</span><span>□ 難しい</span></div></div>
+
+<div class="q"><div class="t"><span class="n">Q7</span><span class="for">A・ABをお考えの場合</span>窓口の処方箋は、どの方法で取り込むのが業務に合いそうですか。</div>
+  <div class="opts"><span>□ タブレットのカメラで撮影</span><span>□ スキャナで取り込み</span><span>□ 未定</span></div></div>
+
+<div class="q"><div class="t"><span class="n">Q8</span><span class="for">A・ABをお考えの場合</span>お使いの在庫管理のシステムから、在庫をCSVで書き出せますか。</div>
+  <div class="opts"><span>□ できる</span><span>□ できない</span><span>□ 分からない</span>　システム名（分かれば）：<span class="line" style="min-width:45mm"></span></div></div>
+
+<div class="q"><div class="t"><span class="n">Q9</span><span class="for">B・ABをお考えの場合</span>窓口や待合に、患者さん向けのQRコードのチラシを置けますか。</div>
+  <div class="opts"><span>□ 置ける</span><span>□ 難しい</span><span>□ 相談したい</span></div></div>
+
+<h2>4．データの扱いについて</h2>
+
+<div class="q"><div class="t"><span class="n">Q10</span>この扱いについて、ご懸念や、導入の前に確認したい点があればお書きください。</div>
+  <div class="note" style="margin:0.8mm 0 0 9mm">
+    プランA：窓口の処方箋の画像を、薬の読み取りのため米国のAIサービス（Anthropic社）に送ります。当方のサーバーには、画像も読み取り結果も保存しません。<br>
+    プランB：患者さんの同意のうえで届いた内容を一時的に保存し、薬局が「完了」を押した時点、または送信から7日で削除します。
+  </div>
+  <div class="write"></div></div>
+
+<div class="page-break"></div>
+
+<h2>5．お試しの準備</h2>
+<p class="note" style="margin-left:0">アカウントを作るために使います。お試しのほかの目的には使いません。</p>
+<table>
+  <tr><th>薬局名</th><td></td></tr>
+  <tr><th>所在地（市区町村まで）</th><td></td></tr>
+  <tr><th>ご担当の方のお名前</th><td></td></tr>
+  <tr><th>ご連絡先（電話・メール）</th><td></td></tr>
+  <tr><th>ログインに使うメールアドレス<br><span class="note">薬局で共用できるものが便利です</span></th><td></td></tr>
+</table>
+
+<div class="q"><div class="t"><span class="n">Q11</span>お試しを始めたい時期</div>
+  <div class="opts"><span>□ すぐにでも</span><span>□ <span class="line" style="min-width:12mm"></span> 月ごろ</span><span>□ 相談したい</span></div></div>
+
+<div class="q"><div class="t"><span class="n">Q12</span>そのほか、ご質問やご要望があればお書きください。</div>
+  <div class="write" style="height:24mm"></div></div>
+
+<div class="box">
+  <div class="lead">プランの選び方の目安</div>
+  <ul>
+    <li>Q5で「プランA」だけに✓ → <b>プランA</b>　／　「プランB」だけに✓ → <b>プランB</b>　／　両方に✓ → <b>プランAB</b></li>
+    <li>迷われる場合は、Q1〜Q3のお答えをもとに運営からご提案します。<br>
+        例：Q1が「ほとんどない」で、Q3が「よく感じる」 → プランA<br>
+        　　Q1が「週に数人」以上で、Q3が「あまり感じない」 → プランB<br>
+        　　Q1が「週に数人」以上で、Q3が「よく感じる」 → プランAB</li>
+    <li>Q6で「難しい」の場合や、Q8でCSVを書き出せない場合は、進め方をご相談させてください。</li>
+    <li>プランはお試しの途中でも変更できます。変更は、次に受付画面を開いたときに反映されます。</li>
+  </ul>
+</div>
+
+<div class="foot">
+  <b>お送り先</b>　ご紹介者の方を通じて、または株式会社Priamos（処方箋ヘルパー）azabumin@gmail.com まで<br>
+  ご協力いただき、ありがとうございます。
+</div>
+
+</body>
+</html>

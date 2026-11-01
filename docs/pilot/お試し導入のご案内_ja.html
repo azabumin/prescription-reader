@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>処方箋ヘルパー　お試し導入のご案内</title>
+<!-- お試しを検討している薬局（ご紹介経由）に最初に送る案内。質問票・ご利用ガイド・デモ動画と一緒に送る。
+     宛名や担当者名は入れない（送付メッセージ 側に書く）。お試しの期間は書かない（運営の判断、2026-11-02）。
+     PDF は同じフォルダの お試し導入のご案内_ja.pdf（Chrome で A4 印刷）。 -->
+<style>
+  @page { size: A4; margin: 15mm 16mm 14mm 16mm; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: "Meiryo", "Yu Gothic", sans-serif; color: #1E2624; font-size: 10pt; line-height: 1.7; margin: 0; background: #fff; }
+  h1 { font-size: 18pt; line-height: 1.4; color: #1D4C44; margin: 0 0 2mm; padding-bottom: 2.5mm; border-bottom: 2.5px solid #2C6E63; }
+  h2 { font-size: 13pt; color: #1D4C44; margin: 6mm 0 2.5mm; padding-left: 3mm; border-left: 4.5px solid #2C6E63; break-after: avoid; }
+  p { margin: 0 0 2.5mm; }
+  .meta { color: #4A5B58; font-size: 9pt; margin-bottom: 5mm; }
+  table { border-collapse: collapse; width: 100%; font-size: 9.3pt; margin: 0 0 2.5mm; }
+  th, td { border: 1px solid #C9D6D3; padding: 2mm 2.5mm; vertical-align: top; text-align: left; }
+  th { background: #EEF5F3; color: #1D4C44; }
+  td.k { background: #F7FAF9; color: #1D4C44; font-weight: bold; white-space: nowrap; width: 34mm; }
+  tr { break-inside: avoid; }
+  ul { margin: 0 0 2.5mm; padding-left: 5.5mm; }
+  li { margin-bottom: 1.2mm; }
+  .note { font-size: 8.8pt; color: #4A5B58; }
+  .box { border: 1.5px solid #2C6E63; background: #F7FAF9; border-radius: 3mm; padding: 3mm 4mm; margin: 0 0 3mm; break-inside: avoid; }
+  .step { display: flex; gap: 3mm; align-items: flex-start; margin: 0 0 3mm; break-inside: avoid; }
+  .num { flex: 0 0 auto; width: 7mm; height: 7mm; border-radius: 50%; background: #2C6E63; color: #fff; font-size: 10pt; font-weight: bold; text-align: center; line-height: 7mm; margin-top: 0.4mm; }
+  .step .body { flex: 1; }
+  .step .t { font-weight: bold; color: #1D4C44; font-size: 10.5pt; }
+  .page-break { break-before: page; }
+  .foot { margin-top: 5mm; padding-top: 2mm; border-top: 1px solid #C9D6D3; font-size: 9pt; color: #33423F; }
+</style>
+</head>
+<body>
+
+<h1>処方箋ヘルパー　お試し導入のご案内</h1>
+<div class="meta">薬局受付・在庫チェック　／　株式会社Priamos　／　2026年11月</div>
+
+<p>このたびは、処方箋ヘルパーのお試しをご検討いただき、誠にありがとうございます。<br>
+この資料では、サービスの概要と、お試しの進め方をご案内いたします。</p>
+
+<h2>処方箋ヘルパーとは</h2>
+<p>受付用のパソコンかタブレットのブラウザで使う、薬局向けの受付・在庫チェックのサービスです。レセコンや在庫管理のシステムとはつながず、レセコンのパソコンには何も入れません。使う機能に合わせて、次の3つのプランから選んでいただけます。</p>
+
+<table>
+  <tr><th style="width:34mm">プラン</th><th>できること</th><th style="width:52mm">向いている場面</th></tr>
+  <tr><td class="k">A　窓口の<br>処方箋チェック</td>
+      <td>窓口で受けた処方箋を撮影または取り込むと、AIが薬の名前を読み取り、出荷状況と在庫CSVとの照合を表示します。</td>
+      <td>処方箋を受けたあとの、在庫や出荷調整の確認に手間がかかっている</td></tr>
+  <tr><td class="k">B　初回問診の<br>受信箱</td>
+      <td>外国籍の患者さんが窓口のQRコードから来局前に送った処方箋の写真と初回アンケートの答えを、日本語の問診票で受け取ります。患者さんは11の言語で答えられます。</td>
+      <td>日本語での問診が難しい患者さんが来局される</td></tr>
+  <tr><td class="k">AB　両方</td>
+      <td>AとBの機能を、1つの受付画面でお使いいただけます。</td>
+      <td>両方の場面がある</td></tr>
+</table>
+<p class="note">AIの読み取りと照合の結果は参考情報です。調剤・疑義照会などのご判断は、これまでどおり処方箋の原本で行っていただきます。プランはお試しの途中でも変更できます。</p>
+
+<h2>お試しの進め方</h2>
+
+<div class="step"><div class="num">1</div><div class="body">
+  <div class="t">資料をご覧ください</div>
+  同封の「ご利用ガイド」（PDF・5ページ）と「デモ動画」（約1分40秒・音声なし）で、各プランの画面の流れをご確認いただけます。画面の例は、すべて架空の薬局・処方箋・患者さんのデータです。
+</div></div>
+
+<div class="step"><div class="num">2</div><div class="body">
+  <div class="t">質問票にお答えください</div>
+  同封の「プラン選択のための質問票」に、業務の様子とお使いの端末についてお答えください。お答えをもとに、合うプランをご提案いたします。メールで番号と答えをお送りいただいても構いません。
+</div></div>
+
+<div class="step"><div class="num">3</div><div class="body">
+  <div class="t">利用条件をご確認ください</div>
+  プランが決まりましたら、お試しの利用条件（同意書）をお送りします。データの扱いなどをご確認いただき、ご署名をお願いいたします。
+</div></div>
+
+<div class="step"><div class="num">4</div><div class="body">
+  <div class="t">初回設定をしてください</div>
+  運営が薬局のアカウントを作り、「初回設定のリンク」（14日間有効・1回限り）をお送りします。リンクを開いて、薬局でパスワードを決めていただきます。運営はパスワードを知りません。プランB・ABの場合は、窓口に置くQRコードのチラシもお送りします。
+</div></div>
+
+<div class="step"><div class="num">5</div><div class="body">
+  <div class="t">受付でお使いください</div>
+  受付用の端末で <b>https://rxhelper.jp/pharmacy</b> を開き、ログインしてお使いください。使い方で分からないことがあれば、いつでもご連絡ください。
+</div></div>
+
+<div class="step"><div class="num">6</div><div class="body">
+  <div class="t">ご意見をお聞かせください</div>
+  お試しの途中や終わりに、使いにくい点や、実際の窓口の流れに合わない点をお聞かせください。いただいたご意見は、サービスの改善に使わせていただきます。
+</div></div>
+
+<h2>費用について</h2>
+<div class="box">
+  お試しの間は、<b>無料</b>でお使いいただけます。<br>
+  有料のサービスにする際は、料金と条件を改めてご案内します。お申し込みいただいた場合に限り有料の契約に移り、<b>自動的に有料になることはありません。</b>
+</div>
+
+<h2>データの扱い（概要）</h2>
+<ul>
+  <li><b>プランA：</b>窓口の処方箋の画像は、薬の読み取りのため、米国のAIサービス（Anthropic社）に送ります。当方のサーバーには、画像も読み取り結果も保存しません。記録として残すのは、照合した時刻と薬の数だけです。</li>
+  <li><b>プランB：</b>患者さんは送信の前に、送る内容とAIの利用について画面上で同意します。届いた内容はクラウドサービス（Cloudflare社、米国）に一時的に保存し、薬局が「完了」を押した時点で削除します。完了されなくても、送信から7日で自動的に削除します。自由記述の翻訳に米国のAIサービス（Anthropic社）を使います。</li>
+  <li><b>在庫CSV：</b>受付の端末のブラウザの中だけで読み込み、当方のサーバーには送りません。</li>
+  <li>詳しくは、利用条件（同意書）でご確認いただけます。ご懸念の点があれば、導入の前にご相談ください。</li>
+</ul>
+
+<h2>同封の資料</h2>
+<ol style="margin:0 0 2.5mm; padding-left:5.5mm">
+  <li>お試し導入のご案内（本書）</li>
+  <li>プラン選択のための質問票</li>
+  <li>薬局プランA・B　ご利用ガイド（PDF・5ページ）</li>
+  <li>薬局プランA・B　デモ動画（MP4・約1分40秒）</li>
+</ol>
+
+<div class="foot">
+  <b>お問い合わせ</b>　株式会社Priamos（処方箋ヘルパー）<br>
+  メール：azabumin@gmail.com　／　ウェブサイト：https://rxhelper.jp
+</div>
+
+</body>
+</html>
