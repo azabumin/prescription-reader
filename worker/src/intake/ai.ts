@@ -46,8 +46,10 @@ List every medicine on it for the pharmacy's stock check.
 Rules -- the pharmacist checks the photo, but a wrong value here misleads the stock check:
 1. One entry per medicine. Copy the name exactly as printed, including strength and maker in 「」 (e.g.
    モンテルカスト錠10mg「KM」). For 【般】 lines put the name without 【般】 and set generic to true.
-2. amountPerDose, dosesPerDay and days come from the printed usage (e.g. 1錠 1日2回 朝夕食後 14日分 -> 1, 2, 14).
-   If the usage gives a daily total instead (e.g. 1日3錠 分3), use amountPerDose = daily total / doses per day.
+2. amountPerDose, dosesPerDay and days come from the printed usage. In the standard notation the quantity after the
+   drug name together with 分N is the daily total (薬品名の後の数量＋分Nは1日量), so amountPerDose = daily total / N
+   (e.g. 2錠 分2 朝夕食後 14日分 -> 1, 2, 14; 1日3錠 分3 -> 1, 3). A per-dose notation gives the amount directly
+   (e.g. 1回1錠 1日2回 -> 1, 2).
 3. As-needed lines (頓服, 疼痛時, 発熱時 ... 5回分): prnCount = the number of doses; dosesPerDay and days = null.
 4. Topicals, inhalers and injections: amountPerDose/dosesPerDay may be null; put the dispensed quantity text in rawText.
 5. If something is unreadable or not printed, use null (or an empty unit). Never guess a value, never swap in a

@@ -7,7 +7,7 @@ import { call, insertIntake, insertPharmacy, loggedInPharmacy, sendBody, TINY_JP
 
 const auth = (token: string) => ({ Authorization: `Bearer ${token}` });
 const CORS = { 'Access-Control-Allow-Origin': 'https://rxhelper.jp' };
-const DRUG = { name: 'アレグラ錠60mg', generic: false, amountPerDose: 1, unit: '錠', dosesPerDay: 2, days: 14, prnCount: null, rawText: 'アレグラ錠60mg 1錠 1日2回 14日分' };
+const DRUG = { name: 'アレグラ錠60mg', generic: false, amountPerDose: 1, unit: '錠', dosesPerDay: 2, days: 14, prnCount: null, rawText: 'アレグラ錠60mg 2錠 分2 朝夕食後 14日分' };
 
 function checkRequest(token: string, body: unknown): Request {
   return new Request('https://api.test/pharmacy/check', {

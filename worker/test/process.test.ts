@@ -6,7 +6,7 @@ import { insertIntake, insertPharmacy } from './helpers';
 const ai = { extractDrugs: vi.fn(), translateFields: vi.fn() };
 const processIntake = (e: Env, id: string) => run(e, id, ai);
 
-const DRUG = { name: 'アレグラ錠60mg', generic: false, amountPerDose: 1, unit: '錠', dosesPerDay: 2, days: 14, prnCount: null, rawText: 'アレグラ錠60mg 1錠 1日2回 朝夕食後 14日分' };
+const DRUG = { name: 'アレグラ錠60mg', generic: false, amountPerDose: 1, unit: '錠', dosesPerDay: 2, days: 14, prnCount: null, rawText: 'アレグラ錠60mg 2錠 分2 朝夕食後 14日分' };
 
 async function row(id: string) {
   return env.DB.prepare('SELECT drugs_json, drugs_status, card_json FROM intakes WHERE id = ?').bind(id).first<{ drugs_json: string | null; drugs_status: string; card_json: string | null }>();
