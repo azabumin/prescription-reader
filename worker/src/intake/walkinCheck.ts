@@ -38,7 +38,7 @@ export async function handleWalkinCheck(request: Request, env: Env, corsHeaders:
 
   let drugs: ExtractedDrug[];
   try {
-    drugs = await ai.extractDrugs(env, images);
+    drugs = await ai.extractDrugs(env, images, { feature: 'walkin', pharmacyId: pharmacy.id });
   } catch (err) {
     console.error('walkin_extraction_failed', pharmacy.id, err);
     return jsonResponse({ error: 'extraction_failed' }, 502, corsHeaders);

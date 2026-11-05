@@ -14,12 +14,24 @@ import {
   saveAdminKey,
   setPharmacyDisabled,
   setPharmacyPlan,
+  getAiUsage,
   type AdminFeedback,
   type AdminPharmacy,
+  type AiUsage,
 } from '../lib/adminApi';
 import type { PharmacyPlan } from '../lib/pharmacyPlan';
 
 const PLANS: PharmacyPlan[] = ['A', 'B', 'AB'];
+const FEATURE_JA: Record<string, string> = {
+  reader: '処方箋の説明（rxhelper.jp）',
+  memo: '薬局で見せるメモの翻訳',
+  intake_read: '患者さんから届いた処方箋の読み取り',
+  intake_translate: '問診の自由記述の翻訳',
+  walkin: '窓口照合',
+  message: '薬局からのメッセージの翻訳',
+};
+const usd = (n: number) => `$${n.toFixed(2)}`;
+const num = (n: number) => n.toLocaleString('ja-JP');
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function copy(text: string) {
@@ -50,6 +62,7 @@ export default function AdminScreen() {
   const [keyInput, setKeyInput] = useState('');
   const [pharmacies, setPharmacies] = useState<AdminPharmacy[] | null>(null);
   const [feedback, setFeedback] = useState<AdminFeedback[] | null>(null);
+  const [aiUsage, setAiUsage] = useState<AiUsage | null>(null);
   const [error, setError] = useState('');
   const [rowMsg, setRowMsg] = useState<Record<number, { text: string; url?: string; bad?: boolean }>>({});
 
@@ -72,9 +85,10 @@ export default function AdminScreen() {
 
   const refresh = useCallback(async () => {
     try {
-      const [p, f] = await Promise.all([listPharmacies(), listFeedback()]);
+      const [p, f, u] = await Promise.all([listPharmacies(), listFeedback(), getAiUsage()]);
       setPharmacies(p);
       setFeedback(f);
+      setAiUsage(u);
       setError('');
     } catch (e) {
       fail(e);
@@ -165,6 +179,34 @@ export default function AdminScreen() {
         </View>
         {!!error && <Text style={ph.error}>{error}</Text>}
 
+        {aiUsage && (
+          <View style={ph.card}>
+            <Text style={ph.h2}>AIの利用（直近{aiUsage.days}日）</Text>
+            {[...aiUsage.features, { feature: '', ...aiUsage.total }].map((f) => (
+              <View
+                key={f.feature || 'total'}
+                style={[
+                  ph.row,
+                  { justifyContent: 'space-between', flexWrap: 'nowrap' },
+                  !f.feature && { borderTopWidth: 1, borderTopColor: COLORS.border, paddingTop: 6 },
+                ]}
+              >
+                <Text style={[f.feature ? ph.body : ph.h2, { flex: 1 }]}>{f.feature ? (FEATURE_JA[f.feature] ?? f.feature) : '合計'}</Text>
+                <Text style={[ph.small, { width: 90, textAlign: 'right' }]}>{num(f.calls)} 回</Text>
+                <Text style={[ph.small, { width: 210, textAlign: 'right' }]}>
+                  入力 {num(f.inputTokens)}・出力 {num(f.outputTokens)}
+                </Text>
+                <Text style={[f.feature ? ph.body : ph.h2, { width: 90, textAlign: 'right' }]}>{usd(f.usd)}</Text>
+              </View>
+            ))}
+            {aiUsage.features.length === 0 && <Text style={ph.body}>まだ記録がありません。</Text>}
+            <Text style={ph.small}>
+              金額は、2026年10月時点の公開価格（100万トークンあたり）で計算した概算（米ドル）です。実際の請求額は Anthropic Console でご確認ください。
+              {aiUsage.total.unpriced.length > 0 && `　価格の分からないモデル（${aiUsage.total.unpriced.join('、')}）の分は金額に入っていません。`}
+            </Text>
+          </View>
+        )}
+
         <View style={ph.card}>
           <Text style={ph.h2}>薬局を登録する</Text>
           <TextInput style={ph.input} value={name} onChangeText={setName} placeholder="薬局名" accessibilityLabel="薬局名" />
@@ -219,7 +261,7 @@ export default function AdminScreen() {
                   {!p.passwordSet && `　／　パスワード未設定${p.setupLinkValid ? '（設定リンク有効）' : '（設定リンク期限切れ）'}`}
                 </Text>
                 <Text style={ph.small}>
-                  直近30日：患者さんからの受付 {p.sends30} 件・窓口照合 {p.checks30} 回　／　未完了の受付 {p.openIntakes} 件　／　未読のご意見 {p.unreadFeedback} 件
+                  直近30日：患者さんからの受付 {p.sends30} 件・窓口照合 {p.checks30} 回・AI {p.ai30.calls} 回（約 {usd(p.ai30.usd)}）　／　未完了の受付 {p.openIntakes} 件　／　未読のご意見 {p.unreadFeedback} 件
                   {p.lastActivityAt ? `　／　最後の利用 ${formatJaTime(p.lastActivityAt)}` : ''}
                 </Text>
                 <View style={ph.row}>

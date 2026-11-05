@@ -5,6 +5,7 @@ import { jsonResponse } from './http';
 import { handleTranslateMemo } from './memoTranslate';
 import { routeAdmin } from './admin';
 import { throwClaudeError } from './aiAlert';
+import { recordUsage, type ApiUsage } from './aiUsage';
 import { handlePharmacyFeedback } from './intake/feedback';
 import {
   handlePharmacyForgot,
@@ -407,9 +408,13 @@ async function callClaude(base64Image: string, mediaType: string, lang: Lang, en
   if (!response.ok) await throwClaudeError(env, response);
 
   const data = (await response.json()) as {
+    model?: string;
+    usage?: ApiUsage;
     stop_reason: string;
     content: { type: string; text?: string }[];
   };
+  // billed even when refused, so recorded before the checks
+  await recordUsage(env, { feature: 'reader' }, data.model ?? MODEL, data.usage);
 
   if (data.stop_reason === 'refusal') {
     throw new Error('model refused the request');

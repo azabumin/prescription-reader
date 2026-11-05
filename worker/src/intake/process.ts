@@ -28,10 +28,10 @@ export function fieldsNeedingJa(card: Partial<PharmacyCard>): FieldIn[] {
 
 export async function processIntake(env: Env, intakeId: string, ai: IntakeAi = defaultAi): Promise<void> {
   const row = await env.DB.prepare(
-    "SELECT i.card_json, p.plan FROM intakes i JOIN pharmacies p ON p.id = i.pharmacy_id WHERE i.id = ? AND i.status != 'done'",
+    "SELECT i.card_json, i.pharmacy_id, p.plan FROM intakes i JOIN pharmacies p ON p.id = i.pharmacy_id WHERE i.id = ? AND i.status != 'done'",
   )
     .bind(intakeId)
-    .first<{ card_json: string | null; plan: PharmacyPlan }>();
+    .first<{ card_json: string | null; pharmacy_id: number; plan: PharmacyPlan }>();
   if (!row) return;
   const readDrugs = hasStockCheck(row.plan);
   const { results: images } = await env.DB.prepare('SELECT media_type, data_b64 FROM intake_images WHERE intake_id = ? ORDER BY idx')
@@ -42,8 +42,14 @@ export async function processIntake(env: Env, intakeId: string, ai: IntakeAi = d
   const pending = card ? fieldsNeedingJa(card) : [];
 
   const [drugs, ja] = await Promise.allSettled([
-    readDrugs ? ai.extractDrugs(env, images.map((i) => ({ base64: i.data_b64, mediaType: i.media_type }))) : Promise.resolve(null),
-    ai.translateFields(env, pending),
+    readDrugs
+      ? ai.extractDrugs(
+          env,
+          images.map((i) => ({ base64: i.data_b64, mediaType: i.media_type })),
+          { feature: 'intake_read', pharmacyId: row.pharmacy_id },
+        )
+      : Promise.resolve(null),
+    ai.translateFields(env, pending, { feature: 'intake_translate', pharmacyId: row.pharmacy_id }),
   ]);
 
   // Write back only while the intake is still open -- a pharmacy that pressed 完了 has asked for the data to go.

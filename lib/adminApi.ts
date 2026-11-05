@@ -22,7 +22,13 @@ export type AdminPharmacy = {
   lastActivityAt: string | null;
   openIntakes: number;
   unreadFeedback: number;
+  ai30: { calls: number; usd: number }; // AI calls and the cost estimate (USD) of the last 30 days
 };
+
+// AI usage of the last 30 days (worker/src/aiUsage.ts). usd is an estimate from list prices; models without a
+// known price are counted in calls/tokens but listed in unpriced instead of the estimate.
+export type AiUsageTotals = { calls: number; inputTokens: number; outputTokens: number; usd: number; unpriced: string[] };
+export type AiUsage = { days: number; features: (AiUsageTotals & { feature: string })[]; total: AiUsageTotals };
 
 export type AdminFeedback = { id: number; createdAt: string; body: string; read: boolean; pharmacyName: string; plan: PharmacyPlan };
 
@@ -84,5 +90,6 @@ export const createPharmacy = (name: string, email: string, plan: PharmacyPlan |
 export const newSetupLink = (id: number) => post<{ setupUrl: string }>(`/admin/pharmacies/${id}/setup-link`);
 export const setPharmacyPlan = (id: number, plan: PharmacyPlan) => post<{ ok: true }>(`/admin/pharmacies/${id}/plan`, { plan });
 export const setPharmacyDisabled = (id: number, disabled: boolean) => post<{ ok: true }>(`/admin/pharmacies/${id}/disabled`, { disabled });
+export const getAiUsage = () => request<AiUsage>('/admin/ai-usage');
 export const listFeedback = async () => (await request<{ items: AdminFeedback[] }>('/admin/feedback')).items;
 export const markFeedbackRead = (id: number) => post<{ ok: true }>(`/admin/feedback/${id}/read`);

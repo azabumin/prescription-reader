@@ -1,6 +1,7 @@
 // The operator's admin screen (app/admin/index.tsx). One operator, one long random key: ADMIN_TOKEN, set with
 // `wrangler secret put ADMIN_TOKEN`. Without it every /admin route is a 404. Patients' prescriptions and answers are
 // never shown here -- only counts.
+import { estimateUsd } from './aiUsage';
 import { checkAndBumpAuthAttempts, normalizeEmail } from './authRoutes';
 import { jsonResponse } from './http';
 import { changePlan, isPlan, randomCode, SETUP_TTL_DAYS, sha256Hex, siteBase } from './intake/pharmacyAuth';
@@ -47,7 +48,46 @@ async function newSetupLink(request: Request, env: Env, pharmacyId: number, code
   return `${siteBase(request, env)}/pharmacy/setup?code=${code}&s=${setupCode}`;
 }
 
+type UsageRow = { pharmacy_id: number; feature: string; model: string; calls: number; inp: number; outp: number; cr: number; cw: number };
+
+// AI usage of the last 30 days (UTC days), one row per pharmacy / feature / model. Pharmacy 0 = not a pharmacy.
+async function usageRows(env: Env): Promise<UsageRow[]> {
+  const sinceDay = new Date(Date.now() - (STATS_DAYS - 1) * DAY_MS).toISOString().slice(0, 10);
+  const { results } = await env.DB.prepare(
+    `SELECT pharmacy_id, feature, model, SUM(calls) AS calls, SUM(input_tokens) AS inp, SUM(output_tokens) AS outp,
+            SUM(cache_read_tokens) AS cr, SUM(cache_write_tokens) AS cw
+       FROM ai_usage_daily WHERE day >= ? GROUP BY pharmacy_id, feature, model`,
+  )
+    .bind(sinceDay)
+    .all<UsageRow>();
+  return results;
+}
+
+const rowUsd = (r: UsageRow) => estimateUsd(r.model, { inputTokens: r.inp, outputTokens: r.outp, cacheReadTokens: r.cr, cacheWriteTokens: r.cw });
+
+// Totals for a set of rows; usd leaves out models with no price (reported in unpriced).
+function sumUsage(rows: UsageRow[]) {
+  let calls = 0, inputTokens = 0, outputTokens = 0, usd = 0;
+  const unpriced = new Set<string>();
+  for (const r of rows) {
+    calls += r.calls;
+    inputTokens += r.inp + r.cr + r.cw;
+    outputTokens += r.outp;
+    const u = rowUsd(r);
+    if (u === null) unpriced.add(r.model);
+    else usd += u;
+  }
+  return { calls, inputTokens, outputTokens, usd, unpriced: [...unpriced] };
+}
+
+async function aiUsage(env: Env) {
+  const rows = await usageRows(env);
+  const features = [...new Set(rows.map((r) => r.feature))].map((feature) => ({ feature, ...sumUsage(rows.filter((r) => r.feature === feature)) }));
+  return { days: STATS_DAYS, features, total: sumUsage(rows) };
+}
+
 async function listPharmacies(env: Env): Promise<unknown[]> {
+  const usage = await usageRows(env);
   const since = new Date(Date.now() - STATS_DAYS * DAY_MS).toISOString();
   const now = new Date().toISOString();
   const { results } = await env.DB.prepare(
@@ -79,6 +119,7 @@ async function listPharmacies(env: Env): Promise<unknown[]> {
     lastActivityAt: r.last_activity_at,
     openIntakes: r.open_intakes,
     unreadFeedback: r.unread_feedback,
+    ai30: (({ calls, usd }) => ({ calls, usd }))(sumUsage(usage.filter((u) => u.pharmacy_id === r.id))),
   }));
 }
 
@@ -94,6 +135,7 @@ export async function routeAdmin(request: Request, env: Env, corsHeaders: Record
   const route = `${request.method} ${url.pathname}`;
 
   if (route === 'GET /admin/pharmacies') return jsonResponse({ items: await listPharmacies(env) }, 200, corsHeaders);
+  if (route === 'GET /admin/ai-usage') return jsonResponse(await aiUsage(env), 200, corsHeaders);
 
   if (route === 'POST /admin/pharmacies') {
     const body = await readJson(request);

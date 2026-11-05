@@ -213,7 +213,7 @@ async function translatePreview({ request, env, corsHeaders, pharmacy }: Pharmac
   if (count >= PREVIEW_DAILY_LIMIT) return jsonResponse({ error: 'rate_limited' }, 429, corsHeaders);
   await env.RATE_LIMIT_KV.put(key, String(count + 1), { expirationTtl: 60 * 60 * 26 });
   try {
-    return jsonResponse({ textPatient: await translateToPatient(env, textJa, lang) }, 200, corsHeaders);
+    return jsonResponse({ textPatient: await translateToPatient(env, textJa, lang, { feature: 'message', pharmacyId: pharmacy.id }) }, 200, corsHeaders);
   } catch (err) {
     console.error('translate_preview_failed', err);
     return jsonResponse({ error: 'translation_failed' }, 502, corsHeaders);

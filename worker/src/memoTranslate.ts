@@ -1,4 +1,5 @@
 import { throwClaudeError } from './aiAlert';
+import { recordUsage, type ApiUsage, type UsageTag } from './aiUsage';
 import { jsonResponse } from './http';
 
 // Japanese translation of the free-text fields of the "memo to show at the pharmacy". The rest of the memo is
@@ -60,9 +61,9 @@ export type FieldIn = { key: MemoField; text: string; lang?: string };
 
 // Same translation as the /translate-memo endpoint, for callers inside the Worker (the pharmacy intake fills in
 // Japanese for free text the patient didn't translate). No rate limit here -- the caller has its own.
-export async function translateFields(env: Env, fields: FieldIn[]): Promise<Partial<Record<MemoField, string>>> {
+export async function translateFields(env: Env, fields: FieldIn[], tag: UsageTag): Promise<Partial<Record<MemoField, string>>> {
   if (fields.length === 0) return {};
-  const translations = await callClaude(fields, env);
+  const translations = await callClaude(fields, env, tag);
   return Object.fromEntries(translations.map((t) => [t.key, t.ja])) as Partial<Record<MemoField, string>>;
 }
 
@@ -146,7 +147,7 @@ export async function handleTranslateMemo(request: Request, env: Env, corsHeader
   ]);
 
   try {
-    const translations = await callClaude(fields, env);
+    const translations = await callClaude(fields, env, { feature: 'memo' });
     return jsonResponse({ translations }, 200, corsHeaders);
   } catch (err) {
     console.error('memo_translation_failed', err);
@@ -154,7 +155,7 @@ export async function handleTranslateMemo(request: Request, env: Env, corsHeader
   }
 }
 
-async function callClaude(fields: FieldIn[], env: Env) {
+async function callClaude(fields: FieldIn[], env: Env, tag: UsageTag) {
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -176,7 +177,8 @@ async function callClaude(fields: FieldIn[], env: Env) {
 
   if (!response.ok) await throwClaudeError(env, response);
 
-  const data = (await response.json()) as { stop_reason: string; content: { type: string; text?: string }[] };
+  const data = (await response.json()) as { model?: string; usage?: ApiUsage; stop_reason: string; content: { type: string; text?: string }[] };
+  await recordUsage(env, tag, data.model ?? TRANSLATE_MODEL, data.usage);
   if (data.stop_reason === 'refusal') throw new Error('model refused the request');
   if (data.stop_reason === 'max_tokens') throw new Error('translation was cut off at max_tokens');
   const textBlock = data.content.find((block) => block.type === 'text');
