@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>処方箋ヘルパー　薬局向けサービスのご紹介（プランA・B・AB）</title>
+<!-- 薬局・薬剤師の方に配る紹介資料（2026-11-06）。プランごとに、使う人の目線で画面がどう進み、どの画面で何ができ、どう役立つかを説明する。
+     画面は 2026-11-06 にローカルの検証環境で撮影（架空の薬局「さくら薬局（デモ）」、テスト用の架空の処方箋、架空の患者さん）。
+     患者さん側の3枚は 受付から返信までの流れ_実際の画面_ja_v2.png から切り出し（架空のベトナム語の患者さん・見本の処方箋）。
+     QRチラシの図（img/promo_flyer.png）は受付画面と同じテンプレートの見本：薬局コードの代わりに「（薬局コード）」、QRは https://rxhelper.jp/ 、「見本」の印つき。
+     守ること：患者さんへの金銭的な特典を書かない／数字の効果をうたわない／AIの結果は参考と明記。
+     PDF は同じフォルダの 薬局向けサービスのご紹介_プランA・B・AB_ja.pdf（Chrome で A4 印刷）。 -->
+<style>
+  @page { size: A4; margin: 13mm 14mm 12mm 14mm; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: "Meiryo", "Yu Gothic", sans-serif; color: #1E2624; font-size: 9.8pt; line-height: 1.65; margin: 0; background: #fff; }
+  h1 { font-size: 21pt; line-height: 1.35; color: #1D4C44; margin: 0 0 1.5mm; }
+  h2 { font-size: 14pt; color: #fff; background: #2C6E63; margin: 0 0 3.5mm; padding: 2mm 4mm; border-radius: 2mm; break-after: avoid; }
+  h3 { font-size: 11pt; color: #1D4C44; margin: 3.5mm 0 1.5mm; padding-left: 2.5mm; border-left: 4px solid #2C6E63; break-after: avoid; }
+  p { margin: 0 0 2mm; }
+  .sub { font-size: 11.5pt; color: #2C6E63; font-weight: bold; margin-bottom: 1mm; }
+  .meta { color: #4A5B58; font-size: 8.8pt; padding-bottom: 2.5mm; border-bottom: 2.5px solid #2C6E63; margin-bottom: 4mm; }
+  .lead { background: #EEF5F3; border-radius: 3mm; padding: 3.5mm 5mm; font-size: 10.8pt; line-height: 1.75; margin-bottom: 4mm; }
+  .lead b { color: #1D4C44; }
+  table { border-collapse: collapse; width: 100%; font-size: 9.3pt; margin: 0 0 3mm; }
+  th, td { border: 1px solid #C9D6D3; padding: 2mm 2.5mm; vertical-align: top; text-align: left; }
+  thead th { background: #2C6E63; color: #fff; text-align: center; }
+  td.k { background: #F7FAF9; color: #1D4C44; font-weight: bold; white-space: nowrap; width: 27mm; }
+  .yes { color: #1D4C44; font-weight: bold; }
+  .no { color: #8A4B2E; }
+  ul { margin: 0 0 2mm; padding-left: 5mm; }
+  li { margin-bottom: 1mm; }
+  .note { font-size: 8.6pt; color: #4A5B58; }
+  .page-break { break-before: page; }
+  .worry { display: flex; gap: 3mm; margin: 0 0 4mm; }
+  .worry div { flex: 1; border: 1.5px solid #C9D6D3; border-radius: 3mm; padding: 2.5mm 3.5mm; font-size: 9.4pt; }
+  .worry b { display: block; color: #1D4C44; font-size: 10.2pt; margin-bottom: 1mm; }
+  .tag { display: inline-block; font-size: 8.5pt; font-weight: bold; color: #fff; background: #2C6E63; border-radius: 1.5mm; padding: 0 2mm; margin-right: 1mm; }
+  .flow { display: flex; align-items: stretch; gap: 0; margin: 0 0 3.5mm; }
+  .flow > div { flex: 1; background: #EEF5F3; border-radius: 2mm; padding: 2mm 2.5mm; font-size: 9pt; text-align: center; font-weight: bold; color: #1D4C44; }
+  .flow > span { flex: 0 0 6mm; display: flex; align-items: center; justify-content: center; color: #2C6E63; font-size: 13pt; font-weight: bold; }
+  .step { display: flex; gap: 4mm; align-items: flex-start; margin: 0 0 3.5mm; break-inside: avoid; }
+  .step .txt { flex: 1; }
+  .num { display: inline-block; width: 6.5mm; height: 6.5mm; border-radius: 50%; background: #2C6E63; color: #fff; font-size: 9.5pt; font-weight: bold; text-align: center; line-height: 6.5mm; margin-right: 1.5mm; }
+  .step .t { font-weight: bold; color: #1D4C44; font-size: 10.5pt; margin-bottom: 1mm; }
+  .shot { display: block; border: 1px solid #C9D6D3; border-radius: 2mm; }
+  .phones { display: flex; gap: 4mm; justify-content: space-between; margin: 0 0 3mm; }
+  .phones figure { flex: 1; margin: 0; text-align: center; }
+  .phones img { width: 100%; max-height: 92mm; object-fit: contain; object-position: top; border: 1px solid #C9D6D3; border-radius: 2mm; }
+  figcaption { font-size: 8.8pt; color: #33423F; margin-top: 1mm; text-align: left; }
+  figcaption b { color: #1D4C44; }
+  .help { border: 1.5px solid #2C6E63; background: #F7FAF9; border-radius: 3mm; padding: 3mm 4.5mm; margin: 0 0 3mm; break-inside: avoid; }
+  .help .lead2 { font-size: 10.8pt; font-weight: bold; color: #1D4C44; margin-bottom: 1mm; }
+  .help ul { margin: 0; }
+  .two { display: flex; gap: 5mm; align-items: flex-start; }
+  .two > div { flex: 1; }
+  .foot { margin-top: 3mm; padding-top: 2mm; border-top: 1px solid #C9D6D3; font-size: 8.5pt; color: #4A5B58; }
+  .contact { background: #1D4C44; color: #fff; border-radius: 3mm; padding: 3.5mm 5mm; font-size: 10pt; line-height: 1.7; }
+  .contact b { font-size: 11.5pt; }
+</style>
+</head>
+<body>
+
+<!-- ───────── 1ページ：概要 ───────── -->
+<div class="sub">薬局の皆様へ</div>
+<h1>処方箋ヘルパー　薬局向けサービスのご紹介</h1>
+<div class="meta">窓口の処方箋チェック（プランA）・外国籍の患者さんの初回問診（プランB）・その両方（プランAB）　／　株式会社Priamos　／　2026年11月</div>
+
+<div class="lead">
+  受付用のパソコンかタブレットの<b>ブラウザだけ</b>で使えます。レセコンや在庫管理のシステムとはつながず、レセコンのパソコンには何も入れません。<br>
+  3つのプランの機能をすべて用意しており、<b>薬局ごとに、使う機能に合わせて受付画面でプランを選べます</b>（あとからいつでも変えられます）。
+</div>
+
+<h3>こんな場面で</h3>
+<div class="worry">
+  <div><b><span class="tag">A</span>窓口で処方箋を受けたとき</b>処方の薬が在庫にあるか、出荷調整がかかっていないかを、その場でまとめて確かめたい。</div>
+  <div><b><span class="tag">B</span>外国籍の患者さんが来るとき</b>日本語での初回の問診（アレルギー・服用中の薬など）が難しく、聞き取りに時間がかかる。</div>
+  <div><b><span class="tag">AB</span>その両方</b>来局前に届いた処方箋の薬も、窓口の処方箋も、在庫と照らし合わせたい。</div>
+</div>
+
+<h3>3つのプラン</h3>
+<table>
+  <thead><tr><th style="width:27mm"></th><th>プランA<br>窓口の処方箋チェック</th><th>プランB<br>初回問診の受信箱</th><th>プランAB<br>AとBの両方</th></tr></thead>
+  <tr><td class="k">できること</td>
+      <td>窓口で受けた処方箋を撮影・取り込むと、AIが薬を読み取り、在庫と出荷状況を照合して表示</td>
+      <td>外国籍の患者さんが来局前に送った処方箋の写真と初回問診の答えを、日本語の問診票で受け取り、返信</td>
+      <td>AとBの機能を1つの受付画面で。届いた処方箋も在庫と照合</td></tr>
+  <tr><td class="k">主な画面</td>
+      <td>「窓口の処方箋を照合する」・在庫CSV</td>
+      <td>受信箱・問診票（日本語）・返信</td>
+      <td>照合ボタン・在庫CSV・受信箱</td></tr>
+  <tr><td class="k">患者さんからの送信</td>
+      <td class="no">受け付けません</td>
+      <td class="yes">受け付けます（窓口のQRコードから）</td>
+      <td class="yes">受け付けます</td></tr>
+  <tr><td class="k">AIによる薬の読み取り</td>
+      <td class="yes">窓口の処方箋</td>
+      <td class="no">行いません（写真と問診票を表示）</td>
+      <td class="yes">窓口の処方箋と、届いた処方箋</td></tr>
+  <tr><td class="k">在庫CSVとの照合</td>
+      <td class="yes">あり</td><td class="no">なし</td><td class="yes">あり</td></tr>
+</table>
+<p class="note">AIの読み取りと照合の結果は参考情報です。調剤・疑義照会などのご判断は、これまでどおり処方箋の原本で薬剤師の方が行います。</p>
+
+<!-- ───────── 2ページ：はじめ方・共通 ───────── -->
+<div class="page-break"></div>
+<h2>はじめ方と、どのプランも共通のこと</h2>
+<div class="two">
+  <div>
+    <div class="step"><div class="txt"><div class="t"><span class="num">1</span>パスワードを決める</div>運営からお送りする「初回設定のリンク」を開き、薬局でパスワードを決めます。運営はパスワードを知りません。</div></div>
+    <div class="step"><div class="txt"><div class="t"><span class="num">2</span>プランを選ぶ</div>初めてログインすると、プランを選ぶ画面（右）が出ます。説明を見て選ぶと、その機能だけが受付画面に表示されます。</div></div>
+    <div class="step"><div class="txt"><div class="t"><span class="num">3</span>あとから変える</div>受付画面の右上の「プランを変更」から、いつでも変えられます。使いにくい点は「ご意見を送る」から運営に届きます。</div></div>
+  </div>
+  <img class="shot" src="img/plan_choose.png" style="width:88mm">
+</div>
+
+<h3>どのプランも共通</h3>
+<ul>
+  <li>レセコンとは別の、インターネットにつながる受付用のパソコンかタブレットのブラウザで使います（rxhelper.jp/pharmacy）。</li>
+  <li>プランは受付画面でいつでも変えられます。パスワードを忘れたときは、ログイン画面からメールで設定し直せます。</li>
+  <li>使いにくい点やほしい機能は、受付画面の「ご意見を送る」から運営に届きます。</li>
+  <li>AIは米国のサービス（Anthropic社）を使います。窓口照合の画像は保存しません。患者さんから届いた内容は一時的に保存し、「完了」または7日で削除します。</li>
+</ul>
+
+
+<h3>ご用意いただくもの</h3>
+<table>
+  <thead><tr><th style="width:52mm"></th><th>プランA</th><th>プランB</th><th>プランAB</th></tr></thead>
+  <tr><td class="k">受付用のパソコンかタブレット<br><span style="font-weight:normal">（レセコンとは別・インターネットにつながるもの）</span></td>
+      <td class="yes">必要</td><td class="yes">必要</td><td class="yes">必要</td></tr>
+  <tr><td class="k">在庫管理のシステムから書き出した在庫CSV</td>
+      <td class="yes">必要</td><td class="no">いりません</td><td class="yes">必要</td></tr>
+  <tr><td class="k">処方箋を取り込む方法<br><span style="font-weight:normal">（タブレットのカメラかスキャナ）</span></td>
+      <td class="yes">必要</td><td class="no">いりません</td><td class="yes">必要</td></tr>
+  <tr><td class="k">窓口や待合にQRチラシを置く場所</td>
+      <td class="no">いりません</td><td class="yes">必要</td><td class="yes">必要</td></tr>
+</table>
+<p class="note">レセコンや在庫管理のシステムに、新しく何かを入れたり、つないだりする必要はありません。</p>
+
+<!-- ───────── 2ページ：プランA ───────── -->
+<div class="page-break"></div>
+<h2>プランA　窓口の処方箋チェック</h2>
+<div class="flow"><div>在庫CSVを読み込む<br><small style="font-weight:normal">（最初に1回）</small></div><span>›</span><div>窓口の処方箋を<br>撮影・取り込む</div><span>›</span><div>AIが薬を<br>読み取る</div><span>›</span><div>在庫と出荷状況を<br>まとめて表示</div></div>
+
+<div class="step">
+  <img class="shot" src="img/promo_a_home.png" style="width:82mm">
+  <div class="txt"><div class="t"><span class="num">1</span>受付画面</div>
+    「窓口の処方箋を照合する」ボタンと「在庫CSV」が並びます。在庫管理のシステムから書き出したCSVを読み込むと、この端末のブラウザの中に残り、次からはそのまま使えます。CSVはインターネットに送りません。</div>
+</div>
+<div class="step">
+  <img class="shot" src="img/promo_a_photo.png" style="width:58mm">
+  <div class="txt"><div class="t"><span class="num">2</span>処方箋の画像を用意して「読み取る」</div>
+    タブレットのカメラで撮影するか、スキャナで取り込んだ画像を選びます（2枚まで）。「読み取る」を押すと、AIが薬の名前・用量・日数を読み取ります。<br>
+    <span class="note">画像は読み取りのため米国のAIサービス（Anthropic社）に送り、画像も読み取り結果も保存しません。</span></div>
+</div>
+<div class="step">
+  <div class="txt"><div class="t"><span class="num">3</span>処方の内容と在庫（参考）</div>
+    薬ごとに<b>必要量・在庫数</b>と、<b>在庫あり／不足／在庫なし</b>を表示します。あわせて、<b>限定出荷・供給停止などの出荷状況</b>（厚生労働省の公開データ）も表示します。「印刷」で紙に、「次の処方箋へ」で画像と結果を消して次の方へ。</div>
+</div>
+<img class="shot" src="img/promo_a_result.png" style="width:138mm; margin: -1mm 0 3mm 9mm">
+
+<div class="help">
+  <div class="lead2">プランAが役立つこと</div>
+  <ul>
+    <li>処方箋を受けたその場で、処方の薬の在庫と出荷調整の状況を<b>1つの画面でまとめて</b>確かめられます。</li>
+    <li>不足や出荷調整がわかれば、お待ちいただく時間や、ほかの薬局・後日のお渡しのご案内を早めに考えられます。</li>
+    <li>レセコンとつながず、受付の端末のブラウザだけで始められます。画像は保存しません。</li>
+  </ul>
+</div>
+
+<!-- ───────── 3ページ：プランB（患者さんの画面） ───────── -->
+<div class="page-break"></div>
+<h2>プランB　外国籍の患者さんの初回問診</h2>
+<div class="flow"><div>患者さんが窓口の<br>QRコードを読み取る</div><span>›</span><div>母語で初回問診に<br>答え、処方箋を送る</div><span>›</span><div>薬局に日本語の<br>問診票で届く</div><span>›</span><div>薬局の返信が<br>患者さんの言語で届く</div></div>
+
+<h3>患者さんのスマートフォンの画面</h3>
+<div class="phones">
+  <figure><img src="img/promo_patient_answer.png"><figcaption><b>① 母語で初回問診に答える</b><br>アレルギー・副作用歴・服用中の薬などを、選択肢を中心に答えます。11の言語に対応しています。</figcaption></figure>
+  <figure><img src="img/promo_patient_send.png"><figcaption><b>② 処方箋を撮って「送る」</b><br>受け取りの希望時刻も選べます。会員登録はいりません。</figcaption></figure>
+  <figure><img src="img/promo_patient_reply.png"><figcaption><b>③ 返信が母語で届く</b><br>「準備できました」などの返信やメッセージが、患者さんの言語で届きます。日本語の原文も表示します。</figcaption></figure>
+</div>
+<p class="note">患者さんは送信の前に、送る内容とAI（翻訳）の利用について画面で同意します。お薬のお受け取りには、これまでどおり処方箋の原本が必要です。画面は架空のベトナム語の患者さん・見本の処方箋です。</p>
+
+<h3>窓口に置くQRコードのチラシ</h3>
+<div class="two">
+  <div>
+    <p>受付画面の<b>「窓口用のQRチラシを印刷」</b>から、その薬局専用のQRコードが入ったA4のチラシを、すぐに印刷できます。窓口や待合に置いてください。</p>
+    <ul>
+      <li>使うかどうかは患者さんの自由です。これまでどおり窓口に処方箋をお持ちいただいてもかまいません。</li>
+      <li>チラシの文面は、患者さん向けに運営が用意したものです。</li>
+    </ul>
+  </div>
+  <img class="shot" src="img/promo_flyer.png" style="width:62mm">
+</div>
+
+<!-- ───────── 4ページ：プランB（薬局の画面） ───────── -->
+<div class="page-break"></div>
+<h2>プランB　薬局の受付画面の流れ</h2>
+
+<div class="step">
+  <img class="shot" src="img/promo_b_inbox.png" style="width:92mm">
+  <div class="txt"><div class="t"><span class="num">1</span>受信箱</div>
+    患者さんから届いた処方箋が並びます。30秒ごとに自動で更新し、新しく届くとお知らせします。受付の時刻・言語・受け取りの希望時刻・返信の状況がひと目でわかります。</div>
+</div>
+<div class="two" style="margin-bottom:3mm">
+  <div>
+    <div class="t" style="font-weight:bold;color:#1D4C44;font-size:10.5pt;margin-bottom:1mm"><span class="num">2</span>問診票（日本語）</div>
+    <p>処方箋の写真と、初回問診の答えを<b>日本語の問診票</b>で表示します。自由に書いた欄は、AIの日本語訳と原文を並べて表示します。問診票はそのまま印刷できます。</p>
+    <img class="shot" src="img/promo_b_questionnaire.png" style="width:86mm">
+  </div>
+  <div>
+    <div class="t" style="font-weight:bold;color:#1D4C44;font-size:10.5pt;margin-bottom:1mm"><span class="num">3</span>ボタンと定型文で返信</div>
+    <p>「準備できました」「疑義照会中」「○時以降にご用意」などのボタンと、よく使うメッセージ（定型文）で返信します。患者さんの言語に翻訳して届きます。自由に書いたメッセージも、訳を確かめてから送れます。</p>
+    <img class="shot" src="img/promo_b_reply.png" style="width:86mm">
+  </div>
+</div>
+
+<div class="help">
+  <div class="lead2">プランBが役立つこと</div>
+  <ul>
+    <li>来局の前に、アレルギーや服用中の薬などの初回の問診の答えが<b>日本語で</b>届きます。窓口での聞き取りや、翻訳の手間を減らせます。</li>
+    <li>患者さんは自分の言語で、落ち着いて答えられます。薬局の返信も、患者さんの言語で届きます。</li>
+    <li>届いた内容は、「完了」を押した時点で削除されます。完了しなくても、送信から7日で自動的に削除されます。</li>
+  </ul>
+</div>
+
+<!-- ───────── 5ページ：プランAB・お試し ───────── -->
+<div class="page-break"></div>
+<h2>プランAB　AとBの両方</h2>
+<div class="two" style="margin-bottom:3mm">
+  <div>
+    <img class="shot" src="img/promo_ab_home.png" style="width:86mm">
+    <figcaption><b>受付画面</b>：窓口照合のボタン・在庫CSV・受信箱が1つの画面に並びます。</figcaption>
+  </div>
+  <div>
+    <img class="shot" src="img/promo_ab_drugs.png" style="width:78mm">
+    <figcaption><b>届いた処方箋の「処方の内容と在庫（参考）」</b>：患者さんから届いた処方箋も、AIが薬を読み取り、在庫CSVと照合します。</figcaption>
+  </div>
+</div>
+<div class="help">
+  <div class="lead2">プランABが役立つこと</div>
+  <ul>
+    <li>来局前に届いた処方箋の薬が足りないとわかれば、<b>患者さんが来る前に</b>準備や、「一部は明日以降のお渡しになります」などのご連絡ができます。</li>
+    <li>窓口で受けた処方箋も、来局前に届いた処方箋も、同じ在庫CSVで照合できます。</li>
+  </ul>
+</div>
+
+<h3>お試しについて</h3>
+<p>お試しの間は無料でお使いいただけます。有料のサービスにする際は、料金と条件を改めてご案内し、お申し込みいただいた場合に限り有料の契約に移ります（自動的に有料になることはありません）。使い方をまとめた「ご利用ガイド」と、画面の流れがわかる「デモ動画（約2分）」もご用意しています。</p>
+
+<div class="contact">
+  <b>お問い合わせ・お試しのご相談</b><br>
+  株式会社Priamos（処方箋ヘルパー）　メール：azabumin@gmail.com　／　ウェブサイト：https://rxhelper.jp
+</div>
+
+<p class="foot">この資料の画面は、すべて架空のデモデータ（架空の薬局「さくら薬局（デモ）」「サンプル薬局」、テスト用の架空の処方箋、架空の患者さん）で撮影した、検証環境の実際の画面です。実在の患者さんの情報は含みません。</p>
+
+</body>
+</html>
