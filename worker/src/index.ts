@@ -4,6 +4,7 @@ import { handleLogin, handleLogout, handleMe, handleRequestPasswordReset, handle
 import { jsonResponse } from './http';
 import { handleTranslateMemo } from './memoTranslate';
 import { routeAdmin } from './admin';
+import { throwClaudeError } from './aiAlert';
 import { handlePharmacyFeedback } from './intake/feedback';
 import {
   handlePharmacyForgot,
@@ -343,11 +344,11 @@ export default {
 
     try {
       const MAX_ATTEMPTS = 3;
-      let analysis = await callClaude(body.image, mediaType, lang, env.ANTHROPIC_API_KEY);
+      let analysis = await callClaude(body.image, mediaType, lang, env);
       let attempts = 1;
       while (hasJapaneseLeak(analysis, lang) && attempts < MAX_ATTEMPTS) {
         console.error('language_leak_detected', { lang, attempt: attempts });
-        analysis = await callClaude(body.image, mediaType, lang, env.ANTHROPIC_API_KEY);
+        analysis = await callClaude(body.image, mediaType, lang, env);
         attempts += 1;
       }
       if (hasJapaneseLeak(analysis, lang)) {
@@ -373,12 +374,12 @@ function buildCorsHeaders(origin: string, env: Env): Record<string, string> {
   return headers;
 }
 
-async function callClaude(base64Image: string, mediaType: string, lang: Lang, apiKey: string) {
+async function callClaude(base64Image: string, mediaType: string, lang: Lang, env: Env) {
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      'x-api-key': apiKey,
+      'x-api-key': env.ANTHROPIC_API_KEY,
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
@@ -403,10 +404,7 @@ async function callClaude(base64Image: string, mediaType: string, lang: Lang, ap
     }),
   });
 
-  if (!response.ok) {
-    const errText = await response.text();
-    throw new Error(`Claude API ${response.status}: ${errText}`);
-  }
+  if (!response.ok) await throwClaudeError(env, response);
 
   const data = (await response.json()) as {
     stop_reason: string;

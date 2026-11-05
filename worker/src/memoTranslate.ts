@@ -1,3 +1,4 @@
+import { throwClaudeError } from './aiAlert';
 import { jsonResponse } from './http';
 
 // Japanese translation of the free-text fields of the "memo to show at the pharmacy". The rest of the memo is
@@ -61,7 +62,7 @@ export type FieldIn = { key: MemoField; text: string; lang?: string };
 // Japanese for free text the patient didn't translate). No rate limit here -- the caller has its own.
 export async function translateFields(env: Env, fields: FieldIn[]): Promise<Partial<Record<MemoField, string>>> {
   if (fields.length === 0) return {};
-  const translations = await callClaude(fields, env.ANTHROPIC_API_KEY);
+  const translations = await callClaude(fields, env);
   return Object.fromEntries(translations.map((t) => [t.key, t.ja])) as Partial<Record<MemoField, string>>;
 }
 
@@ -145,7 +146,7 @@ export async function handleTranslateMemo(request: Request, env: Env, corsHeader
   ]);
 
   try {
-    const translations = await callClaude(fields, env.ANTHROPIC_API_KEY);
+    const translations = await callClaude(fields, env);
     return jsonResponse({ translations }, 200, corsHeaders);
   } catch (err) {
     console.error('memo_translation_failed', err);
@@ -153,12 +154,12 @@ export async function handleTranslateMemo(request: Request, env: Env, corsHeader
   }
 }
 
-async function callClaude(fields: FieldIn[], apiKey: string) {
+async function callClaude(fields: FieldIn[], env: Env) {
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      'x-api-key': apiKey,
+      'x-api-key': env.ANTHROPIC_API_KEY,
       'anthropic-version': '2023-06-01',
       // if a safety classifier declines, re-run server-side on Anthropic's recommended fallback model
       'anthropic-beta': 'server-side-fallback-2026-07-01',
@@ -173,10 +174,7 @@ async function callClaude(fields: FieldIn[], apiKey: string) {
     }),
   });
 
-  if (!response.ok) {
-    const errText = await response.text();
-    throw new Error(`Claude API ${response.status}: ${errText}`);
-  }
+  if (!response.ok) await throwClaudeError(env, response);
 
   const data = (await response.json()) as { stop_reason: string; content: { type: string; text?: string }[] };
   if (data.stop_reason === 'refusal') throw new Error('model refused the request');

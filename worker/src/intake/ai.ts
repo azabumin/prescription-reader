@@ -1,5 +1,6 @@
 // AI calls for the pharmacy intake. Everything here goes to Anthropic (US) -- the patient agrees to that on
 // the send screen. Results are reference for the pharmacist, who always has the original photo next to them.
+import { throwClaudeError } from '../aiAlert';
 import { translateFields } from '../memoTranslate';
 import type { ExtractedDrug, Lang } from './types';
 
@@ -76,7 +77,7 @@ async function callJson<T>(env: Env, content: unknown, schema: unknown): Promise
       messages: [{ role: 'user', content }],
     }),
   });
-  if (!response.ok) throw new Error(`Claude API ${response.status}: ${await response.text()}`);
+  if (!response.ok) await throwClaudeError(env, response);
   const data = (await response.json()) as { stop_reason: string; content: { type: string; text?: string }[] };
   if (data.stop_reason === 'refusal') throw new Error('model refused the request');
   if (data.stop_reason === 'max_tokens') throw new Error('response was cut off at max_tokens');
