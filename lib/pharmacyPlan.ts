@@ -21,7 +21,7 @@ export const PLAN_INFO: Record<PharmacyPlan, { name: string; does: string; note:
   B: {
     name: 'プランB　初回問診の受信箱',
     does: '外国籍の患者さんが窓口のQRコードから送った処方箋の写真と初回アンケートの答えを、日本語の問診票で受け取り、返信できます。薬の読み取りと在庫照合はありません。',
-    note: '窓口に置くQRコードのチラシは、運営からお送りします。',
+    note: '窓口に置くQRコードのチラシは、受付画面の「窓口用のQRチラシを印刷」から印刷できます。',
   },
   AB: {
     name: 'プランAB　AとBの両方',

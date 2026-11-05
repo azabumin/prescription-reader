@@ -53,6 +53,9 @@ export default function PharmacyLoginScreen() {
       <TouchableOpacity accessibilityRole="button" aria-disabled={!canSubmit} disabled={!canSubmit} style={[ph.primary, !canSubmit && ph.disabled]} onPress={submit}>
         {busy ? <ActivityIndicator color="#FFFFFF" /> : <Text style={ph.primaryText}>ログイン</Text>}
       </TouchableOpacity>
+      <TouchableOpacity accessibilityRole="button" onPress={() => router.push('/pharmacy/forgot')}>
+        <Text style={ph.link}>パスワードを忘れた方</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }

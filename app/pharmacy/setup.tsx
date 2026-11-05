@@ -5,8 +5,9 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ph } from '../../components/pharmacy/pharmacyUi';
 import { PharmacyApiError, setupPharmacy } from '../../lib/pharmacyApi';
 
-// First-time setup from the link the operator sends (…/pharmacy/setup?code=<薬局コード>&s=<設定コード>):
-// the pharmacy chooses its own password. The link works once and for 14 days.
+// Password setup from a link (…/pharmacy/setup?code=<薬局コード>&s=<設定コード>): the first-time link the operator
+// sends (14 days) or a "forgot password" email (1 hour). Either works once; the pharmacy chooses its own password,
+// and setting it ends the pharmacy's other logins.
 export default function PharmacySetupScreen() {
   const params = useLocalSearchParams<{ code?: string; s?: string }>();
   const code = typeof params.code === 'string' ? params.code : '';
@@ -32,7 +33,7 @@ export default function PharmacySetupScreen() {
       const c = e instanceof PharmacyApiError ? e.code : 'server';
       setError(
         c === 'invalid_setup'
-          ? 'このリンクは使えません（使用済み、または期限切れ）。運営にお問い合わせください。'
+          ? 'このリンクは使えません（使用済み、または期限切れ）。ログイン画面の「パスワードを忘れた方」から、もう一度お試しください。'
           : c === 'weak_password'
             ? 'パスワードは8文字以上にしてください。'
             : '設定できませんでした。時間をおいて、もう一度お試しください。',
@@ -44,7 +45,7 @@ export default function PharmacySetupScreen() {
 
   return (
     <ScrollView contentContainerStyle={ph.narrow}>
-      <Text style={ph.title}>初回設定（パスワード）</Text>
+      <Text style={ph.title}>パスワードの設定</Text>
       {!code || !setupCode ? (
         <Text style={ph.error}>リンクが正しくありません。届いたリンクをそのまま開いてください。</Text>
       ) : (

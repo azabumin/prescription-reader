@@ -179,3 +179,18 @@ export async function sendPasswordResetEmail(
     throw new Error(`Resend API ${response.status}: ${errText}`);
   }
 }
+
+// A plain-text notice to the operator (OPERATOR_EMAIL), e.g. when a pharmacy sends feedback from its console.
+// Like the reset email, it only logs when Resend isn't configured.
+export async function sendOperatorMail(to: string, subject: string, text: string, resendApiKey: string | undefined): Promise<void> {
+  if (!resendApiKey) {
+    console.log('operator_mail_not_configured', { to, subject });
+    return;
+  }
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${resendApiKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ from: FROM, to, subject, text }),
+  });
+  if (!response.ok) throw new Error(`Resend API ${response.status}: ${await response.text()}`);
+}

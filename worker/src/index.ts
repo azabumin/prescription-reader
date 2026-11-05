@@ -3,7 +3,16 @@ import { canAnalyze, resolveSessionUser } from './auth';
 import { handleLogin, handleLogout, handleMe, handleRequestPasswordReset, handleResetPassword, handleSignup } from './authRoutes';
 import { jsonResponse } from './http';
 import { handleTranslateMemo } from './memoTranslate';
-import { handlePharmacyLogin, handlePharmacyLogout, handlePharmacyMe, handlePharmacySetPlan, handlePharmacySetup } from './intake/pharmacyAuth';
+import { routeAdmin } from './admin';
+import { handlePharmacyFeedback } from './intake/feedback';
+import {
+  handlePharmacyForgot,
+  handlePharmacyLogin,
+  handlePharmacyLogout,
+  handlePharmacyMe,
+  handlePharmacySetPlan,
+  handlePharmacySetup,
+} from './intake/pharmacyAuth';
 import { handleIntakeStatus, handlePharmacyLookup, handleSendIntake } from './intake/patientRoutes';
 import { routePharmacyIntakes } from './intake/pharmacyRoutes';
 import { handleWalkinCheck } from './intake/walkinCheck';
@@ -20,6 +29,11 @@ declare global {
     // ZEUS-issued IP code (clientip) for LinkPoint. Not set yet -- ZEUS issues it once the
     // merchant screening fully completes. Run: wrangler secret put ZEUS_IP_CODE
     ZEUS_IP_CODE: string;
+    // Long random key for the operator's admin screen (src/admin.ts). Unset = no admin routes.
+    // Run: wrangler secret put ADMIN_TOKEN
+    ADMIN_TOKEN?: string;
+    // Where pharmacy feedback notices go (wrangler.jsonc vars).
+    OPERATOR_EMAIL?: string;
   }
 }
 
@@ -263,6 +277,10 @@ export default {
     if (route === 'POST /pharmacy/logout') return handlePharmacyLogout(request, env, corsHeaders);
     if (route === 'GET /pharmacy/me') return handlePharmacyMe(request, env, corsHeaders);
     if (route === 'POST /pharmacy/plan') return handlePharmacySetPlan(request, env, corsHeaders);
+    if (route === 'POST /pharmacy/forgot') return handlePharmacyForgot(request, env, corsHeaders);
+    if (route === 'POST /pharmacy/feedback') return handlePharmacyFeedback(request, env, corsHeaders);
+    const adminResponse = await routeAdmin(request, env, corsHeaders);
+    if (adminResponse) return adminResponse;
     if (route === 'POST /pharmacy/check') return handleWalkinCheck(request, env, corsHeaders);
     const pharmacyResponse = await routePharmacyIntakes(request, env, corsHeaders);
     if (pharmacyResponse) return pharmacyResponse;

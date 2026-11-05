@@ -18,6 +18,8 @@ export default defineConfig(async () => {
             ANTHROPIC_API_KEY: 'test',
             ALLOWED_ORIGINS: 'https://rxhelper.jp',
             RESEND_API_KEY: 'test-resend',
+            ADMIN_TOKEN: 'test-admin-token-0123456789',
+            OPERATOR_EMAIL: 'operator@example.jp',
           },
         },
       }),

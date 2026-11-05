@@ -87,6 +87,9 @@ export default function PharmacyHomeScreen() {
           <TouchableOpacity accessibilityRole="button" onPress={() => router.push('/pharmacy/plan')}>
             <Text style={ph.link}>プランを変更</Text>
           </TouchableOpacity>
+          <TouchableOpacity accessibilityRole="button" onPress={() => router.push('/pharmacy/feedback')}>
+            <Text style={ph.link}>ご意見を送る</Text>
+          </TouchableOpacity>
           <TouchableOpacity accessibilityRole="button" onPress={logout}>
             <Text style={ph.link}>ログアウト</Text>
           </TouchableOpacity>
@@ -110,7 +113,12 @@ export default function PharmacyHomeScreen() {
 
       {plan && hasIntake(plan) && (
         <>
-          {plan === 'AB' && <Text style={[ph.h2, { marginTop: 8 }]}>患者さんから届いた処方箋</Text>}
+          <View style={[ph.row, { justifyContent: 'space-between', marginTop: plan === 'AB' ? 8 : 0 }]}>
+            {plan === 'AB' ? <Text style={ph.h2}>患者さんから届いた処方箋</Text> : <View />}
+            <TouchableOpacity accessibilityRole="button" style={ph.secondary} onPress={() => router.push('/pharmacy/flyer')}>
+              <Text style={ph.secondaryText}>窓口用のQRチラシを印刷</Text>
+            </TouchableOpacity>
+          </View>
           {newCount > 0 && (
             <TouchableOpacity accessibilityRole="button" style={[ph.card, { backgroundColor: '#FFF6E5' }]} onPress={() => setNewCount(0)}>
               <Text style={ph.ok}>新しい受付が {newCount} 件あります（タップで消す）</Text>

@@ -1,0 +1,97 @@
+// The counter flyer for plan B / AB pharmacies (app/pharmacy/flyer.tsx), filled in with the pharmacy's name and QR code.
+// Same wording and layout as docs/pilot/窓口案内チラシ_印刷用.html -- patient-facing, so no monetary perks and no 「無料」.
+const esc = (s: string) =>
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+export function flyerHtml(pharmacyName: string, patientUrl: string, qrDataUrl: string): string {
+  const name = esc(pharmacyName);
+  const url = esc(patientUrl);
+  return `<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>来局前に、処方箋の写真を送れます</title>
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body {
+    margin: 0; width: 210mm; height: 297mm; overflow: hidden;
+    font-family: "Meiryo", "Yu Gothic", sans-serif; color: #1E2624;
+    background: #FFFFFF;
+  }
+  .page { padding: 11mm 15mm 9mm; height: 297mm; display: flex; flex-direction: column; }
+  .eyebrow {
+    display: inline-block; align-self: flex-start;
+    border: 1.5px solid #2C6E63; color: #2C6E63; border-radius: 999px;
+    padding: 1.5mm 5mm; font-size: 12.5pt; font-weight: bold;
+  }
+  .blank { display: inline-block; min-width: 46mm; border-bottom: 1.5px solid #2C6E63; }
+  h1 { font-size: 27pt; line-height: 1.3; margin: 5mm 0 2.5mm; color: #1D4C44; letter-spacing: -0.01em; }
+  .lead { font-size: 13.5pt; margin: 0 0 5mm; }
+  .main { display: flex; gap: 8mm; align-items: stretch; }
+  .steps { flex: 1; display: flex; flex-direction: column; gap: 3mm; }
+  .step { display: flex; gap: 4mm; align-items: flex-start; background: #EEF5F3; border-radius: 4mm; padding: 3mm 5mm; }
+  .num {
+    flex: 0 0 11mm; height: 11mm; border-radius: 50%; background: #2C6E63; color: #fff;
+    font-size: 16pt; font-weight: bold; display: flex; align-items: center; justify-content: center;
+  }
+  .step b { display: block; font-size: 14.5pt; margin-bottom: 1mm; color: #1D4C44; }
+  .step span { font-size: 11pt; line-height: 1.6; }
+  .qr {
+    flex: 0 0 62mm; border: 2px solid #2C6E63; border-radius: 4mm; padding: 5mm;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+  }
+  .qr-img { width: 48mm; height: 48mm; image-rendering: pixelated; }
+  .qr-box {
+    width: 48mm; height: 48mm; border: 2px dashed #9DB8B2; border-radius: 2mm;
+    display: flex; align-items: center; justify-content: center; color: #6F8783; font-size: 11pt;
+  }
+  .qr p { margin: 4mm 0 0; font-size: 10.5pt; font-weight: bold; color: #1D4C44; }
+  .qr small { display: block; margin-top: 2mm; font-size: 8.5pt; color: #4A5B58; word-break: break-all; }
+  h2 { font-size: 13.5pt; color: #1D4C44; margin: 5.5mm 0 2.5mm; padding-left: 3mm; border-left: 4px solid #2C6E63; }
+  ul { margin: 0; padding-left: 6mm; }
+  li { font-size: 10.8pt; line-height: 1.55; margin-bottom: 1mm; }
+  .important { background: #FFF6E5; border-radius: 3mm; padding: 3mm 5mm; font-size: 12pt; line-height: 1.6; margin-bottom: 3mm; }
+  .langs { font-size: 11.5pt; line-height: 1.8; font-family: "Segoe UI", "Nirmala UI", "Myanmar Text", "Leelawadee UI", "Malgun Gothic", "Meiryo", sans-serif; }
+  .langs span { white-space: nowrap; }
+  .foot { margin-top: auto; border-top: 1px solid #D5E0DD; padding-top: 3mm; font-size: 9.5pt; color: #4A5B58; display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="eyebrow">${name}の受付サービス</div>
+  <h1>来局前に、<br>処方箋の写真を送れます</h1>
+  <p class="lead">お薬の準備ができたら、スマートフォンの画面でお知らせします。</p>
+
+  <div class="main">
+    <div class="steps">
+      <div class="step"><div class="num">1</div><div><b>QRコードを読み取る</b><span>スマートフォンのカメラで、右のQRコードを読み取ってください。</span></div></div>
+      <div class="step"><div class="num">2</div><div><b>処方箋の写真を撮って送る</b><span>初回アンケートは、ふだんお使いの言語で答えられます。薬局には日本語で届きます。</span></div></div>
+      <div class="step"><div class="num">3</div><div><b>画面でお知らせを確認する</b><span>「準備ができました」などのお知らせが画面に出ます。メールでのお知らせも選べます。</span></div></div>
+    </div>
+    <div class="qr">
+      <img class="qr-img" src="${qrDataUrl}" alt="QRコード">
+      <p>読み取って送る</p>
+      <small>${url}</small>
+    </div>
+  </div>
+
+  <h2>ご確認ください</h2>
+  <div class="important">お薬を受け取るときは、<b>処方箋の原本</b>と、<b>お薬手帳かマイナ保険証</b>をお持ちください。写真を送っただけでは、お薬はお渡しできません。</div>
+  <ul>
+    <li>電子処方箋の場合は、「控え」（引換番号つき）の写真を送ってください。</li>
+    <li>会員登録はいりません。</li>
+    <li>送った内容は、薬局が受付を完了した時点で削除されます。完了されなくても、7日で自動的に削除されます。</li>
+    <li>処方箋の読み取りと翻訳に、AI（海外のサーバー）を使います。詳しくは送信の画面とプライバシーポリシーをご覧ください。</li>
+    <li>使うかどうかは自由です。これまでどおり、窓口に処方箋をお持ちいただいてもかまいません。</li>
+  </ul>
+
+  <h2>使える言語</h2>
+  <div class="langs"><span>日本語</span> ・ <span>English</span> ・ <span>한국어</span> ・ <span>中文</span> ・ <span>Tiếng Việt</span> ・ <span>Bahasa Indonesia</span> ・ <span>Filipino</span> ・ <span>ภาษาไทย</span> ・ <span>မြန်မာ</span> ・ <span>नेपाली</span> ・ <span>Português</span></div>
+
+  <div class="foot"><span>ご不明な点は、薬局の窓口におたずねください。</span><span>処方箋ヘルパー（運営：株式会社Priamos）　rxhelper.jp</span></div>
+</div>
+</body>
+</html>`;
+}

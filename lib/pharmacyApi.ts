@@ -121,6 +121,11 @@ export async function setupPharmacy(code: string, setupCode: string, password: s
   await request('/pharmacy/setup', { method: 'POST', body: JSON.stringify({ code, setupCode, password }) }, false);
 }
 
+// Mails a one-hour link to the setup screen if the address is registered; the answer is the same either way.
+export async function forgotPassword(email: string): Promise<void> {
+  await request('/pharmacy/forgot', { method: 'POST', body: JSON.stringify({ email }) }, false);
+}
+
 export async function loginPharmacy(email: string, password: string): Promise<PharmacySession> {
   const res = await request('/pharmacy/login', { method: 'POST', body: JSON.stringify({ email, password }) }, false);
   const s = (await res.json()) as PharmacySession;
@@ -149,6 +154,11 @@ export async function setPlan(plan: PharmacyPlan): Promise<void> {
 export async function checkWalkin(images: { base64: string; mediaType: 'image/jpeg' }[]): Promise<ExtractedDrug[]> {
   const res = await request('/pharmacy/check', { method: 'POST', body: JSON.stringify({ images }) });
   return ((await res.json()) as { drugs: ExtractedDrug[] }).drugs;
+}
+
+// Feedback for the operator (shown on /admin and mailed to the operator).
+export async function sendFeedback(body: string): Promise<void> {
+  await request('/pharmacy/feedback', { method: 'POST', body: JSON.stringify({ body }) });
 }
 
 export async function logoutPharmacy(): Promise<void> {
