@@ -8,8 +8,9 @@ import type { Lang } from '../types';
 
 const SESSION_KEY = 'rxhelper.pharmacySession.v1';
 
-// plan is missing in sessions saved before plans existed; the console fills it in from getMe().
-export type PharmacyInfo = { name: string; code: string; plan?: PharmacyPlan };
+// plan / planChosen are missing in sessions saved before they existed; the console fills them in from getMe().
+// planChosen false = the pharmacy has not picked its plan yet, so the console opens the plan screen first.
+export type PharmacyInfo = { name: string; code: string; plan?: PharmacyPlan; planChosen?: boolean };
 export type PharmacySession = { token: string; pharmacy: PharmacyInfo };
 
 // 'skipped' = a plan-B pharmacy, so the medicines were not read
@@ -57,9 +58,10 @@ export class PharmacyAuthError extends Error {
   }
 }
 
-// 'gone' = deleted (7 days or 完了) or another pharmacy's; the rest are what the endpoint said.
+// 'gone' = deleted (7 days or 完了) or another pharmacy's; the rest are what the endpoint said (detail = the rest of
+// the error body, e.g. count for 'open_intakes').
 export class PharmacyApiError extends Error {
-  constructor(public code: string, public status: number) {
+  constructor(public code: string, public status: number, public detail: Record<string, unknown> = {}) {
     super(code);
     this.name = 'PharmacyApiError';
   }
@@ -102,12 +104,15 @@ async function request(path: string, init: RequestInit = {}, auth = true): Promi
   }
   if (!res.ok) {
     let code = 'server';
+    let detail: Record<string, unknown> = {};
     try {
-      code = ((await res.json()) as { error?: string }).error ?? code;
+      const { error, ...rest } = (await res.json()) as { error?: string };
+      code = error ?? code;
+      detail = rest;
     } catch {
       // non-JSON error body
     }
-    throw new PharmacyApiError(code, res.status);
+    throw new PharmacyApiError(code, res.status, detail);
   }
   return res;
 }
@@ -123,13 +128,21 @@ export async function loginPharmacy(email: string, password: string): Promise<Ph
   return s;
 }
 
-// The current name and plan from the server (the operator may have changed the plan); saved into the session.
-export async function getMe(): Promise<PharmacyInfo & { plan: PharmacyPlan }> {
-  const me = (await (await request('/pharmacy/me')).json()) as { name: string; code: string; plan: unknown };
-  const info = { name: me.name, code: me.code, plan: parsePlan(me.plan) ?? 'AB' };
+// The current name and plan from the server (it may have been changed on another device); saved into the session.
+export async function getMe(): Promise<PharmacyInfo & { plan: PharmacyPlan; planChosen: boolean }> {
+  const me = (await (await request('/pharmacy/me')).json()) as { name: string; code: string; plan: unknown; planChosen?: unknown };
+  const info = { name: me.name, code: me.code, plan: parsePlan(me.plan) ?? 'AB', planChosen: me.planChosen !== false };
   const s = loadSession();
   if (s) saveSession({ ...s, pharmacy: info });
   return info;
+}
+
+// The pharmacy picks or changes its plan. Moving to A while patient sends are still open (plan A has no inbox) throws
+// PharmacyApiError 'open_intakes' with detail.count.
+export async function setPlan(plan: PharmacyPlan): Promise<void> {
+  await request('/pharmacy/plan', { method: 'POST', body: JSON.stringify({ plan }) });
+  const s = loadSession();
+  if (s) saveSession({ ...s, pharmacy: { ...s.pharmacy, plan, planChosen: true } });
 }
 
 // Plan A walk-in check: the photos go to the AI and are not kept; the stock check against the CSV runs here.

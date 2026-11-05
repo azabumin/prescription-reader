@@ -11,11 +11,13 @@ const MIN_PASSWORD_LENGTH = 8;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 export type PharmacyPlan = 'A' | 'B' | 'AB';
-export type PharmacySession = { id: number; name: string; code: string; plan: PharmacyPlan };
+// planChosenAt is null until the pharmacy picks its plan on the plan screen (migration 0008).
+export type PharmacySession = { id: number; name: string; code: string; plan: PharmacyPlan; planChosenAt: string | null };
 
 // A = walk-in stock check, B = patient sending + questionnaire inbox, AB = both.
 export const hasStockCheck = (plan: PharmacyPlan) => plan !== 'B';
 export const hasIntake = (plan: PharmacyPlan) => plan !== 'A';
+const isPlan = (v: unknown): v is PharmacyPlan => v === 'A' || v === 'B' || v === 'AB';
 
 type PharmacyRow = {
   id: number;
@@ -28,6 +30,7 @@ type PharmacyRow = {
   setup_expires_at: string | null;
   disabled_at: string | null;
   plan: PharmacyPlan;
+  plan_chosen_at: string | null;
 };
 
 export async function sha256Hex(text: string): Promise<string> {
@@ -97,7 +100,11 @@ export async function handlePharmacyLogin(request: Request, env: Env, corsHeader
   await env.DB.prepare('INSERT INTO pharmacy_sessions (token, pharmacy_id, created_at, expires_at) VALUES (?, ?, ?, ?)')
     .bind(token, row.id, now.toISOString(), new Date(now.getTime() + PHARMACY_SESSION_TTL_DAYS * DAY_MS).toISOString())
     .run();
-  return jsonResponse({ token, pharmacy: { name: row.name, code: row.code, plan: row.plan } }, 200, corsHeaders);
+  return jsonResponse(
+    { token, pharmacy: { name: row.name, code: row.code, plan: row.plan, planChosen: row.plan_chosen_at !== null } },
+    200,
+    corsHeaders,
+  );
 }
 
 export async function handlePharmacyLogout(request: Request, env: Env, corsHeaders: Record<string, string>): Promise<Response> {
@@ -111,7 +118,7 @@ export async function resolvePharmacySession(request: Request, db: D1Database): 
   if (!token) return null;
   const row = await db
     .prepare(
-      `SELECT p.id, p.name, p.code, p.plan FROM pharmacy_sessions s JOIN pharmacies p ON p.id = s.pharmacy_id
+      `SELECT p.id, p.name, p.code, p.plan, p.plan_chosen_at AS planChosenAt FROM pharmacy_sessions s JOIN pharmacies p ON p.id = s.pharmacy_id
        WHERE s.token = ? AND s.expires_at > ? AND p.disabled_at IS NULL`,
     )
     .bind(token, new Date().toISOString())
@@ -119,9 +126,36 @@ export async function resolvePharmacySession(request: Request, db: D1Database): 
   return row ?? null;
 }
 
-// The console asks on every open: sessions saved before plans existed don't know theirs, and the operator may change it.
+// The console asks on every open: sessions saved before plans existed don't know theirs, and the plan may have been
+// changed from another device or by the operator.
 export async function handlePharmacyMe(request: Request, env: Env, corsHeaders: Record<string, string>): Promise<Response> {
   const pharmacy = await resolvePharmacySession(request, env.DB);
   if (!pharmacy) return jsonResponse({ error: 'unauthorized' }, 401, corsHeaders);
-  return jsonResponse({ name: pharmacy.name, code: pharmacy.code, plan: pharmacy.plan }, 200, corsHeaders);
+  return jsonResponse(
+    { name: pharmacy.name, code: pharmacy.code, plan: pharmacy.plan, planChosen: pharmacy.planChosenAt !== null },
+    200,
+    corsHeaders,
+  );
+}
+
+// The pharmacy picks or changes its own plan. Moving to A while patient sends are still open is refused: plan A has no
+// inbox, so they would vanish from the screen until they expire.
+export async function handlePharmacySetPlan(request: Request, env: Env, corsHeaders: Record<string, string>): Promise<Response> {
+  const pharmacy = await resolvePharmacySession(request, env.DB);
+  if (!pharmacy) return jsonResponse({ error: 'unauthorized' }, 401, corsHeaders);
+  const body = await readJson(request);
+  const plan = body?.plan;
+  if (!isPlan(plan)) return jsonResponse({ error: 'invalid_plan' }, 400, corsHeaders);
+
+  if (!hasIntake(plan) && hasIntake(pharmacy.plan)) {
+    const open = await env.DB.prepare("SELECT COUNT(*) AS n FROM intakes WHERE pharmacy_id = ? AND status != 'done' AND expires_at > ?")
+      .bind(pharmacy.id, new Date().toISOString())
+      .first<{ n: number }>();
+    if (open && open.n > 0) return jsonResponse({ error: 'open_intakes', count: open.n }, 409, corsHeaders);
+  }
+
+  await env.DB.prepare('UPDATE pharmacies SET plan = ?, plan_chosen_at = ? WHERE id = ?')
+    .bind(plan, new Date().toISOString(), pharmacy.id)
+    .run();
+  return jsonResponse({ plan, planChosen: true }, 200, corsHeaders);
 }

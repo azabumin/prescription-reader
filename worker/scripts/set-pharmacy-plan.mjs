@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// Changes a registered pharmacy's plan. The pharmacy's screen follows on its next open (GET /pharmacy/me).
+// Changes a registered pharmacy's plan (pharmacies normally do this themselves on the plan screen). The pharmacy's
+// screen follows on its next open (GET /pharmacy/me). It also counts as chosen, so the plan screen is not forced.
 //   A = walk-in stock check, B = patient sending + questionnaire inbox, AB = both.
 // Moving to A stops patient sends at once (the patient link then says the code is unknown).
 //
@@ -27,7 +28,7 @@ if (!code || !/^[a-z0-9]+$/.test(code) || !['A', 'B', 'AB'].includes(plan)) {
 // via a file, like new-pharmacy.mjs: on Windows npx needs a shell, which splits --command at spaces
 const dir = mkdtempSync(path.join(tmpdir(), 'set-pharmacy-plan-'));
 const file = path.join(dir, 'update.sql');
-writeFileSync(file, `UPDATE pharmacies SET plan = '${plan}' WHERE code = '${code}';\nSELECT code, name, plan FROM pharmacies WHERE code = '${code}';\n`, 'utf8');
+writeFileSync(file, `UPDATE pharmacies SET plan = '${plan}', plan_chosen_at = COALESCE(plan_chosen_at, '${new Date().toISOString()}') WHERE code = '${code}';\nSELECT code, name, plan FROM pharmacies WHERE code = '${code}';\n`, 'utf8');
 try {
   execFileSync('npx', ['wrangler', 'd1', 'execute', 'prescription-reader-db', remote ? '--remote' : '--local', `--file=${file}`], {
     stdio: 'inherit',

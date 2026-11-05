@@ -7,7 +7,7 @@ import { StockCsvPanel } from '../../components/pharmacy/StockCsvPanel';
 import { COLORS } from '../../constants/theme';
 import { getMe, listIntakes, loadSession, logoutPharmacy, PharmacyAuthError, type InboxItem } from '../../lib/pharmacyApi';
 import { LANG_NAME_JA } from '../../lib/pharmacyCardStrings';
-import { hasIntake, hasStockCheck, type PharmacyPlan } from '../../lib/pharmacyPlan';
+import { hasIntake, hasStockCheck, PLAN_INFO, type PharmacyPlan } from '../../lib/pharmacyPlan';
 import { SEND_STRINGS } from '../../lib/sendStrings';
 
 const REFRESH_MS = 30_000;
@@ -15,7 +15,8 @@ const DRUGS_JA = { pending: 'AI読み取り中', done: 'AI読み取り済み', f
 
 // The pharmacy's home screen, laid out by plan (lib/pharmacyPlan.ts):
 //   A  -> walk-in check + stock CSV,  B -> inbox of patient sends,  AB -> both.
-// The plan is re-read from the server on every refresh, so an operator's change shows up without logging in again.
+// The plan is re-read from the server on every refresh, so a change from another device shows up without logging in
+// again. A pharmacy that has not chosen its plan yet goes to the plan screen (app/pharmacy/plan.tsx) first.
 export default function PharmacyHomeScreen() {
   const router = useRouter();
   const session = loadSession();
@@ -32,6 +33,10 @@ export default function PharmacyHomeScreen() {
   const refresh = useCallback(async () => {
     try {
       const me = await getMe();
+      if (!me.planChosen) {
+        router.replace('/pharmacy/plan');
+        return;
+      }
       setPlan(me.plan);
       if (hasIntake(me.plan)) {
         const list = await listIntakes();
@@ -70,11 +75,17 @@ export default function PharmacyHomeScreen() {
       <View style={[ph.row, { justifyContent: 'space-between' }]}>
         <View>
           <Text style={ph.title}>{plan === 'A' ? '窓口の処方箋チェック' : '届いた処方箋'}</Text>
-          <Text style={ph.small}>{session.pharmacy.name}</Text>
+          <Text style={ph.small}>
+            {session.pharmacy.name}
+            {plan && `　／　${PLAN_INFO[plan].name}`}
+          </Text>
         </View>
         <View style={ph.row}>
           <TouchableOpacity accessibilityRole="button" style={ph.secondary} onPress={refresh}>
             <Text style={ph.secondaryText}>更新</Text>
+          </TouchableOpacity>
+          <TouchableOpacity accessibilityRole="button" onPress={() => router.push('/pharmacy/plan')}>
+            <Text style={ph.link}>プランを変更</Text>
           </TouchableOpacity>
           <TouchableOpacity accessibilityRole="button" onPress={logout}>
             <Text style={ph.link}>ログアウト</Text>

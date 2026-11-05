@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 // Registers a pharmacy and prints its links:
 //   - the setup link for the pharmacy (one-time, sets their own password; valid 14 days)
-//   - the patient link that goes into the counter QR code (not for plan A, which takes no patient sends)
+//   - the patient link that goes into the counter QR code (used once the pharmacy is on plan B or AB)
 // The operator never sees or sets the pharmacy's password.
-// Plans: A = walk-in stock check, B = patient sending + questionnaire inbox, AB = both (default).
-// Change a plan later with scripts/set-pharmacy-plan.mjs.
+// Plans: A = walk-in stock check, B = patient sending + questionnaire inbox, AB = both.
+// Without --plan the pharmacy picks its own plan on its first login (and can change it later on the plan screen);
+// with --plan it starts on that plan. The operator can still change it with scripts/set-pharmacy-plan.mjs.
 //
 // Usage (from worker/):
 //   node scripts/new-pharmacy.mjs --name "○○薬局" --email pharmacy@example.jp [--plan A|B|AB]          # local D1 (wrangler dev)
@@ -35,9 +36,9 @@ function randomString(length) {
 
 const name = arg('name');
 const email = arg('email')?.trim().toLowerCase();
-const plan = (arg('plan') ?? 'AB').toUpperCase();
+const plan = arg('plan')?.toUpperCase(); // undefined = the pharmacy chooses
 const remote = process.argv.includes('--remote');
-if (!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !PLANS.includes(plan)) {
+if (!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || (plan !== undefined && !PLANS.includes(plan))) {
   console.error('Usage: node scripts/new-pharmacy.mjs --name "薬局名" --email login@example.jp [--plan A|B|AB] [--remote]');
   process.exit(1);
 }
@@ -47,7 +48,7 @@ const setupCode = randomString(24);
 const now = new Date();
 const expires = new Date(now.getTime() + SETUP_TTL_DAYS * 86400000);
 const q = (s) => `'${String(s).replace(/'/g, "''")}'`;
-const sql = `INSERT INTO pharmacies (code, name, login_email, setup_code_hash, setup_expires_at, created_at, plan) VALUES (${q(code)}, ${q(name)}, ${q(email)}, ${q(createHash('sha256').update(setupCode).digest('hex'))}, ${q(expires.toISOString())}, ${q(now.toISOString())}, ${q(plan)});`;
+const sql = `INSERT INTO pharmacies (code, name, login_email, setup_code_hash, setup_expires_at, created_at, plan, plan_chosen_at) VALUES (${q(code)}, ${q(name)}, ${q(email)}, ${q(createHash('sha256').update(setupCode).digest('hex'))}, ${q(expires.toISOString())}, ${q(now.toISOString())}, ${q(plan ?? 'AB')}, ${plan ? q(now.toISOString()) : 'NULL'});`;
 
 // Written to a file (not passed on the command line) so Japanese names survive the Windows console.
 const dir = mkdtempSync(path.join(tmpdir(), 'new-pharmacy-'));
@@ -65,12 +66,12 @@ try {
 console.log('\n薬局を登録しました:', name, `(${remote ? '本番' : 'ローカル'})`);
 console.log('薬局コード      :', code);
 console.log('ログイン用メール:', email);
-console.log('プラン          :', PLAN_JA[plan]);
+console.log('プラン          :', plan ? PLAN_JA[plan] : '薬局が初回ログインで選びます');
 console.log(`初回設定のリンク（薬局に渡す・${SETUP_TTL_DAYS}日有効・1回限り）:`);
 console.log(`  ${SITE}/pharmacy/setup?code=${code}&s=${setupCode}`);
 if (plan === 'A') {
   console.log('患者さん用のリンク: なし（Aプランは患者さんからの送信を受け付けません）');
 } else {
-  console.log('患者さん用のリンク（窓口のQRコードにする）:');
+  console.log(`患者さん用のリンク（窓口のQRコードにする${plan ? '' : '・薬局がプランBかABを選んだら使えます'}）:`);
   console.log(`  ${SITE}/send?ph=${code}`);
 }

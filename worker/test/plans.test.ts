@@ -35,8 +35,71 @@ describe('pharmacy plan', () => {
     const ph = await loggedInPharmacy('A');
     const me = await call('GET', '/pharmacy/me', undefined, auth(ph.token));
     expect(me.status).toBe(200);
-    expect(await me.json()).toEqual({ name: ph.name, code: ph.code, plan: 'A' });
+    expect(await me.json()).toEqual({ name: ph.name, code: ph.code, plan: 'A', planChosen: true });
     expect((await call('GET', '/pharmacy/me')).status).toBe(401);
+  });
+});
+
+describe('choosing the plan (POST /pharmacy/plan)', () => {
+  const choose = (token: string, plan: unknown) => call('POST', '/pharmacy/plan', { plan }, auth(token));
+  const me = async (token: string) => (await (await call('GET', '/pharmacy/me', undefined, auth(token))).json()) as { plan: string; planChosen: boolean };
+
+  it('a new pharmacy has not chosen yet; login says so and patients cannot find it', async () => {
+    const ph = await insertPharmacy({ planChosen: false });
+    await call('POST', '/pharmacy/setup', { code: ph.code, setupCode: ph.setupCode, password: 'correct-horse-1' });
+    const login = await call('POST', '/pharmacy/login', { email: ph.email, password: 'correct-horse-1' });
+    expect(((await login.json()) as { pharmacy: { planChosen: boolean } }).pharmacy.planChosen).toBe(false);
+    expect((await call('GET', `/p/pharmacy?code=${ph.code}`)).status).toBe(404);
+    expect((await call('POST', '/intakes', sendBody(ph.code))).status).toBe(404);
+  });
+
+  it('choosing saves the plan and opens the pharmacy to patients when it takes sends', async () => {
+    const ph = await loggedInPharmacy('AB', false);
+    const res = await choose(ph.token, 'B');
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ plan: 'B', planChosen: true });
+    expect(await me(ph.token)).toMatchObject({ plan: 'B', planChosen: true });
+    expect((await call('GET', `/p/pharmacy?code=${ph.code}`)).status).toBe(200);
+  });
+
+  it('the pharmacy can change it later', async () => {
+    const ph = await loggedInPharmacy('A');
+    expect((await choose(ph.token, 'AB')).status).toBe(200);
+    expect((await me(ph.token)).plan).toBe('AB');
+    expect((await choose(ph.token, 'A')).status).toBe(200);
+    expect((await me(ph.token)).plan).toBe('A');
+  });
+
+  it('refuses moving to A while patient sends are still open, and allows it once they are done', async () => {
+    const ph = await loggedInPharmacy('AB');
+    await insertIntake(ph.id, { status: 'new' });
+    await insertIntake(ph.id, { status: 'ready' });
+    await insertIntake(ph.id, { status: 'done' });
+    const refused = await choose(ph.token, 'A');
+    expect(refused.status).toBe(409);
+    expect(await refused.json()).toEqual({ error: 'open_intakes', count: 2 });
+    expect((await me(ph.token)).plan).toBe('AB');
+    expect((await choose(ph.token, 'B')).status).toBe(200); // B keeps the inbox, so open sends are fine
+
+    await env.DB.prepare("UPDATE intakes SET status = 'done' WHERE pharmacy_id = ?").bind(ph.id).run();
+    expect((await choose(ph.token, 'A')).status).toBe(200);
+  });
+
+  it('ignores expired sends when moving to A', async () => {
+    const ph = await loggedInPharmacy('B');
+    const { id } = await insertIntake(ph.id, { status: 'new' });
+    await env.DB.prepare('UPDATE intakes SET expires_at = ? WHERE id = ?').bind(new Date(Date.now() - 1000).toISOString(), id).run();
+    expect((await choose(ph.token, 'A')).status).toBe(200);
+  });
+
+  it('rejects unknown plans and needs a session', async () => {
+    const ph = await loggedInPharmacy('AB');
+    for (const bad of ['C', 'ab', '', null, 1]) {
+      const res = await choose(ph.token, bad);
+      expect(res.status, String(bad)).toBe(400);
+      expect(await res.json()).toEqual({ error: 'invalid_plan' });
+    }
+    expect((await call('POST', '/pharmacy/plan', { plan: 'A' })).status).toBe(401);
   });
 });
 

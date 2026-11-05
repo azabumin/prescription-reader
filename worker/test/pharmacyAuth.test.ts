@@ -34,7 +34,7 @@ describe('pharmacy setup and login', () => {
     expect(res.status).toBe(200);
     const body = (await res.json()) as { token: string; pharmacy: { name: string; code: string; plan: string } };
     expect(body.token).toMatch(/^[0-9a-f]{64}$/);
-    expect(body.pharmacy).toEqual({ name: ph.name, code: ph.code, plan: 'AB' });
+    expect(body.pharmacy).toEqual({ name: ph.name, code: ph.code, plan: 'AB', planChosen: true });
   });
 
   it('login fails for a disabled pharmacy', async () => {

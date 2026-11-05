@@ -29,9 +29,13 @@ function randomHex(bytes: number): string {
 
 async function findPharmacy(db: D1Database, code: string): Promise<ActivePharmacy | null> {
   if (!code) return null;
-  // a plan-A pharmacy only checks walk-in prescriptions: to a patient it looks like an unknown code
+  // a plan-A pharmacy only checks walk-in prescriptions, and one that hasn't chosen its plan yet takes nothing:
+  // to a patient either looks like an unknown code
   return (
-    (await db.prepare("SELECT id, name FROM pharmacies WHERE code = ? AND disabled_at IS NULL AND plan != 'A'").bind(code).first<ActivePharmacy>()) ?? null
+    (await db
+      .prepare("SELECT id, name FROM pharmacies WHERE code = ? AND disabled_at IS NULL AND plan != 'A' AND plan_chosen_at IS NOT NULL")
+      .bind(code)
+      .first<ActivePharmacy>()) ?? null
   );
 }
 

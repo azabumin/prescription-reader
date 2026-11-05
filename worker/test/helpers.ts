@@ -8,7 +8,10 @@ export async function sha256Hex(text: string): Promise<string> {
 let seq = 0;
 
 // Inserts a pharmacy that still has a one-time setup code (no password yet).
-export async function insertPharmacy(opts: { setupCode?: string; setupExpiresAt?: string; disabled?: boolean; plan?: 'A' | 'B' | 'AB' } = {}) {
+// planChosen: false = registered without --plan, so the pharmacy has not picked its plan yet
+export async function insertPharmacy(
+  opts: { setupCode?: string; setupExpiresAt?: string; disabled?: boolean; plan?: 'A' | 'B' | 'AB'; planChosen?: boolean } = {},
+) {
   seq += 1;
   const code = `testph${seq}${Math.random().toString(36).slice(2, 6)}`;
   const email = `${code}@example.jp`;
@@ -16,10 +19,20 @@ export async function insertPharmacy(opts: { setupCode?: string; setupExpiresAt?
   const now = new Date();
   const expires = opts.setupExpiresAt ?? new Date(now.getTime() + 14 * 86400000).toISOString();
   const row = await env.DB.prepare(
-    `INSERT INTO pharmacies (code, name, login_email, setup_code_hash, setup_expires_at, created_at, disabled_at, plan)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
+    `INSERT INTO pharmacies (code, name, login_email, setup_code_hash, setup_expires_at, created_at, disabled_at, plan, plan_chosen_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
   )
-    .bind(code, `テスト薬局${seq}`, email, await sha256Hex(setupCode), expires, now.toISOString(), opts.disabled ? now.toISOString() : null, opts.plan ?? 'AB')
+    .bind(
+      code,
+      `テスト薬局${seq}`,
+      email,
+      await sha256Hex(setupCode),
+      expires,
+      now.toISOString(),
+      opts.disabled ? now.toISOString() : null,
+      opts.plan ?? 'AB',
+      opts.planChosen === false ? null : now.toISOString(),
+    )
     .first<{ id: number }>();
   return { id: row!.id, code, email, setupCode, name: `テスト薬局${seq}` };
 }
@@ -36,8 +49,8 @@ export function call(method: string, path: string, body?: unknown, headers: Reco
 }
 
 // Creates a pharmacy, sets its password and logs in. Returns the session token.
-export async function loggedInPharmacy(plan: 'A' | 'B' | 'AB' = 'AB') {
-  const ph = await insertPharmacy({ plan });
+export async function loggedInPharmacy(plan: 'A' | 'B' | 'AB' = 'AB', planChosen = true) {
+  const ph = await insertPharmacy({ plan, planChosen });
   await call('POST', '/pharmacy/setup', { code: ph.code, setupCode: ph.setupCode, password: 'correct-horse-1' });
   const res = await call('POST', '/pharmacy/login', { email: ph.email, password: 'correct-horse-1' });
   const { token } = (await res.json()) as { token: string };
