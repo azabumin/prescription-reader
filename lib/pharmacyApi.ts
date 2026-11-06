@@ -151,8 +151,9 @@ export async function setPlan(plan: PharmacyPlan): Promise<void> {
 }
 
 // Plan A walk-in check: the photos go to the AI and are not kept; the stock check against the CSV runs here.
-export async function checkWalkin(images: { base64: string; mediaType: 'image/jpeg' }[]): Promise<ExtractedDrug[]> {
-  const res = await request('/pharmacy/check', { method: 'POST', body: JSON.stringify({ images }) });
+// The worker refuses it ('consent_required') unless the pharmacist confirmed the patient agreed to the AI reading.
+export async function checkWalkin(images: { base64: string; mediaType: 'image/jpeg' }[], patientConsent: boolean): Promise<ExtractedDrug[]> {
+  const res = await request('/pharmacy/check', { method: 'POST', body: JSON.stringify({ images, patientConsent }) });
   return ((await res.json()) as { drugs: ExtractedDrug[] }).drugs;
 }
 

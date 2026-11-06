@@ -140,14 +140,19 @@
       <p class="note" style="margin-top:1mm">PDFのファイルは選べません。スキャナの保存形式をJPEGかPNGにしてください。明るい場所で、処方箋の全体がまっすぐ写るように撮ると、読み取りやすくなります。</p>
     </div></div>
   </div>
-  <img class="shot" src="img/plan_a_photo.png" style="width:78mm">
+  <img class="shot" src="img/plan_a_photo.png" style="width:70mm">
 </div>
 
-<div class="step"><div class="num">4</div><div class="body">
-  <div class="t">確認のチェックを入れて「読み取る」を押す</div>
-  その端末で初めて使うときだけ、「上の内容を確認しました（この端末で初回のみ）」にチェックを入れます。「読み取る」を押すと、AIが薬の名前・用量・日数を読み取ります。読み取り中は「AIが読み取り中です…」と表示されます。
-  <img class="shot" src="img/plan_a_read.png" style="width:100mm">
-</div></div>
+<div class="side">
+  <div class="txt">
+    <div class="step"><div class="num">4</div><div class="body">
+      <div class="t">患者さんの了承を確認して「読み取る」</div>
+      患者さんに「AIで読み取ってよいですか」とひとこと確認し、了承を得たらチェックを入れて「読み取る」を押します（処方箋ごと。チェックがないと押せません）。了承を得られないときは読み取らずに、これまでどおり確認します。
+      <p class="note" style="margin-top:1mm">その端末で初めて使うときは「上の内容を確認しました」にもチェックを入れます。</p>
+    </div></div>
+  </div>
+  <img class="shot" src="img/plan_a_read.png" style="width:84mm">
+</div>
 
 <div class="box warn">
   <div class="lead">処方箋の画像の取り扱い</div>
@@ -157,13 +162,14 @@
     <li>「読み取る」を押すと、処方箋の画像を、薬の読み取りのために<b>米国のAIサービス（Anthropic社）</b>に送信します。</li>
     <li>処方箋ヘルパーのサーバーには、<b>画像も読み取り結果も保存しません</b>。残るのは利用回数の集計（日時と、読み取った薬の数。個人を特定できる情報は含みません）だけです。</li>
     <li>窓口の処方箋の画像は、患者さんのスマートフォンではなく、薬局の端末からAIサービスに送信します。</li>
+    <li><b>患者さんへ：</b>窓口に掲示「処方箋の確認に、AIを使っています」（運営が用意）を貼り、読み取りの前にひとこと了承を得てください（手順4のチェック）。</li>
   </ul>
 </div>
 
 <div class="step" style="break-inside:auto"><div class="num">5</div><div class="body">
   <div class="t">結果を確認する</div>
   読み取った薬ごとに、次の内容を表示します（画面の例は架空の処方箋です）。
-  <img class="shot" src="img/plan_a_result.png" style="width:132mm">
+  <img class="shot" src="img/plan_a_result.png" style="width:92mm">
   <table style="margin-top:2mm">
     <tr><td class="k">薬の名前</td><td>AIが読み取った薬の名前（【般】は一般名処方）と、その下に処方箋の記載</td></tr>
     <tr><td class="k">必要量・在庫</td><td>必要量は「1回量 × 1日の回数 × 日数」（頓服は「1回量 × 回数」）。在庫は在庫CSVの数で、同じ成分・同じ規格の製品は銘柄が違ってもまとめて数えます</td></tr>

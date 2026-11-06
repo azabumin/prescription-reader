@@ -9,11 +9,12 @@ const auth = (token: string) => ({ Authorization: `Bearer ${token}` });
 const CORS = { 'Access-Control-Allow-Origin': 'https://rxhelper.jp' };
 const DRUG = { name: 'アレグラ錠60mg', generic: false, amountPerDose: 1, unit: '錠', dosesPerDay: 2, days: 14, prnCount: null, rawText: 'アレグラ錠60mg 2錠 分2 朝夕食後 14日分' };
 
-function checkRequest(token: string, body: unknown): Request {
+// patientConsent is true unless the test passes it: the pharmacist ticked "the patient agreed".
+function checkRequest(token: string, body: Record<string, unknown>): Request {
   return new Request('https://api.test/pharmacy/check', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...auth(token) },
-    body: JSON.stringify(body),
+    body: JSON.stringify({ patientConsent: true, ...body }),
   });
 }
 
@@ -211,6 +212,17 @@ describe('walk-in check (POST /pharmacy/check)', () => {
     expect(extractDrugs).not.toHaveBeenCalled();
   });
 
+  it("refuses without the patient's OK and doesn't send anything to the AI", async () => {
+    const ph = await loggedInPharmacy('A');
+    const extractDrugs = vi.fn();
+    for (const patientConsent of [undefined, false, 'yes']) {
+      const res = await handleWalkinCheck(checkRequest(ph.token, { images: [TINY_JPEG], patientConsent }), env, CORS, { extractDrugs });
+      expect(res.status).toBe(400);
+      expect(await res.json()).toEqual({ error: 'consent_required' });
+    }
+    expect(extractDrugs).not.toHaveBeenCalled();
+  });
+
   it('is limited per pharmacy per day', async () => {
     const ph = await loggedInPharmacy('A');
     await env.RATE_LIMIT_KV.put(`walkin-ph:${ph.id}:${new Date().toISOString().slice(0, 10)}`, '300');
@@ -222,7 +234,7 @@ describe('walk-in check (POST /pharmacy/check)', () => {
 
   it('says so when the AI fails (network is off in tests)', async () => {
     const ph = await loggedInPharmacy('A');
-    const res = await call('POST', '/pharmacy/check', { images: [TINY_JPEG] }, auth(ph.token));
+    const res = await call('POST', '/pharmacy/check', { images: [TINY_JPEG], patientConsent: true }, auth(ph.token));
     expect(res.status).toBe(502);
     expect(await res.json()).toEqual({ error: 'extraction_failed' });
     expect(await count("SELECT COUNT(*) AS n FROM intake_events WHERE pharmacy_id = ?", ph.id)).toBe(0);

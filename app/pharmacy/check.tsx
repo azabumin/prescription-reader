@@ -33,12 +33,15 @@ function rememberNotice(): void {
 
 // Plan A: a prescription handed in at the counter (外来). Photograph it on the tablet or pick a scanned image; the AI
 // reads the medicines (POST /pharmacy/check, nothing is stored) and the stock check runs here against the saved CSV.
+// Each prescription needs the patient's OK to the AI reading first (the counter notice + one question), ticked below
+// and reset for the next prescription.
 export default function WalkinCheckScreen() {
   const router = useRouter();
   const session = loadSession();
   const [plan, setPlan] = useState<PharmacyPlan | null>(session?.pharmacy.plan ?? null);
   const [photos, setPhotos] = useState<PreparedPhoto[]>([]);
   const [agreed, setAgreed] = useState(noticeSeen);
+  const [patientOk, setPatientOk] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [drugs, setDrugs] = useState<ExtractedDrug[] | null>(null);
@@ -79,13 +82,13 @@ export default function WalkinCheckScreen() {
   }
 
   async function read() {
-    if (photos.length === 0 || !agreed || busy) return;
+    if (photos.length === 0 || !agreed || !patientOk || busy) return;
     rememberNotice();
     setBusy(true);
     setError('');
     setDrugs(null);
     try {
-      setDrugs(await checkWalkin(photos.map((p) => ({ base64: p.base64, mediaType: 'image/jpeg' }))));
+      setDrugs(await checkWalkin(photos.map((p) => ({ base64: p.base64, mediaType: 'image/jpeg' })), patientOk));
     } catch (e) {
       if (e instanceof PharmacyAuthError) {
         router.replace('/pharmacy/login');
@@ -95,6 +98,8 @@ export default function WalkinCheckScreen() {
       setError(
         c === 'plan'
           ? 'このプランでは窓口照合を使えません。'
+          : c === 'consent_required'
+            ? '患者さんの了承のチェックを入れてください。画面が古い場合は、ブラウザで再読み込みしてください。'
           : c === 'rate_limited'
             ? '今日の読み取り回数の上限に達しました。明日もう一度お試しください。'
             : c === 'image_too_large'
@@ -112,6 +117,7 @@ export default function WalkinCheckScreen() {
     setPhotos([]);
     setDrugs(null);
     setError('');
+    setPatientOk(false);
   }
 
   if (!session) return null;
@@ -126,7 +132,7 @@ export default function WalkinCheckScreen() {
     );
   }
 
-  const canRead = photos.length > 0 && agreed && !busy;
+  const canRead = photos.length > 0 && agreed && patientOk && !busy;
 
   return (
     <ScrollView contentContainerStyle={ph.page}>
@@ -144,7 +150,14 @@ export default function WalkinCheckScreen() {
           {photos.map((p, i) => (
             <View key={p.uri} style={{ gap: 4, alignItems: 'center' }}>
               <Image source={{ uri: p.uri }} style={{ width: 140, height: 186, borderRadius: 8, backgroundColor: COLORS.chipBg }} resizeMode="contain" />
-              <TouchableOpacity accessibilityRole="button" onPress={() => setPhotos((prev) => prev.filter((_, j) => j !== i))}>
+              <TouchableOpacity
+                accessibilityRole="button"
+                onPress={() => {
+                  const rest = photos.filter((_, j) => j !== i);
+                  setPhotos(rest);
+                  if (rest.length === 0) setPatientOk(false); // a new prescription needs its own OK
+                }}
+              >
                 <Text style={ph.link}>削除</Text>
               </TouchableOpacity>
             </View>
@@ -178,6 +191,16 @@ export default function WalkinCheckScreen() {
             <Text style={ph.body}>上の内容を確認しました（この端末で初回のみ）</Text>
           </TouchableOpacity>
         )}
+        <TouchableOpacity
+          accessibilityRole="checkbox"
+          aria-checked={patientOk}
+          style={[ph.row, { paddingVertical: 4, flexWrap: 'nowrap' }]}
+          onPress={() => setPatientOk((v) => !v)}
+        >
+          <Text style={[ph.body, { fontWeight: '700' }]}>{patientOk ? '☑' : '☐'}</Text>
+          <Text style={[ph.body, { flexShrink: 1 }]}>患者さんに、AIで読み取ってよいか確認し、了承を得ました</Text>
+        </TouchableOpacity>
+        <Text style={ph.small}>了承を得られないときは読み取らずに、これまでどおり確認してください。チェックは処方箋ごとに入れます。</Text>
         <TouchableOpacity
           accessibilityRole="button"
           aria-disabled={!canRead}

@@ -27,7 +27,10 @@ export async function handleWalkinCheck(request: Request, env: Env, corsHeaders:
   } catch {
     return jsonResponse({ error: 'invalid' }, 400, corsHeaders);
   }
-  const images = parseImages(body && typeof body === 'object' ? (body as Record<string, unknown>).images : undefined);
+  const fields = body && typeof body === 'object' ? (body as Record<string, unknown>) : {};
+  // The pharmacist ticks "the patient agreed" for each prescription before it goes to the AI (consent form 第6条3項).
+  if (fields.patientConsent !== true) return jsonResponse({ error: 'consent_required' }, 400, corsHeaders);
+  const images = parseImages(fields.images);
   if (images === 'invalid') return jsonResponse({ error: 'invalid' }, 400, corsHeaders);
   if (images === 'image_too_large') return jsonResponse({ error: 'image_too_large' }, 413, corsHeaders);
 
