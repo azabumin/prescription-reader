@@ -30,6 +30,7 @@ import {
 import { buildMedicationCalendar, hasSchedulableDoses } from '../lib/calendar';
 import { downloadTextFile } from '../lib/download';
 import { saveHistoryEntry } from '../lib/history';
+import { BRAND } from '../lib/seo';
 import { listSent } from '../lib/intakeStore';
 import { detectDefaultLang, STRINGS } from '../lib/i18n';
 import { loadLangPref, saveLangPref } from '../lib/langPref';
@@ -294,7 +295,10 @@ export default function HomeScreen() {
         </View>
       )}
 
-      <Text style={styles.title}>{t.appTitle}</Text>
+      <Text style={styles.title} role="heading">
+        {lang !== 'ja' && <Text style={styles.brandJa}>{BRAND}{'\n'}</Text>}
+        {t.appTitle}
+      </Text>
       <Text style={styles.subtitle}>{t.appSubtitle}</Text>
 
       {!authChecked && (
@@ -597,6 +601,12 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: COLORS.text,
     textAlign: 'center',
+  },
+  // Japanese brand name above the title in other languages (the name pharmacies know it by)
+  brandJa: {
+    fontSize: FONT.small,
+    fontWeight: '700',
+    color: COLORS.primary,
   },
   subtitle: {
     fontSize: FONT.subtitle,

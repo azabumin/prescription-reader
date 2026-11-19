@@ -1261,6 +1261,9 @@ const BROWSER_LANG_MAP: Record<string, Lang> = {
 };
 
 export function detectDefaultLang(): Lang {
+  // Static web export (build time, no window): always write the Japanese page, so the
+  // published HTML doesn't depend on the build machine's locale. Browsers are unaffected.
+  if (Platform.OS === 'web' && typeof window === 'undefined') return 'ja';
   if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.language) {
     const prefix = navigator.language.toLowerCase().split('-')[0];
     return BROWSER_LANG_MAP[prefix] ?? 'en';

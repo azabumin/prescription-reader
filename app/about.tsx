@@ -3,7 +3,12 @@ import { ScrollView, Text, View } from 'react-native';
 import { Link } from 'expo-router';
 
 import { staticPageStyles as s } from '../components/staticPageStyles';
+import { COLORS } from '../constants/theme';
 import { detectDefaultLang, STRINGS } from '../lib/i18n';
+import { BRAND } from '../lib/seo';
+
+// Japanese brand name above the title in other languages
+const brandJa = { fontSize: 13, fontWeight: '700' as const, color: COLORS.primary };
 import { loadLangPref } from '../lib/langPref';
 import type { Lang } from '../types';
 
@@ -25,7 +30,7 @@ const CONTENT: Record<Lang, { title: string; sections: { heading?: string; body:
     ],
   },
   ja: {
-    title: 'このアプリについて',
+    title: '処方箋ヘルパーについて',
     sections: [
       {
         body: '処方箋ヘルパーは、処方箋やお薬の袋を撮影すると、AIがお薬の名前・服用方法・注意事項をわかりやすく整理してくれる無料のウェブアプリです。',
@@ -202,7 +207,10 @@ export default function AboutScreen() {
       </Link>
 
       <View style={s.langBlock}>
-        <Text style={s.pageTitle}>{content.title}</Text>
+        <Text style={s.pageTitle} role="heading">
+          {lang !== 'ja' && <Text style={brandJa}>{BRAND}{'\n'}</Text>}
+          {content.title}
+        </Text>
         {content.sections.map((section, i) => (
           <View key={i}>
             {section.heading && <Text style={s.sectionHeading}>{section.heading}</Text>}
