@@ -479,6 +479,10 @@ export default function HomeScreen() {
           {t.footerTokushoho}
         </Link>
       </View>
+      {/* for pharmacy staff, so Japanese in every language (the page itself is Japanese only) */}
+      <Link href="/for-pharmacy" style={[styles.footerLink, styles.footerPharmacy]}>
+        薬局の方へ
+      </Link>
     </ScrollView>
   );
 }
@@ -775,5 +779,9 @@ const styles = StyleSheet.create({
   footerDot: {
     fontSize: FONT.small,
     color: COLORS.textMuted,
+  },
+  footerPharmacy: {
+    textAlign: 'center',
+    marginTop: SPACING.sm,
   },
 });

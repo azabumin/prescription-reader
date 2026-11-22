@@ -24,6 +24,8 @@ describe('seo', () => {
     expect(seoForPath('/pharmacy/intake').index).toBe(false);
     expect(seoForPath('/account').index).toBe(false);
     expect(seoForPath('/pharmacy-card').index).toBe(true);
+    expect(seoForPath('/for-pharmacy').index).toBe(true);
+    expect(SITEMAP_PATHS).toContain('/for-pharmacy');
     expect(seoForPath('/about/').url).toBe('https://rxhelper.jp/about');
   });
 });

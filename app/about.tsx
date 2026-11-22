@@ -218,6 +218,11 @@ export default function AboutScreen() {
           </View>
         ))}
       </View>
+
+      {/* Japanese in every language: the pharmacy page is Japanese only */}
+      <Link href="/for-pharmacy" style={s.backLink}>
+        薬局の方へ（A・B・A+Bプラン）→
+      </Link>
     </ScrollView>
   );
 }

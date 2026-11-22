@@ -29,6 +29,7 @@ export default function RootLayout() {
           <Stack.Screen name="terms" />
           <Stack.Screen name="tokushoho" />
           <Stack.Screen name="about" />
+          <Stack.Screen name="for-pharmacy" />
           <Stack.Screen name="login" />
           <Stack.Screen name="signup" />
           <Stack.Screen name="forgot-password" />

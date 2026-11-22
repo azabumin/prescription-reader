@@ -37,6 +37,12 @@ const PAGES: Record<string, Omit<PageSeo, 'description'> & { description?: strin
       'アレルギー・持病・妊娠や授乳・飲んでいるお薬などを入力すると、薬剤師さんに見せられる日本語のメモになります。11言語で入力できます。',
     index: true,
   },
+  '/for-pharmacy': {
+    title: `薬局の方へ｜A・B・A+Bプラン｜${BRAND}`,
+    description:
+      `${BRAND}の薬局向け機能。A：窓口の処方箋をAIで読み取り、在庫CSVや出荷状況と照合。B：外国籍の患者さんの初回問診を日本語で確認し、返信は11言語に翻訳。A+B：その両方。受付のPC・タブレットのブラウザで使えます。`,
+    index: true,
+  },
   '/privacy': { title: `プライバシーポリシー｜${BRAND}`, description: `${BRAND}のプライバシーポリシーです。`, index: true },
   '/terms': { title: `利用規約｜${BRAND}`, description: `${BRAND}の利用規約です。`, index: true },
   '/tokushoho': {
