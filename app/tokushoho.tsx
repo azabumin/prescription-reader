@@ -13,11 +13,11 @@ type Row = { label: string; value: string };
 const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?: string }> = {
   ja: {
     title: '特定商取引法に基づく表記',
-    updated: '最終更新日: 2026年8月',
+    updated: '最終更新日: 2026年11月',
     rows: [
       { label: '販売業者', value: '株式会社Ｐｒｉａｍｏｓ' },
       { label: '運営統括責任者', value: '代表取締役　閔鐘基' },
-      { label: '所在地', value: '東京都江戸川区西葛西8-15 新田住宅6-703' },
+      { label: '所在地', value: '東京都江戸川区西葛西8-15\n※建物名・部屋番号は、ご請求があれば遅滞なく開示いたします。' },
       { label: '電話番号', value: '080-3155-5076' },
       { label: 'メールアドレス', value: 'azabumin@gmail.com' },
       {
@@ -44,11 +44,11 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
   },
   ko: {
     title: '특정상거래법에 따른 표기',
-    updated: '최종 수정일: 2026년 8월',
+    updated: '최종 수정일: 2026년 11월',
     rows: [
       { label: '판매업자', value: '株式会社Ｐｒｉａｍｏｓ (주식회사 PRIAMOS)' },
       { label: '운영총괄책임자', value: '대표이사 민종기 (閔鐘基)' },
-      { label: '소재지', value: '東京都江戸川区西葛西8-15 新田住宅6-703 (일본 도쿄도 에도가와구 니시카사이)' },
+      { label: '소재지', value: '東京都江戸川区西葛西8-15 (일본 도쿄도 에도가와구 니시카사이)\n※건물명·호수는 요청하시면 지체 없이 알려 드립니다.' },
       { label: '전화번호', value: '080-3155-5076' },
       { label: '이메일 주소', value: 'azabumin@gmail.com' },
       {
@@ -76,11 +76,11 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
   },
   en: {
     title: 'Notice Under Japan’s Act on Specified Commercial Transactions',
-    updated: 'Last updated: August 2026',
+    updated: 'Last updated: November 2026',
     rows: [
       { label: 'Business Name', value: 'PRIAMOS Co., Ltd. (株式会社Ｐｒｉａｍｏｓ)' },
       { label: 'Responsible Officer', value: 'Jong-gi Min, Representative Director (閔鐘基)' },
-      { label: 'Address', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
+      { label: 'Address', value: '8-15 Nishikasai, Edogawa-ku, Tokyo, Japan\n* The building name and room number will be disclosed without delay upon request.' },
       { label: 'Phone Number', value: '080-3155-5076' },
       { label: 'Email Address', value: 'azabumin@gmail.com' },
       {
@@ -108,11 +108,11 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
   },
   vi: {
     title: 'Thông Báo Theo Luật Giao Dịch Thương Mại Đặc Định Của Nhật Bản',
-    updated: 'Cập nhật lần cuối: Tháng 8 năm 2026',
+    updated: 'Cập nhật lần cuối: Tháng 11 năm 2026',
     rows: [
       { label: 'Đơn Vị Kinh Doanh', value: 'PRIAMOS Co., Ltd. (株式会社Ｐｒｉａｍｏｓ)' },
       { label: 'Người Chịu Trách Nhiệm', value: 'Đại diện: Jong-gi Min (閔鐘基)' },
-      { label: 'Địa Chỉ', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
+      { label: 'Địa Chỉ', value: '8-15 Nishikasai, Edogawa-ku, Tokyo, Japan\n* Tên tòa nhà và số phòng sẽ được cung cấp ngay khi có yêu cầu.' },
       { label: 'Số Điện Thoại', value: '080-3155-5076' },
       { label: 'Địa Chỉ Email', value: 'azabumin@gmail.com' },
       {
@@ -140,11 +140,11 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
   },
   zh: {
     title: '根据日本《特定商取引法》的表示',
-    updated: '最后更新:2026年8月',
+    updated: '最后更新:2026年11月',
     rows: [
       { label: '经营者名称', value: 'PRIAMOS股份有限公司(株式会社Ｐｒｉａｍｏｓ)' },
       { label: '运营负责人', value: '代表董事 闵钟基(閔鐘基)' },
-      { label: '所在地', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
+      { label: '所在地', value: '8-15 Nishikasai, Edogawa-ku, Tokyo, Japan\n※建筑名称和房间号码将在您提出请求时立即提供。' },
       { label: '电话号码', value: '080-3155-5076' },
       { label: '电子邮箱', value: 'azabumin@gmail.com' },
       {
@@ -169,11 +169,11 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
   },
   id: {
     title: 'Pemberitahuan Berdasarkan Undang-Undang Transaksi Komersial Tertentu Jepang',
-    updated: 'Terakhir diperbarui: Agustus 2026',
+    updated: 'Terakhir diperbarui: November 2026',
     rows: [
       { label: 'Nama Bisnis', value: 'PRIAMOS Co., Ltd. (株式会社Ｐｒｉａｍｏｓ)' },
       { label: 'Penanggung Jawab', value: 'Direktur Perwakilan: Jong-gi Min (閔鐘基)' },
-      { label: 'Alamat', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
+      { label: 'Alamat', value: '8-15 Nishikasai, Edogawa-ku, Tokyo, Japan\n* Nama gedung dan nomor kamar akan diberikan segera atas permintaan.' },
       { label: 'Nomor Telepon', value: '080-3155-5076' },
       { label: 'Alamat Email', value: 'azabumin@gmail.com' },
       {
@@ -201,11 +201,11 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
   },
   tl: {
     title: 'Paunawa Ayon sa Batas ng Japan sa mga Tinukoy na Transaksyong Komersyal',
-    updated: 'Huling na-update: Agosto 2026',
+    updated: 'Huling na-update: Nobyembre 2026',
     rows: [
       { label: 'Pangalan ng Negosyo', value: 'PRIAMOS Co., Ltd. (株式会社Ｐｒｉａｍｏｓ)' },
       { label: 'Responsableng Opisyal', value: 'Representative Director: Jong-gi Min (閔鐘基)' },
-      { label: 'Address', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
+      { label: 'Address', value: '8-15 Nishikasai, Edogawa-ku, Tokyo, Japan\n* Ibibigay agad ang pangalan ng gusali at numero ng kuwarto kapag hiniling.' },
       { label: 'Numero ng Telepono', value: '080-3155-5076' },
       { label: 'Email Address', value: 'azabumin@gmail.com' },
       {
@@ -233,11 +233,11 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
   },
   th: {
     title: 'ประกาศตามพระราชบัญญัติธุรกรรมพาณิชย์เฉพาะของญี่ปุ่น',
-    updated: 'อัปเดตล่าสุด: สิงหาคม 2026',
+    updated: 'อัปเดตล่าสุด: พฤศจิกายน 2026',
     rows: [
       { label: 'ชื่อผู้ประกอบการ', value: 'PRIAMOS Co., Ltd. (株式会社Ｐｒｉａｍｏｓ)' },
       { label: 'ผู้รับผิดชอบดำเนินงาน', value: 'กรรมการผู้แทน: Jong-gi Min (閔鐘基)' },
-      { label: 'ที่อยู่', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
+      { label: 'ที่อยู่', value: '8-15 Nishikasai, Edogawa-ku, Tokyo, Japan\n* ชื่ออาคารและหมายเลขห้องจะเปิดเผยโดยไม่ชักช้าเมื่อมีการร้องขอ' },
       { label: 'หมายเลขโทรศัพท์', value: '080-3155-5076' },
       { label: 'อีเมล', value: 'azabumin@gmail.com' },
       {
@@ -265,11 +265,11 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
   },
   my: {
     title: 'ဂျပန်နိုင်ငံ၏ သတ်မှတ်ကုန်သွယ်မှုဆိုင်ရာ အက်ဥပဒေအရ အသိပေးချက်',
-    updated: 'နောက်ဆုံးမွမ်းမံသည့်ရက်: ၂၀၂၆ ခုနှစ် သြဂုတ်လ',
+    updated: 'နောက်ဆုံးမွမ်းမံသည့်ရက်: ၂၀၂၆ ခုနှစ် နိုဝင်ဘာလ',
     rows: [
       { label: 'စီးပွားရေးလုပ်ငန်း အမည်', value: 'PRIAMOS Co., Ltd. (株式会社Ｐｒｉａｍｏｓ)' },
       { label: 'တာဝန်ခံ အရာရှိ', value: 'Representative Director: Jong-gi Min (閔鐘基)' },
-      { label: 'လိပ်စာ', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
+      { label: 'လိပ်စာ', value: '8-15 Nishikasai, Edogawa-ku, Tokyo, Japan\n* အဆောက်အအုံအမည်နှင့် အခန်းနံပါတ်ကို တောင်းဆိုပါက နှောင့်နှေးခြင်းမရှိဘဲ ပေးပါမည်။' },
       { label: 'ဖုန်းနံပါတ်', value: '080-3155-5076' },
       { label: 'အီးမေးလ်လိပ်စာ', value: 'azabumin@gmail.com' },
       {
@@ -297,11 +297,11 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
   },
   ne: {
     title: 'जापानको विशेष वाणिज्य कारोबार ऐन अन्तर्गत सूचना',
-    updated: 'अन्तिम अद्यावधिक: अगस्ट २०२६',
+    updated: 'अन्तिम अद्यावधिक: नोभेम्बर २०२६',
     rows: [
       { label: 'व्यवसायको नाम', value: 'PRIAMOS Co., Ltd. (株式会社Ｐｒｉａｍｏｓ)' },
       { label: 'जिम्मेवार अधिकारी', value: 'प्रतिनिधि निर्देशक: Jong-gi Min (閔鐘基)' },
-      { label: 'ठेगाना', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
+      { label: 'ठेगाना', value: '8-15 Nishikasai, Edogawa-ku, Tokyo, Japan\n* भवनको नाम र कोठा नम्बर अनुरोध गरेमा ढिलाइ नगरी उपलब्ध गराइनेछ।' },
       { label: 'फोन नम्बर', value: '080-3155-5076' },
       { label: 'इमेल ठेगाना', value: 'azabumin@gmail.com' },
       {
@@ -329,11 +329,11 @@ const CONTENT: Record<Lang, { title: string; updated: string; rows: Row[]; note?
   },
   pt: {
     title: 'Aviso Nos Termos da Lei de Transações Comerciais Específicas do Japão',
-    updated: 'Última atualização: agosto de 2026',
+    updated: 'Última atualização: novembro de 2026',
     rows: [
       { label: 'Nome da Empresa', value: 'PRIAMOS Co., Ltd. (株式会社Ｐｒｉａｍｏｓ)' },
       { label: 'Responsável', value: 'Diretor Representante: Jong-gi Min (閔鐘基)' },
-      { label: 'Endereço', value: '8-15 Nitta Jutaku 6-703, Nishikasai, Edogawa-ku, Tokyo, Japan' },
+      { label: 'Endereço', value: '8-15 Nishikasai, Edogawa-ku, Tokyo, Japan\n* O nome do edifício e o número do apartamento serão informados sem demora mediante solicitação.' },
       { label: 'Número de Telefone', value: '080-3155-5076' },
       { label: 'Endereço de E-mail', value: 'azabumin@gmail.com' },
       {
