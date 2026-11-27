@@ -12,14 +12,25 @@ const CONTACT_EMAIL = 'azabumin@gmail.com'; // same as app/tokushoho.tsx
 const CONTACT_TEL = '080-3155-5076';
 const MAIL_SUBJECT = encodeURIComponent(`${BRAND}（薬局向け）について`);
 
-// 検証研究の協力薬局募集（2026-11-28 追加）. Terms confirmed by the owner on 2026-11-23; the form is the owner's
-// Google Form (16 questions). Remove or rewrite this block once the study period is over.
+// モニター薬局（無料の試験導入）の募集（2026-11-28 追加。同日「検証研究」から名称変更）. Terms confirmed by the owner
+// on 2026-11-23; the form is the owner's Google Form (16 questions). Remove or rewrite this block once the monitor
+// period is over. Keep the wording in sync with the form's description.
 const STUDY_FORM_URL = 'https://forms.gle/AKiL1WFNqMc2YDPt9';
 const STUDY_TERMS: string[] = [
   '期間：2026年12月14日（月）〜2027年1月31日（日）',
   '募集：先着5薬局（定員に達したあとは、順番待ちとしてご連絡します）',
-  '費用：検証期間中はかかりません。期間が終わっても、自動で有料になることはありません。',
+  '費用：モニター期間中はかかりません。期間が終わっても、自動で有料になることはありません。',
   'お願いしたいこと：週1回の簡単な記録（3分ほど）と、終了時に15分ほどのお話',
+];
+const STUDY_CHECKS: string[] = [
+  '受付で、どのくらいの時間と手間で使えるか',
+  'AIの読み取り・在庫との照合・翻訳が、現場で使えるか（薬剤師さんが直した点など）',
+  '外国籍の患者さんとのやり取りが、どう変わるか',
+];
+const STUDY_DATA: string[] = [
+  'いただくのは、薬局名・ご担当者の連絡先と、週1回の記録・終了時のお話の内容だけです。アプリの改善とモニター結果のまとめにだけ使い、第三者には提供しません。',
+  '患者さんの個人情報はいただきません。在庫CSVはブラウザの中だけで照合し、サーバーには送りません。',
+  '窓口で撮影した処方箋の画像（プランA）は、薬の読み取りのためだけに使い、保存しません。患者さんから送られてきたデータ（プランB）は、受付画面で「完了」にした時点か7日後に削除されます。',
 ];
 
 type Plan = { heading: string; lead: string; points: string[] };
@@ -112,9 +123,15 @@ export default function ForPharmacyScreen() {
       </View>
 
       <View style={[s.langBlock, st.study]}>
-        <H2>検証研究の協力薬局を募集しています</H2>
-        <Text style={s.body}>受付で使う機能を実際の薬局で使っていただき、使いやすさと安全性を確かめます。</Text>
+        <H2>{'モニター薬局を募集しています\n（無料の試験導入）'}</H2>
+        <Text style={s.body}>
+          受付で使う機能を、実際の薬局で無料でお試しいただき、使いやすさや、現場で使えるかどうかを一緒に確かめていただく取り組みです（学術研究ではありません）。
+        </Text>
         <Bullets items={STUDY_TERMS} />
+        <Text style={s.sectionHeading}>確かめたいこと</Text>
+        <Bullets items={STUDY_CHECKS} />
+        <Text style={s.sectionHeading}>いただく情報・いただかない情報</Text>
+        <Bullets items={STUDY_DATA} />
         <Link href={STUDY_FORM_URL} target="_blank" rel="noopener noreferrer" style={st.cta}>
           お申し込みフォームを開く
         </Link>
