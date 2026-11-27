@@ -12,6 +12,16 @@ const CONTACT_EMAIL = 'azabumin@gmail.com'; // same as app/tokushoho.tsx
 const CONTACT_TEL = '080-3155-5076';
 const MAIL_SUBJECT = encodeURIComponent(`${BRAND}（薬局向け）について`);
 
+// 検証研究の協力薬局募集（2026-11-28 追加）. Terms confirmed by the owner on 2026-11-23; the form is the owner's
+// Google Form (16 questions). Remove or rewrite this block once the study period is over.
+const STUDY_FORM_URL = 'https://forms.gle/AKiL1WFNqMc2YDPt9';
+const STUDY_TERMS: string[] = [
+  '期間：2026年12月14日（月）〜2027年1月31日（日）',
+  '募集：先着5薬局（定員に達したあとは、順番待ちとしてご連絡します）',
+  '費用：検証期間中はかかりません。期間が終わっても、自動で有料になることはありません。',
+  'お願いしたいこと：週1回の簡単な記録（3分ほど）と、終了時に15分ほどのお話',
+];
+
 type Plan = { heading: string; lead: string; points: string[] };
 
 const PLANS: Plan[] = [
@@ -101,6 +111,18 @@ export default function ForPharmacyScreen() {
         </Text>
       </View>
 
+      <View style={[s.langBlock, st.study]}>
+        <H2>検証研究の協力薬局を募集しています</H2>
+        <Text style={s.body}>受付で使う機能を実際の薬局で使っていただき、使いやすさと安全性を確かめます。</Text>
+        <Bullets items={STUDY_TERMS} />
+        <Link href={STUDY_FORM_URL} target="_blank" rel="noopener noreferrer" style={st.cta}>
+          お申し込みフォームを開く
+        </Link>
+        <Text style={[s.muted, st.note]}>
+          Googleフォームが新しいタブで開きます。フォームには、患者さんの個人情報を入力しないでください。フォームを使わずに、下記のお問い合わせ先へご連絡いただいてもかまいません。
+        </Text>
+      </View>
+
       {PLANS.map((p) => (
         <View key={p.heading} style={s.langBlock}>
           <H2>{p.heading}</H2>
@@ -155,4 +177,17 @@ const st = StyleSheet.create({
   langs: { marginTop: -SPACING.sm, marginBottom: SPACING.lg, paddingHorizontal: SPACING.xs },
   link: { color: COLORS.accent, fontWeight: '600', textDecorationLine: 'underline' },
   footer: { textAlign: 'center', marginBottom: SPACING.xl },
+  study: { borderColor: COLORS.primary, borderWidth: 2 },
+  cta: {
+    marginTop: SPACING.md,
+    backgroundColor: COLORS.primary,
+    color: '#FFFFFF',
+    fontSize: 17,
+    fontWeight: '800',
+    textAlign: 'center',
+    paddingVertical: SPACING.sm + 4,
+    paddingHorizontal: SPACING.md,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
 });
